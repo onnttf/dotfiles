@@ -1,21 +1,27 @@
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+
+-- Install lazy.nvim if not already installed
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system(
-        { "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable", -- latest stable release
-            lazypath }
+        -- Latest stable release
+        { "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable", lazypath }
     )
 end
+
+-- Add lazy.nvim to runtime path
 vim.opt.rtp:prepend(lazypath)
 
+-- Load LSP configuration
 local lsp = require("plugins/lsp/init")
 
+-- Define a list of plugins
 local plugins = {
     {
         "projekt0n/github-nvim-theme",
-        lazy = false,    -- make sure we load this during startup if it is your main colorscheme
-        priority = 1000, -- make sure to load this before all the other start plugins
+        lazy = false,    -- Load during startup if it is the main colorscheme
+        priority = 1000, -- Load before all other start plugins
         config = function()
-            -- load the colorscheme here
+            -- Load the colorscheme here
             require("plugins/github-nvim-theme")
         end
     },
@@ -31,7 +37,6 @@ local plugins = {
         "nvim-neo-tree/neo-tree.nvim",
         branch = "v3.x",
         dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" },
-        -- cmd = {"NeoTreeRevealToggle", "NeoTreeFloatToggle"},
         event = "VeryLazy",
         config = function()
             require("plugins/neo-tree")
@@ -46,7 +51,6 @@ local plugins = {
                 build = 'make'
             }
         },
-        -- cmd = "Telescope",
         event = "VeryLazy",
         config = function()
             require("plugins/telescope")
@@ -94,11 +98,6 @@ local plugins = {
     {
         "folke/which-key.nvim",
         event = "VeryLazy",
-        opts = {
-            -- your configuration comes here
-            -- or leave it empty to use the default settings
-            -- refer to the configuration section below
-        }
     },
     {
         "nvimtools/none-ls.nvim",
@@ -109,4 +108,6 @@ local plugins = {
     },
     lsp
 }
+
+-- Setup lazy-loading for the defined plugins
 require("lazy").setup(plugins)

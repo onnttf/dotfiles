@@ -1,17 +1,20 @@
-local utils = require("utils.utils") -- Load 'utils' module here
+-- Load 'utils' module here
+local utils = require("utils.utils")
 
--- search word under cursor
+-- Key mappings for common tasks
+
+-- Search word under cursor
 utils.keymap({ "n", "x" }, "ws", "*N", {
     desc = "Search word under cursor"
 })
 
--- clear search with <esc>
+-- Clear search with <Esc>
 utils.keymap({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", {
     desc = "Escape and clear hlsearch"
 })
 
--- n to always search forward and N backward
--- https://github.com/mhinz/vim-galore#saner-behavior-of-n-and-n
+-- Improved behavior for 'n' and 'N'
+-- See: https://github.com/mhinz/vim-galore#saner-behavior-of-n-and-n
 utils.keymap({ "n", "x", "o" }, "n", "'Nn'[v:searchforward]", {
     expr = true,
     desc = "Next search result"
@@ -21,17 +24,19 @@ utils.keymap({ "n", "x", "o" }, "N", "'nN'[v:searchforward]", {
     desc = "Prev search result"
 })
 
--- better up/down
+-- Better up/down movement
 utils.keymap("n", "j", "v:count == 0 ? 'gj' : 'j'", {
     expr = true,
-    silent = true
+    silent = true,
+    desc = "Smart down movement"
 })
 utils.keymap("n", "k", "v:count == 0 ? 'gk' : 'k'", {
     expr = true,
-    silent = true
+    silent = true,
+    desc = "Smart up movement"
 })
 
--- move to window using the <ctrl> hjkl keys
+-- Move between windows using <Ctrl> hjkl keys
 utils.keymap("n", "<C-h>", "<C-w>h", {
     desc = "Go to left window"
 })
@@ -45,7 +50,7 @@ utils.keymap("n", "<C-l>", "<C-w>l", {
     desc = "Go to right window"
 })
 
--- move Lines
+-- Move lines up and down
 utils.keymap("n", "<A-j>", ":m .+1<cr>==", {
     desc = "Move down"
 })

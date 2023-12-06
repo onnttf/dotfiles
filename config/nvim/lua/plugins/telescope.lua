@@ -1,7 +1,9 @@
 -- https://github.com/nvim-telescope/telescope.nvim
 local actions = require("telescope.actions")
+local telescope = require("telescope")
 
-require("telescope").setup {
+-- Configure Telescope defaults and pickers
+telescope.setup {
     defaults = {
         mappings = {
             i = {
@@ -22,9 +24,9 @@ require("telescope").setup {
     },
     pickers = {
         extensions = {
-            -- your extension configuration goes here:
+            -- Configuration for the fzf extension
             fzf = {
-                fuzzy = true,                   -- false will only do exact matching
+                fuzzy = true,                   -- false for exact matching
                 override_generic_sorter = true, -- override the generic sorter
                 override_file_sorter = true,    -- override the file sorter
                 case_mode = "smart_case"        -- or "ignore_case" or "respect_case"
@@ -32,14 +34,14 @@ require("telescope").setup {
         }
     }
 }
--- To get fzf loaded and working with telescope, you need to call
--- load_extension, somewhere after setup function:
-require('telescope').load_extension('fzf')
+
+-- Load the fzf extension for Telescope
+telescope.load_extension('fzf')
 
 local builtin = require('telescope.builtin')
-
 local utils = require("utils.utils") -- Load 'utils' module here
 
+-- Custom key mappings for Telescope commands
 utils.keymap('n', 'tf', builtin.find_files, {
     desc = "Search for a file"
 })

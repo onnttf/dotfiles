@@ -14,7 +14,7 @@ local function getTelescopeOpts(state, path)
                 if (filename == nil) then
                     filename = selection[1]
                 end
-                -- any way to open the file without triggering auto-close event of neo-tree?
+                -- Open the file without triggering auto-close event of neo-tree
                 require("neo-tree.sources.filesystem").navigate(state, state.path, filename)
             end)
             return true
@@ -22,18 +22,16 @@ local function getTelescopeOpts(state, path)
     }
 end
 
+-- Neo-Tree setup configuration
 require("neo-tree").setup {
     sources = { "filesystem", "buffers", "git_status", "document_symbols" },
     source_selector = {
-        sources = { {
-            source = "filesystem"
-        }, {
-            source = "buffers"
-        }, {
-            source = "git_status"
-        }, {
-            source = "document_symbols"
-        } }
+        sources = {
+            { source = "filesystem" },
+            { source = "buffers" },
+            { source = "git_status" },
+            { source = "document_symbols" }
+        }
     },
     use_default_mappings = false,
     close_if_last_window = true,
@@ -54,11 +52,11 @@ require("neo-tree").setup {
     filesystem = {
         hijack_netrw_behavior = "open_default",
         filtered_items = {
-            -- remains visible even if other settings would normally hide it
-            always_show = { ".gitignore" }
+            always_show = { ".gitignore" } -- remains visible even if other settings would normally hide it
         },
         window = {
             mappings = {
+                -- Custom mappings for the filesystem section
                 ["h"] = function(state)
                     local node = state.tree:get_node()
                     if node.type == "directory" and node:is_expanded() then
@@ -118,6 +116,7 @@ require("neo-tree").setup {
                 ["."] = "set_root"
             },
             fuzzy_finder_mappings = {
+                -- Custom mappings for the fuzzy finder
                 ["<down>"] = "move_cursor_down",
                 ["<C-n>"] = "move_cursor_down",
                 ["<up>"] = "move_cursor_up",
@@ -125,6 +124,7 @@ require("neo-tree").setup {
             }
         },
         commands = {
+            -- Custom commands for the filesystem section
             telescope_find = function(state)
                 local node = state.tree:get_node()
                 local path = node:get_id()
@@ -138,6 +138,7 @@ require("neo-tree").setup {
         }
     },
     buffers = {
+        -- Configuration for the buffers section
         window = {
             mappings = {
                 ["d"] = "buffer_delete"
@@ -145,6 +146,7 @@ require("neo-tree").setup {
         }
     },
     git_status = {
+        -- Configuration for the git status section
         window = {
             mappings = {
                 ["a"] = "git_add_file",
@@ -157,26 +159,31 @@ require("neo-tree").setup {
             }
         }
     },
-    event_handlers = { {
-        event = "neo_tree_window_after_open",
-        handler = function(args)
-            if args.position == "left" or args.position == "right" then
-                vim.cmd("wincmd =")
+    event_handlers = {
+        -- Event handlers for Neo-Tree events
+        {
+            event = "neo_tree_window_after_open",
+            handler = function(args)
+                if args.position == "left" or args.position == "right" then
+                    vim.cmd("wincmd =")
+                end
             end
-        end
-    }, {
-        event = "neo_tree_window_after_close",
-        handler = function(args)
-            if args.position == "left" or args.position == "right" then
-                vim.cmd("wincmd =")
+        },
+        {
+            event = "neo_tree_window_after_close",
+            handler = function(args)
+                if args.position == "left" or args.position == "right" then
+                    vim.cmd("wincmd =")
+                end
             end
-        end
-    }, {
-        event = "file_opened",
-        handler = function(file_path)
-            require("neo-tree.command").execute({
-                action = "close"
-            })
-        end
-    } }
+        },
+        {
+            event = "file_opened",
+            handler = function(file_path)
+                require("neo-tree.command").execute({
+                    action = "close"
+                })
+            end
+        }
+    }
 }

@@ -1,11 +1,13 @@
 -- https://github.com/kevinhwang91/nvim-ufo
--- '0' is not bad
+-- Set foldcolumn to '0' for a cleaner appearance
 vim.o.foldcolumn = '0'
--- Using ufo provider need a large value, feel free to decrease the value
+
+-- Configure fold settings for UFO provider
 vim.o.foldlevel = 99
 vim.o.foldlevelstart = 99
 vim.o.foldenable = true
 
+-- Customize fold provider selection logic
 local function customizeSelector(bufnr)
     local function handleFallbackException(err, providerName)
         if type(err) == 'string' and err:match('UfoFallbackException') then
@@ -22,15 +24,18 @@ local function customizeSelector(bufnr)
     end)
 end
 
+-- Setup UFO with customized provider selection logic
 require('ufo').setup({
     provider_selector = function(bufnr, filetype, buftype)
         return customizeSelector
+        -- Alternatively, you can manually specify providers like:
         -- return {'treesitter', 'indent'}
     end
 })
 
-local utils = require("utils.utils") -- Load 'utils' module here
-
--- Using ufo provider need remap `zR` and `zM`. If Neovim is 0.6.1, remap yourself
+-- Load 'utils' module here
+local utils = require("utils.utils") 
+-- Remap 'zR' and 'zM' to open and close all folds when using UFO provider
 utils.keymap('n', 'zR', require('ufo').openAllFolds)
 utils.keymap('n', 'zM', require('ufo').closeAllFolds)
+

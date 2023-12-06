@@ -1,10 +1,11 @@
 -- https://github.com/glepnir/dashboard-nvim
 require('dashboard').setup {
     config = {
+        -- Configuration options for the dashboard
         week_header = {
             enable = true
         },
-        -- disable_move = true,
+        -- Shortcut configuration for quick actions
         shortcut = {
             {
                 icon = '  ',
@@ -37,6 +38,8 @@ require('dashboard').setup {
                 action = 'qa'
             }
         },
+
+        -- Footer message displayed at the bottom of the dashboard
         footer = { "", "🎉 Meet a better version of yourself every day." }
     }
 }

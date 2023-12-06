@@ -1,19 +1,22 @@
 -- https://github.com/neovim/nvim-lspconfig
 local lspconfig = require('lspconfig')
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
--- Function to define LSP mappings for a specific buffer
+
+-- Define function to set up LSP mappings for a specific buffer
 local on_attach = function(_, bufnr)
     local utils = require("utils.utils") -- Load 'utils' module here
+
+    -- Helper function to create LSP mappings
     local nmap = function(keys, func, desc)
-        if desc then
-            desc = 'LSP: ' .. desc
-        end
+        desc = desc and ('LSP: ' .. desc) or nil
         utils.keymap('n', keys, func, {
             buffer = bufnr,
             desc = desc,
             silent = true
         })
     end
+
+    -- Set up LSP mappings
     nmap('K', vim.lsp.buf.hover, "Hover Documentation")
     nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
     nmap('gr', vim.lsp.buf.references, '[G]oto [R]eferences')
