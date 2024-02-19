@@ -1,4 +1,5 @@
 -- https://github.com/nvim-treesitter/nvim-treesitter
+
 require("nvim-treesitter.configs").setup({
 	-- List of parsers to ensure are installed or "all"
 	-- Refer to https://github.com/nvim-treesitter/nvim-treesitter#supported-languages

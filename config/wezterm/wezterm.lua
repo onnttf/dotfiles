@@ -101,4 +101,3 @@ config.keys = {
 
 -- Finally, return the configuration to wezterm
 return config
-

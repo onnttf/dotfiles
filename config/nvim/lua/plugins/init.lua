@@ -79,14 +79,6 @@ local plugins = {
 			require("plugins.indent-blankline")
 		end,
 	},
-	-- {
-	-- 	"kevinhwang91/nvim-ufo",
-	-- 	dependencies = { "kevinhwang91/promise-async", "nvim-treesitter/nvim-treesitter" },
-	-- 	event = "VeryLazy",
-	-- 	config = function()
-	-- 		require("plugins/nvim-ufo")
-	-- 	end,
-	-- },
 	{
 		"folke/trouble.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons" },

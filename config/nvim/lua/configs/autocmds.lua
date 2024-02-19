@@ -79,15 +79,15 @@ autocmd("BufWritePre", {
 })
 
 -- Auto command to remove trailing whitespaces and insert a newline at the end of the file
-autocmd("BufWritePre", {
-	group = augroup("auto_add_empty_line"),
-	callback = function()
-		local last_line = vim.fn.line("$")
-		local last_line_content = vim.fn.getline(last_line)
-		local trimmed_content = vim.fn.substitute(last_line_content, "\\s\\+$", "", "")
-		vim.fn.setline(last_line, trimmed_content)
-		if last_line == 1 or trimmed_content ~= "" then
-			vim.fn.append(last_line, "")
-		end
-	end,
-})
+-- autocmd("BufWritePre", {
+-- 	group = augroup("auto_add_empty_line"),
+-- 	callback = function()
+-- 		local last_line = vim.fn.line("$")
+-- 		local last_line_content = vim.fn.getline(last_line)
+-- 		local trimmed_content = vim.fn.substitute(last_line_content, "\\s\\+$", "", "")
+-- 		vim.fn.setline(last_line, trimmed_content)
+-- 		if last_line == 1 or trimmed_content ~= "" then
+-- 			vim.fn.append(last_line, "")
+-- 		end
+-- 	end,
+-- })

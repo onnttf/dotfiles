@@ -1,5 +1,4 @@
 -- https://github.com/hrsh7th/nvim-cmp
-
 local vim = vim
 local cmp = require("cmp")
 
@@ -10,14 +9,38 @@ end
 
 -- Function to check if there are words before the cursor
 local has_words_before = function()
-	local line, col = vim.fn.getpos(".")
-	if col == 0 then
-		return false
-	end
-
-	local current_line = vim.api.nvim_buf_get_lines(0, line[2] - 1, line[2], true)[1]
-	return not current_line:sub(col, col):match("%s")
+	unpack = unpack or table.unpack
+	local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+	return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 end
+
+local kind_icons = {
+	Text = "",
+	Method = "󰆧",
+	Function = "󰊕",
+	Constructor = "",
+	Field = "󰇽",
+	Variable = "󰂡",
+	Class = "󰠱",
+	Interface = "",
+	Module = "",
+	Property = "󰜢",
+	Unit = "",
+	Value = "󰎠",
+	Enum = "",
+	Keyword = "󰌋",
+	Snippet = "",
+	Color = "󰏘",
+	File = "󰈙",
+	Reference = "",
+	Folder = "󰉋",
+	EnumMember = "",
+	Constant = "󰏿",
+	Struct = "",
+	Event = "",
+	Operator = "󰆕",
+	TypeParameter = "󰅲",
+}
 
 -- Setup nvim-cmp
 cmp.setup({
@@ -30,13 +53,28 @@ cmp.setup({
 			return not context.in_treesitter_capture("comment") and not context.in_syntax_group("Comment")
 		end
 	end,
+	formatting = {
+		format = function(entry, vim_item)
+			-- Kind icons
+			vim_item.kind = string.format("%s %s", kind_icons[vim_item.kind], vim_item.kind) -- This concatenates the icons with the name of the item kind
+			-- Source
+			vim_item.menu = ({
+				buffer = "[Buffer]",
+				nvim_lsp = "[LSP]",
+				luasnip = "[LuaSnip]",
+				nvim_lua = "[Lua]",
+				latex_symbols = "[LaTeX]",
+			})[entry.source.name]
+			return vim_item
+		end,
+	},
 	preselect = cmp.PreselectMode.None,
 	matching = {
-		disallow_fuzzy_matching = true,
-		disallow_fullfuzzy_matching = true,
-		disallow_partial_fuzzy_matching = true,
-		disallow_partial_matching = true,
-		disallow_prefix_unmatching = false,
+		-- disallow_fuzzy_matching = true,
+		-- disallow_fullfuzzy_matching = true,
+		-- disallow_partial_fuzzy_matching = true,
+		-- disallow_partial_matching = true,
+		-- disallow_prefix_unmatching = false
 	},
 	snippet = {
 		expand = function(args)
@@ -52,7 +90,7 @@ cmp.setup({
 			elseif has_words_before() then
 				cmp.complete()
 			else
-				fallback()
+				fallback() -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
 			end
 		end, { "i", "s" }),
 		["<S-Tab>"] = cmp.mapping(function()
@@ -73,35 +111,60 @@ cmp.setup({
 					fallback()
 				end
 			end,
+			s = cmp.mapping.confirm({
+				select = true,
+			}),
+			c = cmp.mapping.confirm({
+				behavior = cmp.ConfirmBehavior.Replace,
+				select = true,
+			}),
 		}),
 	},
 	sources = cmp.config.sources({
-		{ name = "nvim_lsp" },
-		{ name = "vsnip" },
-		{ name = "buffer" },
-		{ name = "path" },
+		{
+			name = "nvim_lsp",
+		},
+		{
+			name = "vsnip",
+		},
+		{
+			name = "buffer",
+		},
+		{
+			name = "path",
+		},
 	}),
 })
 
 -- Setup cmdline completion for '/'
 cmp.setup.cmdline("/", {
 	mapping = cmp.mapping.preset.cmdline(),
-	completion = { autocomplete = false },
-	sources = { { name = "buffer" } },
+	completion = {
+		autocomplete = false,
+	},
+	sources = { {
+		name = "buffer",
+	} },
 })
 
 -- Setup cmdline completion for ':'
 cmp.setup.cmdline(":", {
 	mapping = cmp.mapping.preset.cmdline(),
-	completion = { autocomplete = false },
+	completion = {
+		autocomplete = false,
+	},
 	enabled = function()
-		local disabled = { IncRename = true, s = true, sm = true }
+		local disabled = {
+			IncRename = true,
+			s = true,
+			sm = true,
+		}
 		local cmd = vim.fn.getcmdline():match("%S+")
 		return not disabled[cmd] or cmp.close()
 	end,
-	sources = cmp.config.sources({ { name = "path" } }, { { name = "cmdline" } }),
+	sources = cmp.config.sources({ {
+		name = "path",
+	} }, { {
+		name = "cmdline",
+	} }),
 })
-
--- Add parentheses after selecting a function or method item
-local cmp_autopairs = require("nvim-autopairs.completion.cmp")
-cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())

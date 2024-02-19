@@ -22,4 +22,3 @@ if status is-interactive
     # Add commands to run in interactive sessions here.
     # For example, setting the prompt, defining aliases, and functions specifically for interactive use.
 end
-

@@ -1,4 +1,5 @@
 -- https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim
+
 require("mason-tool-installer").setup({
 	-- a list of all tools you want to ensure are installed upon
 	-- start

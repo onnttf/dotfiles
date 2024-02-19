@@ -14,12 +14,6 @@ local lsp_config = {
 						"hrsh7th/cmp-vsnip",
 						dependencies = { "hrsh7th/vim-vsnip", "rafamadriz/friendly-snippets" },
 					},
-					{
-						"windwp/nvim-autopairs",
-						config = function()
-							require("plugins.lsp.nvim-autopairs")
-						end,
-					},
 				},
 				config = function()
 					require("plugins.lsp.nvim-cmp")
@@ -42,15 +36,6 @@ local lsp_config = {
 		end,
 		ft = { "go", "gomod" },
 	},
-	--{
-	--	"ray-x/go.nvim",
-	--	dependencies = { "ray-x/guihua.lua" },
-	--	config = function()
-	--		require("plugins.lsp.go")
-	--	end,
-	--	ft = { "go", "gomod" },
-	--	build = ':lua require("go.install").update_all_sync()', -- Install/update all binaries if needed
-	--},
 }
 
 -- Export the LSP configuration

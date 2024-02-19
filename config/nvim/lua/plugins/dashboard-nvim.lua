@@ -1,4 +1,5 @@
 -- https://github.com/glepnir/dashboard-nvim
+
 require("dashboard").setup({
 	config = {
 		-- Configuration options for the dashboard
