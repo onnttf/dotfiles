@@ -1,16 +1,13 @@
 -- Pull in the wezterm API
 local wezterm = require("wezterm")
 
--- This table will hold the configuration.
+-- Configuration table
 local config = {}
 
--- In newer versions of wezterm, use the config_builder which will
--- help provide clearer error messages
+-- Use config_builder for clearer error messages in newer wezterm versions
 if wezterm.config_builder then
 	config = wezterm.config_builder()
 end
-
--- This is where you actually apply your config choices
 
 -- Enable automatic checking for updates
 config.check_for_updates = true
@@ -40,64 +37,24 @@ local act = wezterm.action
 -- Define keybindings for various actions
 config.keys = {
 	-- Split the current pane horizontally
-	{
-		key = "|",
-		mods = "CMD",
-		action = wezterm.action.SplitHorizontal({
-			domain = "CurrentPaneDomain",
-		}),
-	},
+	{ key = "|", mods = "CMD", action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
 	-- Split the current pane vertically
-	{
-		key = "_",
-		mods = "CMD",
-		action = wezterm.action.SplitVertical({
-			domain = "CurrentPaneDomain",
-		}),
-	},
+	{ key = "_", mods = "CMD", action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }) },
 	-- Close the current pane
-	{
-		key = "C",
-		mods = "CMD",
-		action = wezterm.action.CloseCurrentPane({ confirm = false }),
-	},
+	{ key = "C", mods = "CMD", action = wezterm.action.CloseCurrentPane({ confirm = false }) },
 	-- Activate the pane to the left
-	{
-		key = "h",
-		mods = "CMD",
-		action = act.ActivatePaneDirection("Left"),
-	},
+	{ key = "h", mods = "CMD", action = act.ActivatePaneDirection("Left") },
 	-- Activate the pane to the right
-	{
-		key = "l",
-		mods = "CMD",
-		action = act.ActivatePaneDirection("Right"),
-	},
+	{ key = "l", mods = "CMD", action = act.ActivatePaneDirection("Right") },
 	-- Activate the pane above
-	{
-		key = "j",
-		mods = "CMD",
-		action = act.ActivatePaneDirection("Up"),
-	},
+	{ key = "j", mods = "CMD", action = act.ActivatePaneDirection("Up") },
 	-- Activate the pane below
-	{
-		key = "k",
-		mods = "CMD",
-		action = act.ActivatePaneDirection("Down"),
-	},
+	{ key = "k", mods = "CMD", action = act.ActivatePaneDirection("Down") },
 	-- Move the current tab to the left
-	{
-		key = "<",
-		mods = "CMD",
-		action = act.MoveTabRelative(-1),
-	},
+	{ key = "<", mods = "CMD", action = act.MoveTabRelative(-1) },
 	-- Move the current tab to the right
-	{
-		key = ">",
-		mods = "CMD",
-		action = act.MoveTabRelative(1),
-	},
+	{ key = ">", mods = "CMD", action = act.MoveTabRelative(1) },
 }
 
--- Finally, return the configuration to wezterm
+-- Return the configuration to wezterm
 return config

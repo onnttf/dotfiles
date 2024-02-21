@@ -8,15 +8,22 @@ set jump_server [lindex $argv 0]
 set username [lindex $argv 1]
 set password [lindex $argv 2]
 
-# SSH to the jump server
+# Connect to the jump server via SSH
 spawn ssh $username@$jump_server
 
-# Start expect
+
+# Start expect to handle SSH interactions
 expect {
-"*yes/no*?"
-{send "yes\r";exp_continue;}
-"*assword:*"
-{ send "$password\r" }
+    "*yes/no*?" {
+        # Automatically answer "yes" to the SSH key verification prompt
+        send "yes\r"
+        exp_continue
+    }
+    "*assword:*" {
+        # Send the provided password when prompted for it
+        send "$password\r"
+    }
 }
 
+# Allow interaction with the SSH session
 interact

@@ -1,24 +1,25 @@
-alias n="nvim"
-alias ip="ifconfig | grep inet | grep -v inet6 | awk '{print \$1, \$2}'"
-alias h="cd $HOME"
-alias d="cd $HOME/Desktop"
+# Aliases for convenient commands:
 
-# Check if the 'go' command exists
-if command -v go >/dev/null
-    # Set GOPATH and update PATH if necessary
+alias n="nvim" # 'n' as an alias for 'nvim'
+alias ip="ifconfig | grep inet | grep -v inet6 | awk '{print \$1, \$2}'" # Display IPv4 addresses
+alias h="cd $HOME" # Shortcut to change directory to home
+alias d="cd $HOME/Desktop" # Shortcut to change directory to desktop
+
+# Set 'neovim' as the default editor if 'neovim' is available
+if command -q nvim
+    set -x EDITOR nvim
+end
+
+# Set GOPATH and add GOPATH/bin to the PATH if 'go' is available
+if type -q go
     set -gx GOPATH (go env GOPATH)
-
-    # Add the Go bin directory to PATH if not already present
-    if not contains $GOPATH/bin $PATH
-        set -gx PATH $GOPATH/bin $PATH
-    end
+    fish_add_path $GOPATH/bin
 end
 
 # Check if the current shell is in interactive mode
 if status is-interactive
-    # In this branch, we handle the case when the shell is in interactive mode.
-    # This section is executed when you are actively using the Fish Shell in the terminal.
+    # This section is executed when the Fish Shell is actively used in the terminal.
 
-    # Add commands to run in interactive sessions here.
-    # For example, setting the prompt, defining aliases, and functions specifically for interactive use.
+    # Add commands specific to interactive sessions below.
+    # Examples include setting the prompt, defining aliases, and functions for interactive use.
 end
