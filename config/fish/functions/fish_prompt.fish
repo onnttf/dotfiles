@@ -12,7 +12,8 @@ function fish_prompt --description 'Write out the prompt'
     set -l prompt_status ""
 
     # Adjust the directory name length for a multiline prompt
-    set -q fish_prompt_pwd_dir_length or set -lx fish_prompt_pwd_dir_length 0
+    set -q fish_prompt_pwd_dir_length
+    or set -lx fish_prompt_pwd_dir_length 0
 
     # Customize prompt for root user
     set -l suffix '❯'
