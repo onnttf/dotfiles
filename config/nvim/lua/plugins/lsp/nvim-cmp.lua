@@ -1,52 +1,32 @@
 -- https://github.com/hrsh7th/nvim-cmp
+
 local vim = vim
 local cmp = require("cmp")
 
--- Function to simulate key presses in Neovim
+-- Function to feed key input
 local feedkey = function(key, mode)
 	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
 end
 
 -- Function to check if there are words before the cursor
 local has_words_before = function()
-	unpack = unpack or table.unpack
 	local line, col = unpack(vim.api.nvim_win_get_cursor(0))
 	return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 end
 
+-- Icons for different kinds of completion items
 local kind_icons = {
 	Text = "",
 	Method = "󰆧",
 	Function = "󰊕",
-	Constructor = "",
-	Field = "󰇽",
-	Variable = "󰂡",
-	Class = "󰠱",
-	Interface = "",
-	Module = "",
-	Property = "󰜢",
-	Unit = "",
-	Value = "󰎠",
-	Enum = "",
-	Keyword = "󰌋",
-	Snippet = "",
-	Color = "󰏘",
-	File = "󰈙",
-	Reference = "",
-	Folder = "󰉋",
-	EnumMember = "",
-	Constant = "󰏿",
-	Struct = "",
-	Event = "",
-	Operator = "󰆕",
-	TypeParameter = "󰅲",
 }
 
--- Setup nvim-cmp
+-- cmp setup
 cmp.setup({
 	enabled = function()
 		local context = require("cmp.config.context")
-		-- Disable completion in comments in command mode
+
+		-- Enable cmp in command-line mode and not in treesitter comments or syntax group comments
 		if vim.api.nvim_get_mode().mode == "c" then
 			return true
 		else
@@ -55,9 +35,9 @@ cmp.setup({
 	end,
 	formatting = {
 		format = function(entry, vim_item)
-			-- Kind icons
-			vim_item.kind = string.format("%s %s", kind_icons[vim_item.kind], vim_item.kind) -- This concatenates the icons with the name of the item kind
-			-- Source
+			-- Customize the display format for completion items
+			vim_item.kind = string.format("%s %s", kind_icons[vim_item.kind], vim_item.kind)
+
 			vim_item.menu = ({
 				buffer = "[Buffer]",
 				nvim_lsp = "[LSP]",
@@ -69,13 +49,6 @@ cmp.setup({
 		end,
 	},
 	preselect = cmp.PreselectMode.None,
-	matching = {
-		-- disallow_fuzzy_matching = true,
-		-- disallow_fullfuzzy_matching = true,
-		-- disallow_partial_fuzzy_matching = true,
-		-- disallow_partial_matching = true,
-		-- disallow_prefix_unmatching = false
-	},
 	snippet = {
 		expand = function(args)
 			vim.fn["vsnip#anonymous"](args.body)
@@ -90,7 +63,7 @@ cmp.setup({
 			elseif has_words_before() then
 				cmp.complete()
 			else
-				fallback() -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
+				fallback()
 			end
 		end, { "i", "s" }),
 		["<S-Tab>"] = cmp.mapping(function()
@@ -136,24 +109,26 @@ cmp.setup({
 	}),
 })
 
--- Setup cmdline completion for '/'
+-- cmp setup for cmdline mode with specific sources
 cmp.setup.cmdline("/", {
 	mapping = cmp.mapping.preset.cmdline(),
 	completion = {
 		autocomplete = false,
 	},
-	sources = { {
-		name = "buffer",
-	} },
+	sources = {
+		{
+			name = "buffer",
+		},
+	},
 })
 
--- Setup cmdline completion for ':'
 cmp.setup.cmdline(":", {
 	mapping = cmp.mapping.preset.cmdline(),
 	completion = {
 		autocomplete = false,
 	},
 	enabled = function()
+		-- Disable cmp for specific cmdline modes
 		local disabled = {
 			IncRename = true,
 			s = true,
@@ -162,9 +137,13 @@ cmp.setup.cmdline(":", {
 		local cmd = vim.fn.getcmdline():match("%S+")
 		return not disabled[cmd] or cmp.close()
 	end,
-	sources = cmp.config.sources({ {
-		name = "path",
-	} }, { {
-		name = "cmdline",
-	} }),
+	sources = cmp.config.sources({
+		{
+			name = "path",
+		},
+	}, {
+		{
+			name = "cmdline",
+		},
+	}),
 })

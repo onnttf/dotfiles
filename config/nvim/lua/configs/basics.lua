@@ -1,63 +1,34 @@
--- Use a local reference to vim.opt for brevity
 local opt = vim.opt
 
--- General options
+-- UI Settings
+opt.number = true -- Display line numbers
+opt.cursorline = true -- Highlight current line
+opt.scrolloff = 8 -- Lines to keep above and below the cursor when scrolling
+opt.sidescrolloff = 8 -- Columns to keep to the left and right of the cursor when scrolling
+opt.colorcolumn = "200" -- Highlight column 200
 
--- Show line numbers
-opt.number = true
+-- Search Settings
+opt.ignorecase = true -- Case-insensitive searching
+opt.smartcase = true -- Case-sensitive if there's an uppercase character in the search
 
--- Highlight current line
-opt.cursorline = true
+-- File Handling
+opt.backup = false -- Disable backups
+opt.writebackup = false -- Disable writing backups before overwriting
+opt.swapfile = false -- Disable swap file creation
 
--- Set padding for jkhl
-opt.scrolloff = 8
-opt.sidescrolloff = 8
+-- Window and Layout
+opt.splitbelow = true -- Split below current window
+opt.splitright = true -- Split to the right of the current window
+opt.signcolumn = "yes" -- Always show the sign column
 
--- Set line of reference on right
-opt.colorcolumn = "200"
+-- Clipboard
+opt.clipboard = "unnamedplus" -- Use system clipboard for copy-pasting
 
--- Search options
+-- Undo Settings
+opt.undofile = true -- Enable persistent undo
 
--- Ignore case when searching
-opt.ignorecase = true
-
--- Don't ignore case if pattern has an upper case
-opt.smartcase = true
-
--- File handling options
-
--- Disable backup files
-opt.backup = false
-opt.writebackup = false
-
--- Disable swap files
-opt.swapfile = false
-
--- Window splitting options
-
--- Splits will be below
-opt.splitbelow = true
-
--- Splits will be to the right
-opt.splitright = true
-
--- Clipboard options
-
--- Use clipboard for all operations
-opt.clipboard = "unnamed,unnamedplus"
-
--- GUI and appearance options
-
--- Enable GUI colors
-opt.termguicolors = true
-
--- Always show the signcolumn, otherwise it would shift the text each time
-opt.signcolumn = "yes"
-
--- Tab settings
-
--- Set tabstop, softtabstop, shiftwidth, and use expandtab
-opt.tabstop = 4
-opt.softtabstop = 4
-opt.shiftwidth = 4
-opt.expandtab = true
+-- Indentation and Tabs
+opt.tabstop = 4 -- Number of spaces that a <Tab> counts for
+opt.softtabstop = 4 -- Number of spaces inserted for each <Tab>
+opt.shiftwidth = 4 -- Number of spaces to use for autoindent
+opt.expandtab = true -- Use spaces instead of tabs

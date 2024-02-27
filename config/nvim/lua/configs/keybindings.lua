@@ -1,14 +1,11 @@
--- Load 'utils' module here
+-- Importing utility functions
 local utils = require("utils.utils")
 
--- Key mappings for common tasks
-
--- Search word under cursor
+-- Search Keymaps
 utils.keymap({ "n", "x" }, "ws", "*N", {
 	desc = "Search word under cursor",
 })
 
--- Clear search with <Esc>
 utils.keymap({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", {
 	desc = "Escape and clear hlsearch",
 })
@@ -24,7 +21,7 @@ utils.keymap({ "n", "x", "o" }, "N", "'nN'[v:searchforward]", {
 	desc = "Prev search result",
 })
 
--- Better up/down movement
+-- Smart Movement Keymaps
 utils.keymap("n", "j", "v:count == 0 ? 'gj' : 'j'", {
 	expr = true,
 	silent = true,
@@ -36,7 +33,7 @@ utils.keymap("n", "k", "v:count == 0 ? 'gk' : 'k'", {
 	desc = "Smart up movement",
 })
 
--- Move between windows using <Ctrl> hjkl keys
+-- Window Navigation Keymaps
 utils.keymap("n", "<C-h>", "<C-w>h", {
 	desc = "Go to left window",
 })
@@ -50,7 +47,7 @@ utils.keymap("n", "<C-l>", "<C-w>l", {
 	desc = "Go to right window",
 })
 
--- Move lines up and down
+-- Move Lines Keymaps
 utils.keymap("n", "<A-j>", ":m .+1<cr>==", {
 	desc = "Move down",
 })

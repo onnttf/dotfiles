@@ -25,14 +25,14 @@ local plugins = {
 			require("plugins/github-nvim-theme")
 		end,
 	},
-	{
-		"glepnir/dashboard-nvim",
-		dependencies = { "nvim-tree/nvim-web-devicons" },
-		event = "VimEnter",
-		config = function()
-			require("plugins/dashboard-nvim")
-		end,
-	},
+	-- {
+	-- 	"glepnir/dashboard-nvim",
+	-- 	dependencies = { "nvim-tree/nvim-web-devicons" },
+	-- 	event = "VimEnter",
+	-- 	config = function()
+	-- 		require("plugins/dashboard-nvim")
+	-- 	end,
+	-- },
 	{
 		"nvim-neo-tree/neo-tree.nvim",
 		branch = "v3.x",
@@ -56,16 +56,16 @@ local plugins = {
 			require("plugins/telescope")
 		end,
 	},
-	{
-		"lewis6991/gitsigns.nvim",
-		cmd = "Gitsigns",
-		config = function()
-			require("plugins/gitsigns")
-		end,
-	},
+	-- {
+	-- 	"lewis6991/gitsigns.nvim",
+	-- 	cmd = "Gitsigns",
+	-- 	config = function()
+	-- 		require("plugins/gitsigns")
+	-- 	end,
+	-- },
 	{
 		"nvim-treesitter/nvim-treesitter",
-		event = "VeryLazy",
+		-- event = "VeryLazy",
 		build = ":TSUpdate",
 		config = function()
 			require("plugins/nvim-treesitter")
@@ -92,25 +92,19 @@ local plugins = {
 		event = "VeryLazy",
 	},
 	{
-		"WhoIsSethDaniel/mason-tool-installer",
-		dependencies = {
-			{
-				"williamboman/mason.nvim",
-				config = function()
-					require("mason").setup()
-				end,
-			},
-		},
-		config = function()
-			require("plugins.mason-tool-installer")
-		end,
-	},
-	{
 		"nvimtools/none-ls.nvim",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		event = "VeryLazy",
 		config = function()
 			require("plugins.none-ls")
+		end,
+	},
+	{
+		"iamcco/markdown-preview.nvim",
+		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+		ft = { "markdown" },
+		build = function()
+			vim.fn["mkdp#util#install"]()
 		end,
 	},
 	lsp,

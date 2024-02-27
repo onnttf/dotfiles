@@ -1,4 +1,5 @@
 -- https://github.com/nvim-neo-tree/neo-tree.nvim
+
 -- Helper function to get Telescope options
 local function getTelescopeOpts(state, path)
 	return {

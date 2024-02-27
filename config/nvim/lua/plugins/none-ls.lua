@@ -1,27 +1,27 @@
 -- https://github.com/nvimtools/none-ls.nvim
+
 local null_ls = require("null-ls")
 
--- Function to trigger LSP formatting for a specific buffer
+-- Function for LSP formatting
 local lsp_formatting = function(bufnr)
 	vim.lsp.buf.format({
 		filter = function(client)
-			-- Apply logic to select only the "null-ls" client for formatting
+			-- Use null-ls for formatting
 			return client.name == "null-ls"
 		end,
 		bufnr = bufnr,
 	})
 end
 
--- Create an autogroup for LSP formatting events
+-- Create an augroup for LSP formatting
 local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
--- Add the formatting on save callback to your shared on_attach callback
+-- Function called on LSP client attachment
 local on_attach = function(client, bufnr)
 	if client.supports_method("textDocument/formatting") then
-		-- Clear existing autocommands for the buffer
+		-- Clear existing autocmds and create BufWritePre autocmd for LSP formatting
 		vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
 
-		-- Create a new autocommand for BufWritePre event to trigger LSP formatting
 		vim.api.nvim_create_autocmd("BufWritePre", {
 			group = augroup,
 			buffer = bufnr,
@@ -32,7 +32,7 @@ local on_attach = function(client, bufnr)
 	end
 end
 
--- Setup null-ls with specified sources and on_attach callback
+-- Setup null-ls with specific sources
 require("null-ls").setup({
 	sources = {
 		-- Code Actions
@@ -46,5 +46,5 @@ require("null-ls").setup({
 		null_ls.builtins.formatting.stylua,
 		-- Hover
 	},
-	on_attach = on_attach,
+	on_attach = on_attach, -- Attach on LSP client connection
 })

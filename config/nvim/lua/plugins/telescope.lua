@@ -1,5 +1,6 @@
 -- https://github.com/nvim-telescope/telescope.nvim
 
+-- Load required Telescope modules
 local actions = require("telescope.actions")
 local telescope = require("telescope")
 
@@ -8,18 +9,18 @@ telescope.setup({
 	defaults = {
 		mappings = {
 			i = {
-				["<C-u>"] = false,
-				["<Tab>"] = actions.move_selection_previous,
-				["<S-Tab>"] = actions.move_selection_next,
-				["<C-j>"] = actions.move_selection_next,
-				["<C-k>"] = actions.move_selection_previous,
+				["<C-u>"] = false, -- Disable preview on <C-u>
+				["<Tab>"] = actions.move_selection_previous, -- Move selection to previous item
+				["<S-Tab>"] = actions.move_selection_next, -- Move selection to next item
+				["<C-j>"] = actions.move_selection_next, -- Move selection to next item
+				["<C-k>"] = actions.move_selection_previous, -- Move selection to previous item
 			},
 			n = {
-				["<esc>"] = actions.close,
-				["<Tab>"] = actions.move_selection_previous,
-				["<S-Tab>"] = actions.move_selection_next,
-				["<C-j>"] = actions.move_selection_next,
-				["<C-k>"] = actions.move_selection_previous,
+				["<esc>"] = actions.close, -- Close Telescope on <esc>
+				["<Tab>"] = actions.move_selection_previous, -- Move selection to previous item
+				["<S-Tab>"] = actions.move_selection_next, -- Move selection to next item
+				["<C-j>"] = actions.move_selection_next, -- Move selection to next item
+				["<C-k>"] = actions.move_selection_previous, -- Move selection to previous item
 			},
 		},
 	},
@@ -27,10 +28,10 @@ telescope.setup({
 		extensions = {
 			-- Configuration for the fzf extension
 			fzf = {
-				fuzzy = true, -- false for exact matching
-				override_generic_sorter = true, -- override the generic sorter
-				override_file_sorter = true, -- override the file sorter
-				case_mode = "smart_case", -- or "ignore_case" or "respect_case"
+				fuzzy = true, -- Enable fuzzy searching
+				override_generic_sorter = true, -- Override the generic sorter
+				override_file_sorter = true, -- Override the file sorter
+				case_mode = "smart_case", -- Use smart case sensitivity
 			},
 		},
 	},
@@ -39,16 +40,17 @@ telescope.setup({
 -- Load the fzf extension for Telescope
 telescope.load_extension("fzf")
 
+-- Load required Telescope modules
 local builtin = require("telescope.builtin")
 local utils = require("utils.utils") -- Load 'utils' module here
 
 -- Custom key mappings for Telescope commands
-utils.keymap("n", "tf", builtin.find_files, {
-	desc = "Search for a file",
+utils.keymap("n", "sf", builtin.find_files, {
+	desc = "[S]earch [F]iles", -- Description for find_files command
 })
-utils.keymap("n", "tg", builtin.live_grep, {
-	desc = "Search for a string",
+utils.keymap("n", "sg", builtin.live_grep, {
+	desc = "[S]earch by [G]rep", -- Description for live_grep command
 })
-utils.keymap("n", "tw", builtin.grep_string, {
-	desc = "Search for the string under your cursor or selection",
+utils.keymap("n", "sw", builtin.grep_string, {
+	desc = "[S]earch current [W]ord", -- Description for grep_string command
 })

@@ -1,38 +1,43 @@
--- Load 'utils' module here
+-- Importing utility functions
 local utils = require("utils.utils")
 
--- Define a function for creating auto commands groups
+-- Function to create autocmd groups
 local augroup = function(name)
 	return vim.api.nvim_create_augroup("AutoGroup_" .. name, {
 		clear = true,
 	})
 end
 
--- Define a function for creating auto commands
 local autocmd = vim.api.nvim_create_autocmd
 
--- Auto commands to check if the file needs to be reloaded when it changes
+-- Auto commands for various events
+
+-- Checktime on FocusGained, TermClose, and TermLeave
 autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
 	group = augroup("checktime"),
 	command = "checktime",
+	desc = "Automatically run :checktime on FocusGained, TermClose, and TermLeave",
 })
 
--- Auto command to highlight on yank
+-- Highlight when yanking (copying) text on TextYankPost
 autocmd("TextYankPost", {
-	group = augroup("text_yank_post"),
+	desc = "Highlight when yanking (copying) text",
+	group = augroup("highlight-yank"),
 	callback = vim.highlight.on_yank,
 })
 
--- Auto command to resize splits if the window is resized
+-- Resize windows equally on VimResized
 autocmd("VimResized", {
+	desc = "Resize windows equally on VimResized",
 	group = augroup("vim_resized"),
 	callback = function()
 		vim.cmd("tabdo wincmd =")
 	end,
 })
 
--- Auto command to go to the last location when opening a buffer
+-- Restore cursor position on BufReadPost
 autocmd("BufReadPost", {
+	desc = "Restore cursor position on BufReadPost",
 	group = augroup("buf_read_post"),
 	callback = function()
 		local mark = vim.api.nvim_buf_get_mark(0, '"')
@@ -43,8 +48,9 @@ autocmd("BufReadPost", {
 	end,
 })
 
--- Auto command to close some filetypes with <q>
+-- Customize settings and keymap for specific file types on FileType
 autocmd("FileType", {
+	desc = "Customize settings and keymap for specific file types on FileType",
 	group = augroup("close"),
 	pattern = {
 		"PlenaryTestPopup",
@@ -66,8 +72,9 @@ autocmd("FileType", {
 	end,
 })
 
--- Auto command to create a directory when saving a file, in case some intermediate directory does not exist
+-- Automatically create missing directories on BufWritePre
 autocmd("BufWritePre", {
+	desc = "Automatically create missing directories on BufWritePre",
 	group = augroup("auto_mkdir"),
 	callback = function(event)
 		if event.match:match("^%w%w+://") then
@@ -77,17 +84,3 @@ autocmd("BufWritePre", {
 		vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
 	end,
 })
-
--- Auto command to remove trailing whitespaces and insert a newline at the end of the file
--- autocmd("BufWritePre", {
--- 	group = augroup("auto_add_empty_line"),
--- 	callback = function()
--- 		local last_line = vim.fn.line("$")
--- 		local last_line_content = vim.fn.getline(last_line)
--- 		local trimmed_content = vim.fn.substitute(last_line_content, "\\s\\+$", "", "")
--- 		vim.fn.setline(last_line, trimmed_content)
--- 		if last_line == 1 or trimmed_content ~= "" then
--- 			vim.fn.append(last_line, "")
--- 		end
--- 	end,
--- })
