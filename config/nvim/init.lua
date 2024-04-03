@@ -1,2 +1,2 @@
-require("configs/init")
-require("plugins/init")
+require("config.init")
+require("plugin.init")

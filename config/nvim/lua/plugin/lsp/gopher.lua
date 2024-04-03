@@ -1,5 +1,3 @@
--- https://github.com/olexsmir/gopher.nvim
-
 require("gopher").setup({
 	commands = {
 		go = "go",
