@@ -34,6 +34,7 @@ require("conform").setup({
 				return { "isort", "black" }
 			end
 		end,
+		php = { "php_cs_fixer" },
 		-- Use the "*" filetype to run formatters on all filetypes.
 		["*"] = { "codespell" },
 		-- Use the "_" filetype to run formatters on filetypes that don't

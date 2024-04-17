@@ -39,7 +39,7 @@ vim.opt.signcolumn = "yes"
 vim.opt.updatetime = 250
 
 -- Set the time in milliseconds for which key mappings can be digraphs
--- vim.opt.timeoutlen = 300
+vim.opt.timeoutlen = 300
 
 -- Open new split to the right
 vim.opt.splitright = true
