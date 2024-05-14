@@ -45,10 +45,6 @@ vim.opt.signcolumn = "yes"
 -- Decrease update time
 vim.opt.updatetime = 250
 
--- Decrease mapped sequence wait time
--- Displays which-key popup sooner
-vim.opt.timeoutlen = 300
-
 -- Configure how new splits should be opened
 vim.opt.splitright = true
 vim.opt.splitbelow = true
@@ -218,7 +214,6 @@ require("lazy").setup({ -- NOTE: Plugins can be added with a link (or for a gith
 	-- Use `opts = {}` to force a plugin to be loaded.
 	--
 	--  This is equivalent to:
-	--    require('Comment').setup({})
 	{
 		"projekt0n/github-nvim-theme",
 		priority = 1000, -- Make sure to load this before all the other start plugins.
@@ -234,8 +229,13 @@ require("lazy").setup({ -- NOTE: Plugins can be added with a link (or for a gith
 	},
 	{
 		"folke/which-key.nvim",
-		event = "VimEnter",
+		event = "VeryLazy",
 		opts = {},
+		init = function()
+			-- Decrease mapped sequence wait time
+			-- Displays which-key popup sooner
+			vim.opt.timeoutlen = 300
+		end,
 	},
 	{
 		"nvim-neo-tree/neo-tree.nvim",
@@ -352,6 +352,7 @@ require("lazy").setup({ -- NOTE: Plugins can be added with a link (or for a gith
 
 			require("mini.pairs").setup()
 
+			require("mini.comment").setup()
 			-- ... and there is more!
 			--  Check out: https://github.com/echasnovski/mini.nvim
 		end,
