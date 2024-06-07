@@ -1,32 +1,23 @@
 -- Set <space> as the leader key
--- See `:help mapleader`
---  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
+-- Must be set before plugins are loaded to ensure the correct leader key is used
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
--- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = true
-
 -- [[ Setting options ]]
--- See `:help vim.opt`
--- NOTE: You can change these options as you wish!
---  For more options, you can see `:help option-list`
+-- For more options, see `:help vim.opt`
 
--- Make line numbers default
+-- Enable line numbers
 vim.opt.number = true
--- You can also add relative line numbers, to help with jumping.
---  Experiment for yourself to see if you like it!
+-- Enable relative line numbers (optional)
 -- vim.opt.relativenumber = true
 
--- Enable mouse mode, can be useful for resizing splits for example!
+-- Enable mouse mode for easier split resizing, etc.
 vim.opt.mouse = "a"
 
--- Don't show the mode, since it's already in the status line
+-- Hide mode in command line (already displayed in status line)
 vim.opt.showmode = false
 
--- Sync clipboard between OS and Neovim.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
+-- Sync clipboard with OS clipboard
 vim.opt.clipboard = "unnamedplus"
 
 -- Enable break indent
@@ -35,108 +26,80 @@ vim.opt.breakindent = true
 -- Save undo history
 vim.opt.undofile = true
 
--- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
+-- Case-insensitive searching unless using capital letters or \C
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
--- Keep signcolumn on by default
+-- Always show the sign column
 vim.opt.signcolumn = "yes"
 
--- Decrease update time
+-- Reduce update time for better performance
 vim.opt.updatetime = 250
 
--- Configure how new splits should be opened
+-- Open new splits to the right and below by default
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
--- Preview substitutions live, as you type!
+-- Show live preview of substitutions
 -- vim.opt.inccommand = "split"
 
--- Show which line your cursor is on
+-- Highlight the current line
 vim.opt.cursorline = true
 
--- Minimal number of screen lines to keep above and below the cursor.
+-- Maintain a minimum of 10 lines above and below the cursor
 vim.opt.scrolloff = 10
 
--- Set smart indent
+-- Enable smart and automatic indentation
 vim.opt.smartindent = true
--- Enable automatic indent
 vim.opt.autoindent = true
 
 -- Set tab size to 4 spaces
 vim.opt.tabstop = 4
--- Set number of spaces for a tab
 vim.opt.softtabstop = 4
--- Set number of spaces to use for each step of (auto)indent
 vim.opt.shiftwidth = 4
--- Insert spaces instead of tabs
 vim.opt.expandtab = true
 
--- Set highlight on search
+-- Highlight search results
 vim.opt.hlsearch = true
 
 -- [[ Basic Keymaps ]]
---  See `:help vim.keymap.set()`
-
--- Clear highlight on pressing <Esc> in normal mode
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", {
-	desc = "Clear highlight on pressing <Esc> in normal mode",
-})
-
--- Diagnostic keymaps
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, {
-	desc = "Go to previous [D]iagnostic message",
-})
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, {
-	desc = "Go to next [D]iagnostic message",
-})
--- vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
-
--- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
--- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
--- is not what someone will guess without a bit more experience.
 --
--- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
--- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", {
-	desc = "Exit terminal mode",
-})
+-- Clear search highlights with <Esc> in normal mode
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlights" })
 
--- TIP: Disable arrow keys in normal mode
-vim.keymap.set("n", "<left>", '<cmd>echo "Use h to move!!"<CR>')
-vim.keymap.set("n", "<right>", '<cmd>echo "Use l to move!!"<CR>')
-vim.keymap.set("n", "<up>", '<cmd>echo "Use k to move!!"<CR>')
-vim.keymap.set("n", "<down>", '<cmd>echo "Use j to move!!"<CR>')
+-- Diagnostic navigation keymaps
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic message" })
+-- vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic quickfix list" })
 
--- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows
-vim.keymap.set("n", "<C-h>", "<C-w><C-h>", {
-	desc = "Move focus to the left window",
-})
-vim.keymap.set("n", "<C-l>", "<C-w><C-l>", {
-	desc = "Move focus to the right window",
-})
-vim.keymap.set("n", "<C-j>", "<C-w><C-j>", {
-	desc = "Move focus to the lower window",
-})
-vim.keymap.set("n", "<C-k>", "<C-w><C-k>", {
-	desc = "Move focus to the upper window",
-})
+-- Exit terminal mode with <Esc><Esc>
+vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+
+-- Disable arrow keys in normal mode to encourage hjkl usage
+vim.keymap.set("n", "<left>", '<cmd>echo "Use h to move!"<CR>')
+vim.keymap.set("n", "<right>", '<cmd>echo "Use l to move!"<CR>')
+vim.keymap.set("n", "<up>", '<cmd>echo "Use k to move!"<CR>')
+vim.keymap.set("n", "<down>", '<cmd>echo "Use j to move!"<CR>')
+
+-- Easier window navigation with CTRL + hjkl
+vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to left window" })
+vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to right window" })
+vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to lower window" })
+vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to upper window" })
 
 -- [[ Basic Autocommands ]]
---  See `:help lua-guide-autocommands`
-
--- Highlight when yanking (copying) text
+--
+-- Highlight text on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
-	desc = "Highlight when yanking (copying) text",
+	desc = "Highlight yanked text",
 	callback = function()
 		vim.highlight.on_yank()
 	end,
 })
 
--- Create directories before writing a buffer
+-- Automatically create directories when saving files
 vim.api.nvim_create_autocmd("BufWritePre", {
-	desc = "Auto create directory if not exist",
+	desc = "Auto-create directories",
 	callback = function(event)
 		if event.match:match("^%w%w+:[\\/][\\/]") then
 			return
@@ -146,22 +109,19 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 	end,
 })
 
--- Close certain buffers with "q"
+-- Close specific buffers with 'q'
 vim.api.nvim_create_autocmd("FileType", {
 	desc = "Close specific buffers with 'q'",
 	pattern = { "help", "lspinfo" },
 	callback = function(event)
 		vim.bo[event.buf].buflisted = false
-		vim.keymap.set("n", "q", "<cmd>close<cr>", {
-			buffer = event.buf,
-			silent = true,
-		})
+		vim.keymap.set("n", "q", "<cmd>close<CR>", { buffer = event.buf, silent = true })
 	end,
 })
 
--- Handle cursor position after buffer read
+-- Return to the last edit position when reopening files
 vim.api.nvim_create_autocmd("BufReadPost", {
-	desc = "Handle cursor position after buffer read",
+	desc = "Return to last edit position",
 	callback = function()
 		local mark = vim.api.nvim_buf_get_mark(0, '"')
 		local lcount = vim.api.nvim_buf_line_count(0)
@@ -171,11 +131,10 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 	end,
 })
 
--- Handle window resize
+-- Resize windows equally on Vim resize
 vim.api.nvim_create_autocmd("VimResized", {
-	desc = "Handle window resize",
+	desc = "Equalize window sizes on resize",
 	callback = function()
-		-- Equally resize all windows in all tabs
 		vim.cmd("tabdo wincmd =")
 	end,
 })
@@ -204,29 +163,26 @@ vim.opt.rtp:prepend(lazypath)
 --
 --  To update plugins you can run
 --    :Lazy update
---
--- NOTE: Here is where you install your plugins.
-require("lazy").setup({ -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
+require("lazy").setup({
 	-- NOTE: Plugins can also be added by using a table,
 	-- with the first argument being the link and the following
 	-- keys can be used to configure plugin behavior/loading/etc.
 	--
 	-- Use `opts = {}` to force a plugin to be loaded.
 	--
-	--  This is equivalent to:
-	{
-		"projekt0n/github-nvim-theme",
-		priority = 1000, -- Make sure to load this before all the other start plugins.
-		config = function()
-			require("github-theme").setup({
-				options = {
-					-- Enable transparent background
-					transparent = true,
-				},
-			})
-			vim.cmd.colorscheme("github_dark")
-		end,
-	},
+	--{
+	--	"projekt0n/github-nvim-theme",
+	--	priority = 1000, -- Make sure to load this before all the other start plugins.
+	--	config = function()
+	--		require("github-theme").setup({
+	--			options = {
+	--				-- Enable transparent background
+	--				transparent = true,
+	--			},
+	--		})
+	--		vim.cmd.colorscheme("github_dark")
+	--	end,
+	--},
 	{
 		"folke/which-key.nvim",
 		event = "VeryLazy",
@@ -245,7 +201,6 @@ require("lazy").setup({ -- NOTE: Plugins can be added with a link (or for a gith
 			"nvim-lua/plenary.nvim",
 			{
 				"nvim-tree/nvim-web-devicons",
-				enabled = vim.g.have_nerd_font,
 			},
 			"MunifTanjim/nui.nvim",
 		},
@@ -268,7 +223,6 @@ require("lazy").setup({ -- NOTE: Plugins can be added with a link (or for a gith
 			{ "nvim-telescope/telescope-ui-select.nvim" },
 			{
 				"nvim-tree/nvim-web-devicons",
-				enabled = vim.g.have_nerd_font,
 			},
 		},
 		config = function()
@@ -281,6 +235,11 @@ require("lazy").setup({ -- NOTE: Plugins can be added with a link (or for a gith
 		main = "ibl",
 		opts = {},
 	},
+	--	{
+	--		"lewis6991/gitsigns.nvim",
+	--		event = "VeryLazy",
+	--		opts = {},
+	--	},
 	{
 		"nvim-treesitter/nvim-treesitter",
 		event = "VeryLazy",
@@ -293,7 +252,6 @@ require("lazy").setup({ -- NOTE: Plugins can be added with a link (or for a gith
 		"folke/trouble.nvim",
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
-			enabled = vim.g.have_nerd_font,
 		},
 		cmd = "Trouble",
 		opts = {
@@ -319,7 +277,7 @@ require("lazy").setup({ -- NOTE: Plugins can be added with a link (or for a gith
 	},
 	{
 		"echasnovski/mini.nvim",
-		event = "InsertEnter",
+		event = "VeryLazy",
 		config = function()
 			-- Better Around/Inside textobjects
 			--
@@ -342,10 +300,7 @@ require("lazy").setup({ -- NOTE: Plugins can be added with a link (or for a gith
 			--  You could remove this setup call if you don't like it,
 			--  and try some other statusline plugin
 			local statusline = require("mini.statusline")
-			-- set use_icons to true if you have a Nerd Font
-			statusline.setup({
-				use_icons = vim.g.have_nerd_font,
-			})
+			statusline.setup()
 			statusline.section_location = function()
 				return "%2l:%-2v"
 			end
@@ -353,6 +308,8 @@ require("lazy").setup({ -- NOTE: Plugins can be added with a link (or for a gith
 			require("mini.pairs").setup()
 
 			require("mini.comment").setup()
+
+			require("mini.git").setup()
 			-- ... and there is more!
 			--  Check out: https://github.com/echasnovski/mini.nvim
 		end,
@@ -397,24 +354,12 @@ require("lazy").setup({ -- NOTE: Plugins can be added with a link (or for a gith
 			require("plugin.lsp.gopher")
 		end,
 	},
-}, {
-	ui = {
-		-- If you are using a Nerd Font: set icons to an empty table which will use the
-		-- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
-		icons = vim.g.have_nerd_font and {} or {
-			cmd = "⌘",
-			config = "🛠",
-			event = "📅",
-			ft = "����",
-			init = "⚙",
-			keys = "🗝",
-			plugin = "🔌",
-			runtime = "💻",
-			require = "🌙",
-			source = "����",
-			start = "🚀",
-			task = "📌",
-			lazy = "💤 ",
-		},
+	{
+		"iamcco/markdown-preview.nvim",
+		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+		ft = { "markdown" },
+		build = function()
+			vim.fn["mkdp#util#install"]()
+		end,
 	},
 })
