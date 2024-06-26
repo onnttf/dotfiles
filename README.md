@@ -10,8 +10,6 @@ These are my personal **dotfiles** used to manage and share my terminal and tool
 
 ### Terminal
 
-- [Alacritty](https://github.com/alacritty/alacritty): A cross-platform, OpenGL terminal emulator. The configuration file is in [alacritty](./config/alacritty).
-
 - [WezTerm](https://github.com/wez/wezterm): A GPU-accelerated cross-platform terminal emulator and multiplexer written by @wez and implemented in Rust. The configuration file is in [wezterm](./config/wezterm).
 
 ### Editor
