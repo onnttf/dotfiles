@@ -1,22 +1,57 @@
 [core]
-editor = nvim
-excludesfile = ~/.gitignore_global
+    excludesfile = "~/.gitignore_global"  # Global gitignore file
+
 [init]
-defaultBranch = main
+    defaultBranch = "main"  # Set default branch name to 'main'
+
 [push]
-autoSetupRemote = true
-[user]
-name = onnttf
-email = onnttf@gmail.com
-[alias]
-graph = log --graph --all --date=format:'%Y-%m-%d %H:%M:%S' --pretty=format:'%Cred%h%Creset - %s %Cgreen(%ad)%Creset %C(bold blue)%an%Creset %C(yellow)%d%Creset'
-aliases = config --get-regexp alias
-last = log -1 HEAD
-amend = commit --amend --reuse-message=HEAD
-update = fetch --all --prune
-purge = !bash -c \"git branch -r | awk '{print \\$1}' | grep -E -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '{print \\$1}' | xargs -r git branch -D\"
-uncommit = reset --soft HEAD~1
-unstage = reset HEAD --
-stat = diff --stat
+    autoSetupRemote = true  # Automatically set up remote tracking for new branches
+
 [color]
-ui = auto
+    ui = "auto"  # Enable color output
+
+[user]
+    name = "Zhang Peng"  # User name
+    email = "onnttf@gmail.com"  # User email
+
+[pretty]
+    pshort = "%C(auto)%h %C(red)%ad %C(blue)%aN%C(auto)%d%C(green)%Creset %s"
+
+[alias]
+	# List all aliases
+	aliases = "config --get-regexp alias"
+
+    # Initialize a repository and create an empty commit
+    start = "!git init && git commit --allow-empty -m \"Initial commit\""
+
+    # Display a concise commit log
+    slog = "log --date=format:'%Y-%m-%d %H:%M:%S' --pretty=pshort"
+    # Display a graphical commit log
+    glog = "log --graph --all --date=format:'%Y-%m-%d %H:%M:%S' --pretty=pshort"
+
+    # Show the last n commits
+    ln = "!f() { git slog -$1; }; f"
+    l1 = slog -1
+    l5 = slog -5
+
+    # Amend the last commit
+    amend = "commit --amend --reuse-message=HEAD"
+    # Undo the last commit but keep the changes
+    uncommit = "reset --soft HEAD~1"
+    # Unstage changes from the staging area
+    unstage = "reset HEAD --"
+
+    # Show statistics for changes
+    stat = "diff --stat"
+    # Show word-level differences ignoring whitespace changes
+    wdiff = "diff -w --word-diff=color --ignore-space-at-eol"
+
+    # Update all remote branches
+    update = "fetch --all --prune"
+    # Delete local branches that have been removed from the remote
+    purge = "!bash -c \"git branch -r | awk '{print \\$1}' | grep -E -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '{print \\$1}' | xargs -r git branch -D\""
+
+    # Get the remote URL
+    remoteurl = "remote get-url origin"
+    # Convert SSH remote URL to HTTPS
+    remotehttps = "!git remoteurl | sed -e 's/git@/https:\\/\\//'"
