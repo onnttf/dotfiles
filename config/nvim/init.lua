@@ -1,70 +1,66 @@
--- [[ Set leader key ]]
--- Must be set before plugins are loaded to ensure the correct leader key is used
+-- [[ Core Configuration ]]
+-- Set leader key (must be set before plugins are loaded)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
--- [[ Setting options ]]
--- Enable line numbers
-vim.opt.number = true
--- Enable mouse mode for easier split resizing, etc.
-vim.opt.mouse = "a"
--- Hide mode in command line (already displayed in status line)
-vim.opt.showmode = false
--- Sync clipboard with OS clipboard
-vim.opt.clipboard = "unnamedplus"
--- Enable break indent
-vim.opt.breakindent = true
--- Save undo history
-vim.opt.undofile = true
--- Case-insensitive searching unless using capital letters or \C
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
--- Always show the sign column
-vim.opt.signcolumn = "yes"
--- Reduce update time for better performance
-vim.opt.updatetime = 250
--- Open new splits to the right and below by default
-vim.opt.splitright = true
-vim.opt.splitbelow = true
--- Show live preview of substitutions
--- vim.opt.inccommand = "split"
--- Highlight the current line
-vim.opt.cursorline = true
--- Maintain a minimum of 10 lines above and below the cursor
-vim.opt.scrolloff = 10
--- Enable smart indentation
-vim.opt.smartindent = true
--- Enable automatic indentation
-vim.opt.autoindent = true
--- Set tab size to 4 spaces
-vim.opt.tabstop = 4
--- Set soft tab size to 4 spaces
-vim.opt.softtabstop = 4
--- Set shift width to 4 spaces
-vim.opt.shiftwidth = 4
--- Convert tabs to spaces
-vim.opt.expandtab = true
--- Highlight search results
-vim.opt.hlsearch = true
+-- [[ Essential Options ]]
+vim.opt.number = true -- Show line numbers
+vim.opt.mouse = "a" -- Enable mouse for all modes
+vim.opt.showmode = false -- Don't show mode in command line (shown in statusline)
+vim.opt.clipboard = "unnamedplus" -- Sync with system clipboard
+vim.opt.breakindent = true -- Enable break indent
+vim.opt.undofile = true -- Save undo history
+vim.opt.ignorecase = true -- Case insensitive searching
+vim.opt.smartcase = true -- Case sensitive if search contains capitals
+vim.opt.signcolumn = "yes" -- Always show the sign column
+vim.opt.updatetime = 250 -- Decrease update time for better performance
+vim.opt.timeoutlen = 300 -- Decrease mapped sequence wait time
+
+-- [[ Split Behavior ]]
+vim.opt.splitright = true -- Open new vertical splits to the right
+vim.opt.splitbelow = true -- Open new horizontal splits below
+
+-- [[ Appearance ]]
+vim.opt.cursorline = true -- Highlight the current line
+vim.opt.scrolloff = 10 -- Maintain 10 lines above/below cursor
+
+-- [[ Indentation ]]
+vim.opt.smartindent = true -- Enable smart indentation
+vim.opt.autoindent = true -- Enable automatic indentation
+vim.opt.tabstop = 4 -- Set tab size to 4 spaces
+vim.opt.softtabstop = 4 -- Set soft tab size to 4 spaces
+vim.opt.shiftwidth = 4 -- Set shift width to 4 spaces
+vim.opt.expandtab = true -- Convert tabs to spaces
+
+-- [[ Search ]]
+vim.opt.hlsearch = true -- Highlight search results
 
 -- [[ Basic Keymaps ]]
--- Clear search highlights with <Esc> in normal mode
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlights" })
--- Diagnostic navigation keymaps
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic message" })
--- Disable arrow keys in normal mode to encourage hjkl usage
+-- Clear search highlights
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
+
+-- Diagnostic navigation
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+
+-- Disable arrow keys in normal mode (encourage hjkl usage)
 vim.keymap.set("n", "<left>", '<cmd>echo "Use h to move!"<CR>')
 vim.keymap.set("n", "<right>", '<cmd>echo "Use l to move!"<CR>')
 vim.keymap.set("n", "<up>", '<cmd>echo "Use k to move!"<CR>')
 vim.keymap.set("n", "<down>", '<cmd>echo "Use j to move!"<CR>')
--- Easier window navigation with CTRL + hjkl
-vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to left window" })
-vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to right window" })
-vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to lower window" })
-vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to upper window" })
 
--- [[ Basic Autocommands ]]
+-- Window navigation with CTRL + hjkl
+vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Focus left window" })
+vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Focus right window" })
+vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Focus lower window" })
+vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Focus upper window" })
+
+-- Remap for dealing with word wrap
+vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+
+-- [[ Autocommands ]]
+-- Highlight on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
 	desc = "Highlight yanked text",
 	callback = function()
@@ -72,8 +68,9 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
+-- Auto-create directories when saving a file
 vim.api.nvim_create_autocmd("BufWritePre", {
-	desc = "Auto-create directories",
+	desc = "Create parent directories on save",
 	callback = function(event)
 		if event.match:match("^%w%w+:[\\/][\\/]") then
 			return
@@ -83,17 +80,19 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 	end,
 })
 
+-- Close specific buffers with 'q'
 vim.api.nvim_create_autocmd("FileType", {
-	desc = "Close specific buffers with 'q'",
-	pattern = { "help", "lspinfo" },
+	desc = "Use 'q' to close specific buffers",
+	pattern = { "help", "lspinfo", "neo-tree" },
 	callback = function(event)
 		vim.bo[event.buf].buflisted = false
 		vim.keymap.set("n", "q", "<cmd>close<CR>", { buffer = event.buf, silent = true })
 	end,
 })
 
+-- Return to last edit position
 vim.api.nvim_create_autocmd("BufReadPost", {
-	desc = "Return to last edit position",
+	desc = "Go to last location when reopening a file",
 	callback = function()
 		local mark = vim.api.nvim_buf_get_mark(0, '"')
 		local lcount = vim.api.nvim_buf_line_count(0)
@@ -103,25 +102,30 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 	end,
 })
 
+-- Equalize window sizes on resize
 vim.api.nvim_create_autocmd("VimResized", {
-	desc = "Equalize window sizes on resize",
+	desc = "Auto-resize splits on window resize",
 	callback = function()
 		vim.cmd("tabdo wincmd =")
 	end,
 })
 
--- [[ Install `lazy.nvim` plugin manager ]]
+-- [[ Plugin Manager Setup ]]
+-- Install and set up `lazy.nvim` plugin manager
 -- See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-	vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+	if vim.v.shell_error ~= 0 then
+		error("Error cloning lazy.nvim:\n" .. out)
+	end
 end
 vim.opt.rtp:prepend(lazypath)
 
 -- [[ Configure and install plugins ]]
 require("lazy").setup({
-	checker = { enabled = true }, -- Automatically check for plugin updates
+	checker = { enabled = false }, -- Automatically check for plugin updates
 	rocks = { enabled = false }, -- Disable LuaRocks integration
 	spec = {
 		-- NOTE: Plugins can also be added by using a table,
@@ -146,7 +150,11 @@ require("lazy").setup({
 		{
 			"folke/which-key.nvim",
 			event = "VeryLazy",
-			opts = {},
+			opts = {
+				icons = {
+					rules = false,
+				},
+			},
 			init = function()
 				-- Decrease mapped sequence wait time
 				-- Displays which-key popup sooner
@@ -238,7 +246,7 @@ require("lazy").setup({
 				--
 				-- Examples:
 				--  - va)  - [V]isually select [A]round [)]paren
-				--  - yinq - [Y]ank [I]nside [N]ext [']quote
+				--  - yinq - [Y]ank [I]nside [N]ext [Q]uote
 				--  - ci'  - [C]hange [I]nside [']quote
 				require("mini.ai").setup({
 					n_lines = 500,
@@ -303,11 +311,19 @@ require("lazy").setup({
 		},
 		{
 			"olexsmir/gopher.nvim",
-			ft = { "go", "gomod" },
-			dependencies = { "nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter" },
-			config = function()
-				require("plugin.lsp.gopher")
+			ft = "go",
+			-- branch = "develop", -- if you want develop branch
+			-- keep in mind, it might break everything
+			dependencies = {
+				"nvim-lua/plenary.nvim",
+				"nvim-treesitter/nvim-treesitter",
+				--   "mfussenegger/nvim-dap", -- (optional) only if you use `gopher.dap`
+			},
+			-- (optional) will update plugin's deps on every update
+			build = function()
+				vim.cmd.GoInstallDeps()
 			end,
+			opts = {},
 		},
 	},
 })

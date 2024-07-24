@@ -249,6 +249,7 @@ require("neo-tree").setup({
 		},
 	},
 	window = {
+		position = "float",
 		mappings = {
 			["<"] = "prev_source", -- Go to previous source
 			[">"] = "next_source", -- Go to next source
@@ -318,7 +319,7 @@ require("neo-tree").setup({
 						show_path = "relative",
 					},
 				},
-				["m"] = { -- Move file or directory
+				["m"] = {
 					"move",
 					config = {
 						show_path = "relative",
