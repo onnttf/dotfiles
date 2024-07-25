@@ -15,10 +15,10 @@ require("conform").setup({
 		end,
 		php = { "php_cs_fixer" },
 		-- Use the "*" filetype to run formatters on all filetypes.
-		["*"] = { "codespell" },
+		-- ["*"] = { "codespell" },
 		-- Use the "_" filetype to run formatters on filetypes that don't
 		-- have other formatters configured.
-		["_"] = { "trim_whitespace" },
+		["_"] = { "codespell", "trim_whitespace" },
 	},
 	format_on_save = function(bufnr)
 		-- Disable autoformat on certain filetypes

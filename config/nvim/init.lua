@@ -198,10 +198,63 @@ require("lazy").setup({
 			end,
 		},
 		{
+			"nvimdev/dashboard-nvim",
+			event = "VimEnter",
+			config = function()
+				require("dashboard").setup({
+					theme = "hyper",
+					change_to_vcs_root = true,
+					config = {
+						shortcut = {
+							{
+								desc = "New file",
+								action = "enew",
+								key = "e",
+							},
+							{
+								desc = "Files",
+								action = "Telescope find_files cwd=.",
+								key = "f",
+							},
+							{
+								desc = "Config",
+								action = "tabnew $MYVIMRC | tcd %:p:h",
+								key = "c",
+							},
+							-- {
+							-- 	desc = "Update",
+							-- 	action = "Lazy update",
+							-- 	key = "u",
+							-- },
+						},
+						header = {
+							"                                                       ",
+							" ███╗   ██╗ ███████╗ ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗",
+							" ████╗  ██║ ██╔════╝██╔═══██╗ ██║   ██║ ██║ ████╗ ████║",
+							" ██╔██╗ ██║ █████╗  ██║   ██║ ██║   ██║ ██║ ██╔████╔██║",
+							" ██║╚██╗██║ ██╔══╝  ██║   ██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║",
+							" ██║ ╚████║ ███████╗╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║",
+							" ╚═╝  ╚═══╝ ╚══════╝ ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝",
+							"                                                       ",
+						},
+						footer = {
+							"",
+							"😀 Meet a better version of yourself every day.",
+						},
+					},
+				})
+			end,
+			dependencies = { { "nvim-tree/nvim-web-devicons" } },
+		},
+		{
 			"lukas-reineke/indent-blankline.nvim",
 			event = "VeryLazy",
 			main = "ibl",
-			opts = {},
+			opts = {
+				exclude = {
+					filetypes = { "dashboard" },
+				},
+			},
 		},
 		{
 			"nvim-treesitter/nvim-treesitter",
@@ -273,6 +326,7 @@ require("lazy").setup({
 				require("mini.comment").setup()
 
 				require("mini.git").setup()
+
 				-- ... and there is more!
 				--  Check out: https://github.com/echasnovski/mini.nvim
 			end,
@@ -283,10 +337,10 @@ require("lazy").setup({
 				"williamboman/mason.nvim",
 				"williamboman/mason-lspconfig.nvim",
 				"WhoIsSethDaniel/mason-tool-installer.nvim",
-				{
-					"j-hui/fidget.nvim",
-					opts = {},
-				},
+				-- {
+				-- 	"j-hui/fidget.nvim",
+				-- 	opts = {},
+				-- },
 			},
 			config = function()
 				require("plugin.lsp.nvim-lspconfig")
