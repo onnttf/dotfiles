@@ -4,64 +4,82 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 -- [[ Essential Options ]]
-vim.opt.number = true -- Show line numbers
-vim.opt.mouse = "a" -- Enable mouse for all modes
-vim.opt.showmode = false -- Don't show mode in command line (shown in statusline)
-vim.opt.clipboard = "unnamedplus" -- Sync with system clipboard
-vim.opt.breakindent = true -- Enable break indent
-vim.opt.undofile = true -- Save undo history
-vim.opt.ignorecase = true -- Case insensitive searching
-vim.opt.smartcase = true -- Case sensitive if search contains capitals
-vim.opt.signcolumn = "yes" -- Always show the sign column
-vim.opt.updatetime = 250 -- Decrease update time for better performance
-vim.opt.timeoutlen = 300 -- Decrease mapped sequence wait time
+-- Define a table of options for easy management
+local options = {
+	number = true, -- Show line numbers
+	mouse = "a", -- Enable mouse for all modes
+	showmode = false, -- Don't show mode in command line (shown in statusline)
+	breakindent = true, -- Enable break indent
+	undofile = false, -- Disable persistent undo
+	ignorecase = true, -- Case insensitive searching
+	smartcase = true, -- Case sensitive if search contains capitals
+	signcolumn = "yes", -- Always show the sign column
+	updatetime = 250, -- Decrease update time for better performance
+	timeoutlen = 300, -- Decrease mapped sequence wait time
+	splitright = true, -- Open new vertical splits to the right
+	splitbelow = true, -- Open new horizontal splits below
+	cursorline = true, -- Highlight the current line
+	scrolloff = 10, -- Maintain 10 lines above/below cursor
+	smartindent = true, -- Enable smart indentation
+	autoindent = true, -- Enable automatic indentation
+	tabstop = 4, -- Set tab size to 4 spaces
+	softtabstop = 4, -- Set soft tab size to 4 spaces
+	shiftwidth = 4, -- Set shift width to 4 spaces
+	expandtab = true, -- Convert tabs to spaces
+	hlsearch = true, -- Highlight search results
+}
 
--- [[ Split Behavior ]]
-vim.opt.splitright = true -- Open new vertical splits to the right
-vim.opt.splitbelow = true -- Open new horizontal splits below
+-- Apply all options
+for k, v in pairs(options) do
+	vim.opt[k] = v
+end
 
--- [[ Appearance ]]
-vim.opt.cursorline = true -- Highlight the current line
-vim.opt.scrolloff = 10 -- Maintain 10 lines above/below cursor
-
--- [[ Indentation ]]
-vim.opt.smartindent = true -- Enable smart indentation
-vim.opt.autoindent = true -- Enable automatic indentation
-vim.opt.tabstop = 4 -- Set tab size to 4 spaces
-vim.opt.softtabstop = 4 -- Set soft tab size to 4 spaces
-vim.opt.shiftwidth = 4 -- Set shift width to 4 spaces
-vim.opt.expandtab = true -- Convert tabs to spaces
-
--- [[ Search ]]
-vim.opt.hlsearch = true -- Highlight search results
+-- Sync clipboard between OS and Neovim
+-- Schedule the setting after `UiEnter` because it can increase startup-time
+vim.schedule(function()
+	vim.opt.clipboard = "unnamedplus"
+end)
 
 -- [[ Basic Keymaps ]]
+-- Define default options
+local default_opts = { noremap = true, silent = true }
+
+-- Create a function that merges default_opts with any additional options
+local function keymap(mode, lhs, rhs, opts)
+	opts = opts or {}
+	opts = vim.tbl_extend("force", default_opts, opts)
+	vim.keymap.set(mode, lhs, rhs, opts)
+end
+
+-- Now use this function for all your keymaps
+
 -- Clear search highlights
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
+keymap("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
 
 -- Diagnostic navigation
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+keymap("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
+keymap("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
 
 -- Disable arrow keys in normal mode (encourage hjkl usage)
-vim.keymap.set("n", "<left>", '<cmd>echo "Use h to move!"<CR>')
-vim.keymap.set("n", "<right>", '<cmd>echo "Use l to move!"<CR>')
-vim.keymap.set("n", "<up>", '<cmd>echo "Use k to move!"<CR>')
-vim.keymap.set("n", "<down>", '<cmd>echo "Use j to move!"<CR>')
+for _, key in ipairs({ "left", "right", "up", "down" }) do
+	keymap("n", "<" .. key .. ">", string.format('<cmd>echo "Use %s to move!"<CR>', key:sub(1, 1)))
+end
 
 -- Window navigation with CTRL + hjkl
-vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Focus left window" })
-vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Focus right window" })
-vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Focus lower window" })
-vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Focus upper window" })
+for _, key in ipairs({ "h", "j", "k", "l" }) do
+	keymap("n", "<C-" .. key .. ">", "<C-w><C-" .. key .. ">", { desc = "Focus " .. key .. " window" })
+end
 
 -- Remap for dealing with word wrap
-vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
-vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+keymap("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+keymap("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
 -- [[ Autocommands ]]
+local augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
+
 -- Highlight on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
+	group = augroup,
 	desc = "Highlight yanked text",
 	callback = function()
 		vim.highlight.on_yank()
@@ -70,6 +88,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 
 -- Auto-create directories when saving a file
 vim.api.nvim_create_autocmd("BufWritePre", {
+	group = augroup,
 	desc = "Create parent directories on save",
 	callback = function(event)
 		if event.match:match("^%w%w+:[\\/][\\/]") then
@@ -82,16 +101,18 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 
 -- Close specific buffers with 'q'
 vim.api.nvim_create_autocmd("FileType", {
+	group = augroup,
 	desc = "Use 'q' to close specific buffers",
 	pattern = { "help", "lspinfo", "neo-tree" },
 	callback = function(event)
 		vim.bo[event.buf].buflisted = false
-		vim.keymap.set("n", "q", "<cmd>close<CR>", { buffer = event.buf, silent = true })
+		keymap("n", "q", "<cmd>close<CR>", { buffer = event.buf, silent = true })
 	end,
 })
 
 -- Return to last edit position
 vim.api.nvim_create_autocmd("BufReadPost", {
+	group = augroup,
 	desc = "Go to last location when reopening a file",
 	callback = function()
 		local mark = vim.api.nvim_buf_get_mark(0, '"')
@@ -104,6 +125,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 
 -- Equalize window sizes on resize
 vim.api.nvim_create_autocmd("VimResized", {
+	group = augroup,
 	desc = "Auto-resize splits on window resize",
 	callback = function()
 		vim.cmd("tabdo wincmd =")
@@ -155,11 +177,6 @@ require("lazy").setup({
 					rules = false,
 				},
 			},
-			init = function()
-				-- Decrease mapped sequence wait time
-				-- Displays which-key popup sooner
-				vim.opt.timeoutlen = 300
-			end,
 		},
 		{
 			"nvim-neo-tree/neo-tree.nvim",
@@ -363,21 +380,21 @@ require("lazy").setup({
 				require("plugin.lsp.nvim-cmp")
 			end,
 		},
-		{
-			"olexsmir/gopher.nvim",
-			ft = "go",
-			-- branch = "develop", -- if you want develop branch
-			-- keep in mind, it might break everything
-			dependencies = {
-				"nvim-lua/plenary.nvim",
-				"nvim-treesitter/nvim-treesitter",
-				--   "mfussenegger/nvim-dap", -- (optional) only if you use `gopher.dap`
-			},
-			-- (optional) will update plugin's deps on every update
-			build = function()
-				vim.cmd.GoInstallDeps()
-			end,
-			opts = {},
-		},
+		-- {
+		--     "olexsmir/gopher.nvim",
+		--     ft = "go",
+		--     -- branch = "develop", -- if you want develop branch
+		--     -- keep in mind, it might break everything
+		--     dependencies = {
+		--         "nvim-lua/plenary.nvim",
+		--         "nvim-treesitter/nvim-treesitter",
+		--         --   "mfussenegger/nvim-dap", -- (optional) only if you use `gopher.dap`
+		--     },
+		--     -- (optional) will update plugin's deps on every update
+		--     build = function()
+		--         vim.cmd.GoInstallDeps()
+		--     end,
+		--     opts = {},
+		-- },
 	},
 })
