@@ -10,7 +10,6 @@ local options = {
 	mouse = "a", -- Enable mouse for all modes
 	showmode = false, -- Don't show mode in command line (shown in statusline)
 	breakindent = true, -- Enable break indent
-	undofile = false, -- Disable persistent undo
 	ignorecase = true, -- Case insensitive searching
 	smartcase = true, -- Case sensitive if search contains capitals
 	signcolumn = "yes", -- Always show the sign column
@@ -27,6 +26,10 @@ local options = {
 	shiftwidth = 4, -- Set shift width to 4 spaces
 	expandtab = true, -- Convert tabs to spaces
 	hlsearch = true, -- Highlight search results
+	termguicolors = true, -- Enable 24-bit RGB color in the TUI
+	backup = false, -- Disable backup files
+    swapfile = false, -- Disable swap files
+	undofile = false, -- Disable undo files
 }
 
 -- Apply all options
@@ -52,6 +55,9 @@ local function keymap(mode, lhs, rhs, opts)
 end
 
 -- Now use this function for all your keymaps
+
+keymap("n", "-", "<C-a>", { desc = "Decrease number" })
+keymap("n", "+", "<C-x>", { desc = "Increase number" })
 
 -- Clear search highlights
 keymap("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })

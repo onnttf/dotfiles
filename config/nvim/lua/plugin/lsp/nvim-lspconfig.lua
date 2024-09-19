@@ -77,11 +77,13 @@ local servers = {
 				diagnostics = {
 					globals = { "vim" },
 				},
+				workspace = { checkThirdParty = false },
+                telemetry = { enable = false },
 			},
 		},
 	},
 	gopls = {
-		setting = {
+		settings = {
 			gopls = {
 				gofumpt = true,
 				semanticTokens = true,
@@ -107,7 +109,7 @@ local servers = {
 	},
 	sqlls = {},
 	jsonls = {},
-	yamlls = {},
+    yamlls = {},
 	ts_ls = {},
 	intelephense = {},
 }
