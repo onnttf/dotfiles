@@ -1,28 +1,27 @@
 local conform = require("conform")
+local filetype_config = require("plugin.lsp.filetype_config")
+
+local function extract_formatters()
+	local formatters = {}
+	for ft, config in pairs(filetype_config) do
+		if config.formatter then
+			local ft_formatters = {}
+			for formatter, _ in pairs(config.formatter) do
+				table.insert(ft_formatters, formatter)
+			end
+			if #ft_formatters > 0 then
+				formatters[ft] = ft_formatters
+			end
+		end
+	end
+	return formatters
+end
 
 conform.setup({
-	formatters_by_ft = {
-		lua = { "stylua" },
-		-- Run multiple formatters sequentially
-		go = { "gofumpt", "goimports" },
-		-- Run the first available formatter
-		css = { "prettierd", "prettier", stop_after_first = true },
-		less = { "prettierd", "prettier", stop_after_first = true },
-		html = { "prettierd", "prettier", stop_after_first = true },
-		javascript = { "prettierd", "prettier", stop_after_first = true },
-		typescript = { "prettierd", "prettier", stop_after_first = true },
-		yaml = { "prettierd", "prettier", stop_after_first = true },
-		json = { "prettierd", "prettier", stop_after_first = true },
-		markdown = { "prettierd", "prettier", stop_after_first = true },
-		-- Dynamic formatter selection for Python
-		python = function(bufnr)
-			return conform.get_formatter_info("ruff_format", bufnr).available and { "ruff_format" }
-				or { "isort", "black" }
-		end,
-		--php = { "php_cs_fixer" },
-		-- Default formatters for unspecified filetypes
-		["_"] = { "codespell", "trim_whitespace" },
+	default_format_opts = {
+		lsp_format = "fallback",
 	},
+	formatters_by_ft = extract_formatters(),
 
 	-- Format on save configuration
 	format_on_save = function(bufnr)
