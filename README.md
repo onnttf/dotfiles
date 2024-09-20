@@ -1,4 +1,4 @@
-# dotfiles
+# Dotfiles
 
 These are my personal **dotfiles** used to manage and share my terminal and tool configurations. Below are detailed explanations of some key features and components of the project.
 
@@ -30,18 +30,20 @@ These are my personal **dotfiles** used to manage and share my terminal and tool
 
 ## Installation
 
+To set up these dotfiles on a new system, run:
+
 ```shell
 /bin/bash -c "$(curl -fsSL https://github.com/onnttf/dotfiles/raw/main/bootstrap.sh)"
 ```
 
 ## Customization
 
-You can customize configuration files according to personal needs. Modify the configuration files and run the installation script to apply changes.
+Feel free to fork this repository and modify the configurations to suit your needs. After making changes, run the installation script to apply them.
 
 ## Contribution
 
-If you find any issues or have suggestions for improvement, please raise issues or create pull requests on GitHub.
+If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on GitHub.
 
 ## License
 
-This project is licensed under the MIT License. For detailed information, refer to the LICENSE file.
+MIT License. See the [LICENSE](./LICENSE) file for details.
