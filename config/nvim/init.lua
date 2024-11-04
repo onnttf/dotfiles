@@ -56,9 +56,6 @@ end
 
 -- Now use this function for all your keymaps
 
-keymap("n", "-", "<C-a>", { desc = "Decrease number" })
-keymap("n", "+", "<C-x>", { desc = "Increase number" })
-
 -- Clear search highlights
 keymap("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
 
@@ -182,6 +179,15 @@ require("lazy").setup({
 				icons = {
 					rules = false,
 				},
+			},
+		},
+		{
+			"folke/todo-comments.nvim",
+			dependencies = { "nvim-lua/plenary.nvim" },
+			opts = {
+				-- your configuration comes here
+				-- or leave it empty to use the default settings
+				-- refer to the configuration section below
 			},
 		},
 		{
@@ -350,10 +356,7 @@ require("lazy").setup({
 
 				require("mini.pairs").setup()
 
-				require("mini.comment").setup()
-
-				require("mini.git").setup()
-
+				require("mini.diff").setup()
 				-- ... and there is more!
 				--  Check out: https://github.com/echasnovski/mini.nvim
 			end,
@@ -390,6 +393,11 @@ require("lazy").setup({
 				require("plugin.lsp.nvim-cmp")
 			end,
 		},
+		--{
+		--	"lewis6991/gitsigns.nvim",
+		--	event = "VeryLazy",
+		--	opts = {},
+		--},
 		-- {
 		--     "olexsmir/gopher.nvim",
 		--     ft = "go",

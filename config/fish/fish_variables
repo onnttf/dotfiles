@@ -40,4 +40,4 @@ SETUVAR fish_pager_color_selected_background:\x2d\x2dbackground\x3dFFCC66
 SETUVAR fish_pager_color_selected_completion:\x1d
 SETUVAR fish_pager_color_selected_description:\x1d
 SETUVAR fish_pager_color_selected_prefix:\x1d
-SETUVAR fish_user_paths:/usr/local/Cellar/go\x401\x2e22/1\x2e22\x2e7/libexec/bin\x1e/usr/local/opt/mysql\x408\x2e4/bin\x1e/usr/local/opt/mysql\x408\x2e0/bin\x1e/Users/zhangpeng/go/bin\x1e/Users/onnttf/go/bin
+SETUVAR fish_user_paths:/usr/local/Cellar/go\x401\x2e22/1\x2e22\x2e8/libexec/bin\x1e/usr/local/Cellar/go\x401\x2e22/1\x2e22\x2e7/libexec/bin\x1e/usr/local/opt/mysql\x408\x2e4/bin\x1e/usr/local/opt/mysql\x408\x2e0/bin\x1e/Users/zhangpeng/go/bin\x1e/Users/onnttf/go/bin

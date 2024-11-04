@@ -1,6 +1,5 @@
 -- Pull in the wezterm API
 local wezterm = require("wezterm")
-
 -- Configuration table
 local config = {}
 
@@ -19,14 +18,14 @@ config.hide_tab_bar_if_only_one_tab = true
 
 -- Configure window padding
 config.window_padding = {
-	left = 4,
-	right = 4,
-	top = 4,
-	bottom = 4,
+	left = 2,
+	right = 2,
+	top = 2,
+	bottom = 2,
 }
 
 -- Set the background opacity for the window
-config.window_background_opacity = 0.8
+config.window_background_opacity = 0.85
 
 -- Configure HarfBuzz features for text rendering
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
@@ -37,11 +36,11 @@ local act = wezterm.action
 -- Define keybindings for various actions
 config.keys = {
 	-- Split the current pane horizontally
-	{ key = "|", mods = "CMD", action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
+	{ key = "|", mods = "CMD", action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
 	-- Split the current pane vertically
-	{ key = "_", mods = "CMD", action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }) },
+	{ key = "_", mods = "CMD", action = act.SplitVertical({ domain = "CurrentPaneDomain" }) },
 	-- Close the current pane
-	{ key = "C", mods = "CMD", action = wezterm.action.CloseCurrentPane({ confirm = false }) },
+	{ key = "C", mods = "CMD", action = act.CloseCurrentPane({ confirm = false }) },
 	-- Activate the pane to the left
 	{ key = "h", mods = "CMD", action = act.ActivatePaneDirection("Left") },
 	-- Activate the pane to the right
