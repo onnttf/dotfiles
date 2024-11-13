@@ -218,6 +218,7 @@ neotree.setup({
 	use_default_mappings = false,
 	close_if_last_window = true,
 	sources = { "filesystem", "buffers", "git_status", "document_symbols" },
+	use_popups_for_input = false,
 	source_selector = {
 		sources = {
 			{ source = "filesystem" },

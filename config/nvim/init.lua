@@ -7,26 +7,26 @@ vim.g.maplocalleader = " "
 -- Define a table of options for easy management
 local options = {
 	number = true, -- Show line numbers
-	mouse = "a", -- Enable mouse for all modes
+	mouse = "a", -- Enable mouse support in all modes
 	showmode = false, -- Don't show mode in command line (shown in statusline)
-	breakindent = true, -- Enable break indent
+	breakindent = true, -- Enable break indent for wrapped lines
 	ignorecase = true, -- Case insensitive searching
 	smartcase = true, -- Case sensitive if search contains capitals
-	signcolumn = "yes", -- Always show the sign column
+	signcolumn = "yes", -- Always show the sign column (for diagnostics, etc.)
 	updatetime = 250, -- Decrease update time for better performance
-	timeoutlen = 300, -- Decrease mapped sequence wait time
-	splitright = true, -- Open new vertical splits to the right
-	splitbelow = true, -- Open new horizontal splits below
+	timeoutlen = 300, -- Decrease timeout for mapped key sequences
+	splitright = true, -- Open vertical splits to the right
+	splitbelow = true, -- Open horizontal splits below
 	cursorline = true, -- Highlight the current line
-	scrolloff = 10, -- Maintain 10 lines above/below cursor
+	scrolloff = 10, -- Keep 10 lines above/below the cursor
+	hlsearch = true, -- Highlight search results
+	termguicolors = true, -- Enable true color support in terminal
 	smartindent = true, -- Enable smart indentation
 	autoindent = true, -- Enable automatic indentation
 	tabstop = 4, -- Set tab size to 4 spaces
 	softtabstop = 4, -- Set soft tab size to 4 spaces
 	shiftwidth = 4, -- Set shift width to 4 spaces
 	expandtab = true, -- Convert tabs to spaces
-	hlsearch = true, -- Highlight search results
-	termguicolors = true, -- Enable 24-bit RGB color in the TUI
 	backup = false, -- Disable backup files
 	swapfile = false, -- Disable swap files
 	undofile = false, -- Disable undo files
@@ -57,16 +57,12 @@ end
 -- Now use this function for all your keymaps
 
 -- Clear search highlights
-keymap("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
+-- keymap("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
+keymap("n", "<Esc>", "<cmd>nohlsearch<CR><cmd>let @/ = ''<CR>", { desc = "Clear highlights and search content" })
 
 -- Diagnostic navigation
 keymap("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
 keymap("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
-
--- Disable arrow keys in normal mode (encourage hjkl usage)
-for _, key in ipairs({ "left", "right", "up", "down" }) do
-	keymap("n", "<" .. key .. ">", string.format('<cmd>echo "Use %s to move!"<CR>', key:sub(1, 1)))
-end
 
 -- Window navigation with CTRL + hjkl
 for _, key in ipairs({ "h", "j", "k", "l" }) do
@@ -158,20 +154,6 @@ require("lazy").setup({
 		-- keys can be used to configure plugin behavior/loading/etc.
 		--
 		-- Use `opts = {}` to force a plugin to be loaded.
-		--
-		--{
-		--	"projekt0n/github-nvim-theme",
-		--	priority = 1000, -- Make sure to load this before all the other start plugins.
-		--	config = function()
-		--		require("github-theme").setup({
-		--			options = {
-		--				-- Enable transparent background
-		--				transparent = true,
-		--			},
-		--		})
-		--		vim.cmd.colorscheme("github_dark")
-		--	end,
-		--},
 		{
 			"folke/which-key.nvim",
 			event = "VeryLazy",
@@ -184,11 +166,7 @@ require("lazy").setup({
 		{
 			"folke/todo-comments.nvim",
 			dependencies = { "nvim-lua/plenary.nvim" },
-			opts = {
-				-- your configuration comes here
-				-- or leave it empty to use the default settings
-				-- refer to the configuration section below
-			},
+			opts = {},
 		},
 		{
 			"nvim-neo-tree/neo-tree.nvim",
@@ -196,9 +174,7 @@ require("lazy").setup({
 			branch = "v3.x",
 			dependencies = {
 				"nvim-lua/plenary.nvim",
-				{
-					"nvim-tree/nvim-web-devicons",
-				},
+				"nvim-tree/nvim-web-devicons",
 				"MunifTanjim/nui.nvim",
 			},
 			config = function()
@@ -217,10 +193,8 @@ require("lazy").setup({
 						return vim.fn.executable("make") == 1
 					end,
 				},
-				{ "nvim-telescope/telescope-ui-select.nvim" },
-				{
-					"nvim-tree/nvim-web-devicons",
-				},
+				"nvim-telescope/telescope-ui-select.nvim",
+				"nvim-tree/nvim-web-devicons",
 			},
 			config = function()
 				require("plugin.telescope")
@@ -250,11 +224,6 @@ require("lazy").setup({
 								action = "tabnew $MYVIMRC | tcd %:p:h",
 								key = "c",
 							},
-							-- {
-							-- 	desc = "Update",
-							-- 	action = "Lazy update",
-							-- 	key = "u",
-							-- },
 						},
 						header = {
 							"                                                       ",
@@ -273,7 +242,7 @@ require("lazy").setup({
 					},
 				})
 			end,
-			dependencies = { { "nvim-tree/nvim-web-devicons" } },
+			dependencies = { "nvim-tree/nvim-web-devicons" },
 		},
 		{
 			"lukas-reineke/indent-blankline.nvim",
@@ -314,15 +283,6 @@ require("lazy").setup({
 			config = function()
 				require("plugin.conform")
 			end,
-		},
-		{
-			"akinsho/toggleterm.nvim",
-			version = "*",
-			event = "VeryLazy",
-			opts = { {
-				direction = "float",
-				open_mapping = [[<c-\>]],
-			} },
 		},
 		{
 			"echasnovski/mini.nvim",
@@ -376,43 +336,57 @@ require("lazy").setup({
 				require("plugin.lsp.nvim-lspconfig")
 			end,
 		},
+		--{
+		--	"hrsh7th/nvim-cmp",
+		--	event = "VeryLazy",
+		--	dependencies = {
+		--		"hrsh7th/cmp-nvim-lsp",
+		--		"hrsh7th/cmp-buffer",
+		--		"hrsh7th/cmp-path",
+		--		"hrsh7th/cmp-cmdline",
+		--		{
+		--			"hrsh7th/cmp-vsnip",
+		--			dependencies = { "hrsh7th/vim-vsnip", "rafamadriz/friendly-snippets" },
+		--		},
+		--	},
+		--	config = function()
+		--		require("plugin.lsp.nvim-cmp")
+		--	end,
+		--},
 		{
-			"hrsh7th/nvim-cmp",
-			event = "VeryLazy",
-			dependencies = {
-				"hrsh7th/cmp-nvim-lsp",
-				"hrsh7th/cmp-buffer",
-				"hrsh7th/cmp-path",
-				"hrsh7th/cmp-cmdline",
-				{
-					"hrsh7th/cmp-vsnip",
-					dependencies = { "hrsh7th/vim-vsnip", "rafamadriz/friendly-snippets" },
+			"saghen/blink.cmp",
+			lazy = false, -- lazy loading handled internally
+			-- optional: provides snippets for the snippet source
+			dependencies = "rafamadriz/friendly-snippets",
+			-- use a release tag to download pre-built binaries
+			version = "v0.*",
+			opts = {
+				-- 'default' for mappings similar to built-in completion
+				-- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
+				-- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
+				-- see the "default configuration" section below for full documentation on how to define
+				-- your own keymap.
+				keymap = {
+					["<CR>"] = { "accept", "fallback" },
+
+					["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
+					["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+
+					["<Up>"] = { "select_prev", "fallback" },
+					["<Down>"] = { "select_next", "fallback" },
+
+					["<C-b>"] = { "scroll_documentation_up", "fallback" },
+					["<C-f>"] = { "scroll_documentation_down", "fallback" },
+				},
+				windows = {
+					documentation = {
+						auto_show = true,
+					},
 				},
 			},
-			config = function()
-				require("plugin.lsp.nvim-cmp")
-			end,
+			-- allows extending the enabled_providers array elsewhere in your config
+			-- without having to redefining it
+			opts_extend = { "sources.completion.enabled_providers" },
 		},
-		--{
-		--	"lewis6991/gitsigns.nvim",
-		--	event = "VeryLazy",
-		--	opts = {},
-		--},
-		-- {
-		--     "olexsmir/gopher.nvim",
-		--     ft = "go",
-		--     -- branch = "develop", -- if you want develop branch
-		--     -- keep in mind, it might break everything
-		--     dependencies = {
-		--         "nvim-lua/plenary.nvim",
-		--         "nvim-treesitter/nvim-treesitter",
-		--         --   "mfussenegger/nvim-dap", -- (optional) only if you use `gopher.dap`
-		--     },
-		--     -- (optional) will update plugin's deps on every update
-		--     build = function()
-		--         vim.cmd.GoInstallDeps()
-		--     end,
-		--     opts = {},
-		-- },
 	},
 })
