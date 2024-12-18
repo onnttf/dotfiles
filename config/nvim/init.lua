@@ -54,24 +54,24 @@ local function keymap(mode, lhs, rhs, opts)
 	vim.keymap.set(mode, lhs, rhs, opts)
 end
 
--- Now use this function for all your keymaps
-
 -- Clear search highlights
--- keymap("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
 keymap("n", "<Esc>", "<cmd>nohlsearch<CR><cmd>let @/ = ''<CR>", { desc = "Clear highlights and search content" })
 
--- Diagnostic navigation
-keymap("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
-keymap("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
-
 -- Window navigation with CTRL + hjkl
-for _, key in ipairs({ "h", "j", "k", "l" }) do
-	keymap("n", "<C-" .. key .. ">", "<C-w><C-" .. key .. ">", { desc = "Focus " .. key .. " window" })
-end
+keymap("n", "<C-h>", "<C-w>h", { desc = "Focus left window" })
+keymap("n", "<C-j>", "<C-w>j", { desc = "Focus bottom window" })
+keymap("n", "<C-k>", "<C-w>k", { desc = "Focus top window" })
+keymap("n", "<C-l>", "<C-w>l", { desc = "Focus right window" })
 
 -- Remap for dealing with word wrap
 keymap("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 keymap("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+
+-- Search related (s)
+keymap("n", "sf", "<cmd>Telescope find_files<CR>", { desc = "[S]earch [f]iles" })
+keymap("n", "sg", "<cmd>Telescope live_grep<CR>", { desc = "[S]earch by [g]rep" })
+keymap("n", "sh", "<cmd>Telescope help_tags<CR>", { desc = "[S]earch [h]elp" })
+keymap("n", "sk", "<cmd>Telescope keymaps<CR>", { desc = "[S]earch [k]eymaps" })
 
 -- [[ Autocommands ]]
 local augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
@@ -169,6 +169,12 @@ require("lazy").setup({
 			opts = {},
 		},
 		{
+			"MeanderingProgrammer/render-markdown.nvim",
+			ft = { "markdown" },
+			dependencies = { "nvim-treesitter/nvim-treesitter" },
+			opts = {},
+		},
+		{
 			"nvim-neo-tree/neo-tree.nvim",
 			event = "VeryLazy",
 			branch = "v3.x",
@@ -186,19 +192,8 @@ require("lazy").setup({
 			event = "VeryLazy",
 			dependencies = {
 				"nvim-lua/plenary.nvim",
-				{
-					"nvim-telescope/telescope-fzf-native.nvim",
-					build = "make",
-					cond = function()
-						return vim.fn.executable("make") == 1
-					end,
-				},
-				"nvim-telescope/telescope-ui-select.nvim",
-				"nvim-tree/nvim-web-devicons",
 			},
-			config = function()
-				require("plugin.telescope")
-			end,
+			opts = {},
 		},
 		{
 			"nvimdev/dashboard-nvim",
@@ -327,32 +322,82 @@ require("lazy").setup({
 				"williamboman/mason.nvim",
 				"williamboman/mason-lspconfig.nvim",
 				"WhoIsSethDaniel/mason-tool-installer.nvim",
-				-- {
-				-- 	"j-hui/fidget.nvim",
-				-- 	opts = {},
-				-- },
 			},
 			config = function()
 				require("plugin.lsp.nvim-lspconfig")
+				-- Add keymaps when an LSP is attached to the current buffer
+				vim.api.nvim_create_autocmd("LspAttach", {
+					group = augroup,
+					callback = function(ev)
+						-- Enable completion triggered by <c-x><c-o>
+						vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
+
+						-- Buffer local mappings
+						local localOpts = { buffer = ev.buf }
+
+						-- Movement related (g)
+						keymap(
+							"n",
+							"gd",
+							vim.lsp.buf.definition,
+							vim.tbl_extend("force", localOpts, { desc = "Go to definition" })
+						)
+						keymap(
+							"n",
+							"gD",
+							vim.lsp.buf.declaration,
+							vim.tbl_extend("force", localOpts, { desc = "Go to definition" })
+						)
+						keymap(
+							"n",
+							"gr",
+							vim.lsp.buf.references,
+							vim.tbl_extend("force", localOpts, { desc = "Go to declaration" })
+						)
+						keymap(
+							"n",
+							"gi",
+							vim.lsp.buf.implementation,
+							vim.tbl_extend("force", localOpts, { desc = "Go to implementation" })
+						)
+						keymap(
+							"n",
+							"gt",
+							vim.lsp.buf.type_definition,
+							vim.tbl_extend("force", localOpts, { desc = "Go to type definition" })
+						)
+
+						-- Hover and signature help
+						keymap(
+							"n",
+							"K",
+							vim.lsp.buf.hover,
+							vim.tbl_extend("force", localOpts, { desc = "Show hover information" })
+						)
+						keymap(
+							"n",
+							"<C-k>",
+							vim.lsp.buf.signature_help,
+							vim.tbl_extend("force", localOpts, { desc = "Show signature help" })
+						)
+
+						-- Edit related (e)
+						keymap(
+							"n",
+							"er",
+							vim.lsp.buf.rename,
+							vim.tbl_extend("force", localOpts, { desc = "Rename symbol" })
+						)
+						keymap(
+							{ "n", "v" },
+							"ea",
+							vim.lsp.buf.code_action,
+							vim.tbl_extend("force", localOpts, { desc = "Code actions" })
+						)
+					end,
+				})
 			end,
 		},
-		--{
-		--	"hrsh7th/nvim-cmp",
-		--	event = "VeryLazy",
-		--	dependencies = {
-		--		"hrsh7th/cmp-nvim-lsp",
-		--		"hrsh7th/cmp-buffer",
-		--		"hrsh7th/cmp-path",
-		--		"hrsh7th/cmp-cmdline",
-		--		{
-		--			"hrsh7th/cmp-vsnip",
-		--			dependencies = { "hrsh7th/vim-vsnip", "rafamadriz/friendly-snippets" },
-		--		},
-		--	},
-		--	config = function()
-		--		require("plugin.lsp.nvim-cmp")
-		--	end,
-		--},
 		{
 			"saghen/blink.cmp",
 			lazy = false, -- lazy loading handled internally
@@ -378,15 +423,15 @@ require("lazy").setup({
 					["<C-b>"] = { "scroll_documentation_up", "fallback" },
 					["<C-f>"] = { "scroll_documentation_down", "fallback" },
 				},
-				windows = {
+				completion = {
 					documentation = {
+						-- Controls whether the documentation window will automatically show when selecting a completion item
 						auto_show = true,
+						-- Delay before showing the documentation window
+						auto_show_delay_ms = 200,
 					},
 				},
 			},
-			-- allows extending the enabled_providers array elsewhere in your config
-			-- without having to redefining it
-			opts_extend = { "sources.completion.enabled_providers" },
 		},
 	},
 })

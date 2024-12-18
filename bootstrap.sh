@@ -188,7 +188,8 @@ cp -r "$dotfiles_path/config/"* "$config_path/"
 # Copy specific Git configuration files
 echo "Copying Git configuration files to $HOME"
 cp "$dotfiles_path/config/git/gitconfig" "$HOME/.gitconfig"
-cp "$dotfiles_path/config/git/gitignore_global" "$HOME/.gitignore_global"
+cp "$dotfiles_path/config/git/gitconfig.company" "$HOME/.gitconfig.company"
+cp "$dotfiles_path/config/git/gitignore" "$HOME/.gitignore"
 
 # Change shell to Fish if not already set
 if [ "$SHELL" != "$(command -v fish)" ]; then

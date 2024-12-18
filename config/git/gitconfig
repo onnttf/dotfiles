@@ -1,5 +1,5 @@
 [core]
-    excludesfile = "~/.gitignore_global"  # Global gitignore file
+	excludesfile = "~/.gitignore"  # Global gitignore file
 
 [init]
     defaultBranch = "main"  # Set default branch name to 'main'
@@ -10,19 +10,12 @@
 [color]
     ui = "auto"  # Enable color output
 
-[user]
-    name = "Zhang Peng"  # User name
-    email = "onnttf@gmail.com"  # User email
-
-[pretty]
-    pshort = "%C(auto)%h %C(red)%ad %C(blue)%aN%C(auto)%d%C(green)%Creset %s"
-
 [alias]
 	# List all aliases
-	aliases = "config --get-regexp alias"
+	alias = "config --get-regexp alias"
 
     # Initialize a repository and create an empty commit
-    start = "!git init && git commit --allow-empty -m \"Initial commit\""
+    start = "!git init && git commit --allow-empty -m \"initial commit\""
 
     # Display a concise commit log
     slog = "log --date=format:'%Y-%m-%d %H:%M:%S' --pretty=pshort"
@@ -51,7 +44,5 @@
     # Delete local branches that have been removed from the remote
     purge = "!bash -c \"git branch -r | awk '{print \\$1}' | grep -E -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '{print \\$1}' | xargs -r git branch -D\""
 
-    # Get the remote URL
-    remoteurl = "remote get-url origin"
-    # Convert SSH remote URL to HTTPS
-    remotehttps = "!git remoteurl | sed -e 's/git@/https:\\/\\//'"
+[includeIf "gitdir:~/Desktop/company/"]
+    path = ~/.gitconfig.company

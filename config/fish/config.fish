@@ -1,20 +1,15 @@
-# --- Aliases ---
+# Disable the fish greeting message
+set -g fish_greeting
 
-alias n="nvim"
-alias ip="ifconfig | awk '/inet / && !/inet6/ {print \$1, \$2}'"
-alias h="cd $HOME"
-alias d="cd $HOME/Desktop"
-
-# --- Environment Variables ---
-
-# Set default editor (nvim if available, else vim)
-if command -v nvim >/dev/null
-    set -gx EDITOR nvim
-else
-    set -gx EDITOR vim
+# Initialize interactive session settings
+if status is-interactive
+    # Configure default editor if neovim is available
+    if command -sq nvim
+        set -gx EDITOR nvim
+    end
 end
 
-# Set Go environment and add paths if Go is installed
+# Setup Go development environment
 if command -v go >/dev/null
     set -gx GOPATH (go env GOPATH)
     set -gx GOROOT (go env GOROOT)
@@ -26,23 +21,14 @@ if command -v go >/dev/null
     end
 end
 
-# --- Path Settings ---
+# Common aliases for frequently used commands
+alias n="nvim"
+alias ip="ifconfig | awk '/inet / && !/inet6/ {print \$1, \$2}'"
+alias h="cd $HOME"
 
-# Add MySQL to PATH if available
-set -l mysql_paths \
-    /usr/local/opt/mysql@8.4/bin \
-    /usr/local/mysql/bin \
-    /opt/homebrew/opt/mysql@8.4/bin
-for path in $mysql_paths
-    if test -d $path; and not contains $path $PATH
-        fish_add_path $path
-        break
-    end
-end
+# Utility Functions
 
-# --- Custom Functions ---
-
-# Create directory and enter it
+# Create and navigate to directory
 function mkcd
     if test (count $argv) -eq 0
         echo "Usage: mkcd <dir1> [dir2 ...]"
@@ -51,7 +37,7 @@ function mkcd
     mkdir -p $argv[-1] && cd $argv[-1]
 end
 
-# Search for processes
+# Enhanced process search
 function psearch
     test (count $argv) -eq 0; and echo "Usage: psearch <process-name>" and return 1
     echo "USER        PID  %CPU %MEM      VSZ    RSS TTY      STAT STARTED                      ELAPSED COMMAND"
@@ -60,7 +46,7 @@ function psearch
     end
 end
 
-# Find files by name
+# Quick file search
 function ff
     if test (count $argv) -eq 0
         echo "Usage: ff <filename> [find options]"
@@ -70,7 +56,7 @@ function ff
     find . -type f -iname $name $argv[2..-1]
 end
 
-# Find directories by name
+# Quick directory search
 function fd
     if test (count $argv) -eq 0
         echo "Usage: fd <dirname> [find options]"
@@ -80,7 +66,7 @@ function fd
     find . -type d -iname $name $argv[2..-1]
 end
 
-# Backup files with timestamp
+# File backup with timestamp
 function backup
     if test (count $argv) -eq 0
         echo "Usage: backup <file1> [file2 ...]"
@@ -101,7 +87,7 @@ function backup
     end
 end
 
-# Extract compressed files
+# Universal archive extractor
 function extract
     if test (count $argv) -eq 0
         echo "Usage: extract <file>"
@@ -133,10 +119,4 @@ function extract
         case '*'
             echo "'$argv[1]' cannot be extracted via extract()"
     end
-end
-
-# --- Interactive Session Settings ---
-
-if status is-interactive
-    # Add commands to be run in interactive sessions here
 end

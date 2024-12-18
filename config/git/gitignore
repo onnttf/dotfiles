@@ -1,0 +1,9 @@
+# IDE/Editor specific files
+.idea      # JetBrains IDE files
+.vscode    # VS Code files
+
+# Package dependencies
+node_modules
+
+# Operating system files
+.DS_Store  # macOS generated files
