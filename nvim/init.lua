@@ -477,9 +477,9 @@ require("lazy").setup({
 		},
 		{
 			"saghen/blink.cmp",
-			lazy = false, -- Load immediately.
 			dependencies = "rafamadriz/friendly-snippets",
-			version = "v0.*",
+			-- use a release tag to download pre-built binaries
+			version = "*",
 			opts = {
 				keymap = {
 					["<CR>"] = { "accept", "fallback" },
