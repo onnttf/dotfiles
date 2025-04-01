@@ -1,47 +1,4 @@
-local lsp2Config = {
-    gopls = {
-        cmd = { "gopls" },
-        filetypes = { "go", "gomod", "gowork", "gotmpl" },
-        settings = {}
-    },
-    sqlls = {
-        cmd = { "sql-language-server", "up", "--method", "stdio" },
-        filetypes = { "sql", "mysql" },
-        settings = {}
-    },
-    pyright = {
-        cmd = { "pyright-langserver", "--stdio" },
-        filetypes = { "python" },
-        settings = {}
-    },
-    lua_ls = {
-        cmd = { "lua-language-server" },
-        filetypes = { "lua" },
-        settings = {}
-    },
-    intelephense = {
-        cmd = { "intelephense", "--stdio" },
-        filetypes = { "php" },
-        settings = {}
-    },
-    jsonls = {
-        cmd = { "vscode-json-language-server", "--stdio" },
-        filetypes = { "json", "jsonc" },
-        settings = {}
-    },
-    yamlls = {
-        cmd = { "yaml-language-server", "--stdio" },
-        filetypes = { "yaml", "yaml.docker-compose", "yaml.gitlab" },
-        settings = {}
-    },
-    bashls = {
-        cmd = { "bash-language-server", "start" },
-        filetypes = { "bash", "sh" },
-        settings = {}
-    }
-}
-
-vim.lsp.config('*', {
+local common_config = {
     capabilities = {
         textDocument = {
             semanticTokens = {
@@ -50,23 +7,58 @@ vim.lsp.config('*', {
         }
     },
     root_markers = { '.git' }
-})
+}
 
-for lsp, config in pairs(lsp2Config) do
-    local lsp_config = {}
+local lsp2Config = {
+    gopls = {
+        cmd = { "gopls" },
+        filetypes = { "go", "gomod", "gowork", "gotmpl" }
+    },
+    sqlls = {
+        cmd = { "sql-language-server", "up", "--method", "stdio" },
+        filetypes = { "sql", "mysql" }
+    },
+    pyright = {
+        cmd = { "pyright-langserver", "--stdio" },
+        filetypes = { "python" }
+    },
+    lua_ls = {
+        cmd = { "lua-language-server" },
+        filetypes = { "lua" },
+        settings = {
+            Lua = {
+                runtime = {
+                    version = "LuaJIT"
+                },
+                diagnostics = {
+                    globals = { "vim" }
+                }
+            }
+        }
+    },
+    intelephense = {
+        cmd = { "intelephense", "--stdio" },
+        filetypes = { "php" }
+    },
+    jsonls = {
+        cmd = { "vscode-json-language-server", "--stdio" },
+        filetypes = { "json", "jsonc" }
+    },
+    yamlls = {
+        cmd = { "yaml-language-server", "--stdio" },
+        filetypes = { "yaml", "yaml.docker-compose", "yaml.gitlab" }
+    },
+    bashls = {
+        cmd = { "bash-language-server", "start" },
+        filetypes = { "bash", "sh" }
+    }
+}
 
-    if config.cmd and next(config.cmd) then
-        lsp_config.cmd = config.cmd
-    end
-    if config.filetypes and next(config.filetypes) then
-        lsp_config.filetypes = config.filetypes
-    end
-    if config.settings and next(config.settings) then
-        lsp_config.settings = config.settings
-    end
+vim.lsp.config('*', common_config)
 
-    vim.lsp.config[lsp] = lsp_config
-    vim.lsp.enable({ lsp })
+for lsp_name, config in pairs(lsp2Config) do
+    vim.lsp.config[lsp_name] = config
+    vim.lsp.enable({ lsp_name })
 end
 
 local augroup = vim.api.nvim_create_augroup("user_config_lsp", {
@@ -147,13 +139,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
                 desc = "Show outgoing calls"
             })
         end
-
-        if client:supports_method('textDocument/highlight') then
-            vim.cmd([[
-              autocmd CursorHold  <buffer> lua vim.lsp.buf.document_highlight()
-              autocmd CursorHoldI <buffer> lua vim.lsp.buf.document_highlight()
-              autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
-            ]])
-        end
+        
     end
 })
