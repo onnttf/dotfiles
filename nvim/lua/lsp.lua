@@ -6,51 +6,57 @@ local common_config = {
             }
         }
     },
-    root_markers = { '.git' }
+    root_markers = {'.git'}
 }
 
 local lsp2Config = {
     gopls = {
-        cmd = { "gopls" },
-        filetypes = { "go", "gomod", "gowork", "gotmpl" }
+        cmd = {"gopls"},
+        filetypes = {'go', 'gomod', 'gowork', 'gotmpl'},
+        root_markers = {'go.work', 'go.mod', '.git'},
+        settings = {
+            gopls = {
+                usePlaceholders = true
+            }
+        }
     },
     sqlls = {
-        cmd = { "sql-language-server", "up", "--method", "stdio" },
-        filetypes = { "sql", "mysql" }
+        cmd = {"sql-language-server", "up", "--method", "stdio"},
+        filetypes = {"sql", "mysql"}
     },
     pyright = {
-        cmd = { "pyright-langserver", "--stdio" },
-        filetypes = { "python" }
+        cmd = {"pyright-langserver", "--stdio"},
+        filetypes = {"python"}
     },
     lua_ls = {
-        cmd = { "lua-language-server" },
-        filetypes = { "lua" },
+        cmd = {"lua-language-server"},
+        filetypes = {"lua"},
         settings = {
             Lua = {
                 runtime = {
                     version = "LuaJIT"
                 },
                 diagnostics = {
-                    globals = { "vim" }
+                    globals = {"vim"}
                 }
             }
         }
     },
     intelephense = {
-        cmd = { "intelephense", "--stdio" },
-        filetypes = { "php" }
+        cmd = {"intelephense", "--stdio"},
+        filetypes = {"php"}
     },
     jsonls = {
-        cmd = { "vscode-json-language-server", "--stdio" },
-        filetypes = { "json", "jsonc" }
+        cmd = {"vscode-json-language-server", "--stdio"},
+        filetypes = {"json", "jsonc"}
     },
     yamlls = {
-        cmd = { "yaml-language-server", "--stdio" },
-        filetypes = { "yaml", "yaml.docker-compose", "yaml.gitlab" }
+        cmd = {"yaml-language-server", "--stdio"},
+        filetypes = {"yaml", "yaml.docker-compose", "yaml.gitlab"}
     },
     bashls = {
-        cmd = { "bash-language-server", "start" },
-        filetypes = { "bash", "sh" }
+        cmd = {"bash-language-server", "start"},
+        filetypes = {"bash", "sh"}
     }
 }
 
@@ -58,7 +64,7 @@ vim.lsp.config('*', common_config)
 
 for lsp_name, config in pairs(lsp2Config) do
     vim.lsp.config[lsp_name] = config
-    vim.lsp.enable({ lsp_name })
+    vim.lsp.enable({lsp_name})
 end
 
 local augroup = vim.api.nvim_create_augroup("user_config_lsp", {
@@ -139,6 +145,5 @@ vim.api.nvim_create_autocmd('LspAttach', {
                 desc = "Show outgoing calls"
             })
         end
-        
     end
 })
