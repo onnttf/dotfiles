@@ -20,19 +20,22 @@ keymap("n", "<C-l>", "<C-w>l", {
     desc = "Focus right window"
 })
 
--- Remap 'k' and 'j' to handle wrapped lines properly
-keymap("n", "k", "v:count == 0 ? 'gk' : 'k'", {
-    expr = true,
-    silent = true,
-    desc = "Move up, respecting wrapped lines"
-})
+-- Remap 'j' and 'k' to handle wrapped lines properly
 keymap("n", "j", "v:count == 0 ? 'gj' : 'j'", {
     expr = true,
     silent = true,
     desc = "Move down, respecting wrapped lines"
 })
+keymap("n", "k", "v:count == 0 ? 'gk' : 'k'", {
+    expr = true,
+    silent = true,
+    desc = "Move up, respecting wrapped lines"
+})
 
--- In visual mode, remap 'p' so that pasting does not overwrite the default register
+-- Remap 'p' and 'P' in visual mode to prevent pasting from overwriting the default register.
 keymap("v", "p", '"_d"+p', {
+    desc = "Paste without overwriting default register"
+})
+keymap("v", "P", '"_d"+P', {
     desc = "Paste without overwriting default register"
 })

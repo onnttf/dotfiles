@@ -1,5 +1,7 @@
 -- [[ Autocommand ]]
-local augroup = vim.api.nvim_create_augroup("user_config_autocommand", { clear = true })
+local augroup = vim.api.nvim_create_augroup("user_config_autocommand", {
+    clear = true
+})
 
 -- Highlight yanked text momentarily after a yank operation
 vim.api.nvim_create_autocmd("TextYankPost", {
@@ -28,10 +30,13 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 vim.api.nvim_create_autocmd("FileType", {
     group = augroup,
     desc = "Use 'q' to close specific buffers",
-    pattern = { "help", "lspinfo", "neo-tree", "qf" },
+    pattern = {"help", "lspinfo", "neo-tree", "qf"},
     callback = function(event)
         vim.bo[event.buf].buflisted = false
-        vim.keymap.set("n", "q", "<cmd>close<CR>", { buffer = event.buf, silent = true })
+        vim.keymap.set("n", "q", "<cmd>close<CR>", {
+            buffer = event.buf,
+            silent = true
+        })
     end
 })
 

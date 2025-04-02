@@ -1,5 +1,8 @@
 -- Default options for key mappings
-local default_opts = { noremap = true, silent = true }
+local default_opts = {
+    noremap = true,
+    silent = true
+}
 
 -- Helper function to create key mappings with default options merged
 local function keymap(mode, lhs, rhs, opts)

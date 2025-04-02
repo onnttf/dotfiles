@@ -2,7 +2,7 @@
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
     local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-    local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+    local out = vim.fn.system({"git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath})
     if vim.v.shell_error ~= 0 then
         error("Error cloning lazy.nvim:\n" .. out)
     end
@@ -17,7 +17,7 @@ require("lazy").setup({
     rocks = {
         enabled = false
     },
-    spec = { { "tpope/vim-sleuth" }, {
+    spec = {{"tpope/vim-sleuth"}, {
         "folke/which-key.nvim",
         event = "VeryLazy",
         opts = {
@@ -25,7 +25,7 @@ require("lazy").setup({
                 mappings = false
             }
         },
-        keys = { {
+        keys = {{
             "<leader>?",
             function()
                 require("which-key").show({
@@ -33,30 +33,30 @@ require("lazy").setup({
                 })
             end,
             desc = "Buffer Local Keymaps (which-key)"
-        } }
+        }}
     }, {
         "folke/todo-comments.nvim",
         event = "VeryLazy",
-        dependencies = { "nvim-lua/plenary.nvim" }
+        dependencies = {"nvim-lua/plenary.nvim"}
     }, {
         "nvim-neo-tree/neo-tree.nvim",
         event = "VeryLazy",
         branch = "v3.x",
-        dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" },
+        dependencies = {"nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim"},
         config = function()
             require("neo-tree").setup({
                 use_default_mappings = false,
                 close_if_last_window = true,
                 popup_border_style = "rounded",
-                sources = { "filesystem", "document_symbols", "buffers" },
+                sources = {"filesystem", "document_symbols", "buffers"},
                 source_selector = {
-                    sources = { {
+                    sources = {{
                         source = "filesystem"
                     }, {
                         source = "document_symbols"
                     }, {
                         source = "buffers"
-                    } }
+                    }}
                 },
                 window = {
                     position = "float",
@@ -77,8 +77,8 @@ require("lazy").setup({
                         show_hidden_count = true,
                         hide_dotfiles = true,
                         hide_gitignored = true,
-                        hide_by_name = { "node_modules" },
-                        always_show = { ".gitignored" }
+                        hide_by_name = {"node_modules"},
+                        always_show = {".gitignored"}
                     },
                     window = {
                         mappings = {
@@ -155,7 +155,7 @@ require("lazy").setup({
                         }
                     }
                 },
-                event_handlers = { {
+                event_handlers = {{
                     event = "file_open_requested",
                     handler = function()
                         require("neo-tree.command").execute({
@@ -172,13 +172,13 @@ require("lazy").setup({
                     handler = function(args)
                         print(args.source, " moved to ", args.destination)
                     end
-                } }
+                }}
             })
         end
     }, {
         'MeanderingProgrammer/render-markdown.nvim',
-        ft = { "markdown" },
-        dependencies = { 'nvim-treesitter/nvim-treesitter' }
+        ft = {"markdown"},
+        dependencies = {'nvim-treesitter/nvim-treesitter'}
     }, {
         "ibhagwan/fzf-lua",
         event = "VeryLazy"
@@ -204,13 +204,13 @@ require("lazy").setup({
         end
     }, {
         "folke/trouble.nvim",
-        cmd = { "Trouble" },
+        cmd = {"Trouble"},
         opts = {}
     }, {
         "stevearc/conform.nvim",
-        event = { "BufWritePre" },
-        cmd = { "ConformInfo" },
-        keys = { {
+        event = {"BufWritePre"},
+        cmd = {"ConformInfo"},
+        keys = {{
             "<leader>f",
             function()
                 require("conform").format({
@@ -219,7 +219,7 @@ require("lazy").setup({
             end,
             mode = "",
             desc = "Format buffer"
-        } },
+        }},
         opts = {
             format_on_save = function(bufnr)
                 if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
@@ -265,17 +265,8 @@ require("lazy").setup({
         version = '*',
         opts = {}
     }, {
-        "williamboman/mason-lspconfig.nvim",
-        dependencies = { {
-            "williamboman/mason.nvim",
-            opts = {}
-        } },
-        config = function()
-            local ensure_installed = {}
-            require("mason-lspconfig").setup({
-                ensure_installed = vim.tbl_keys(ensure_installed)
-            })
-        end
+        "williamboman/mason.nvim",
+        opts = {}
     }, {
         "saghen/blink.cmp",
         event = "VeryLazy",
@@ -283,38 +274,52 @@ require("lazy").setup({
         dependencies = "rafamadriz/friendly-snippets",
         opts = {
             keymap = {
-                ["<CR>"] = { "accept", "fallback" },
-                ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
-                ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
-                ["<Up>"] = { "select_prev", "fallback" },
-                ["<Down>"] = { "select_next", "fallback" }
+                preset = 'none',
+                ["<Tab>"] = {"select_next", "snippet_forward", "fallback"},
+                ["<S-Tab>"] = {"select_prev", "snippet_backward", "fallback"},
+                ["<Up>"] = {"select_prev", "fallback"},
+                ["<Down>"] = {"select_next", "fallback"},
+                ["<CR>"] = {"accept", "fallback"}
             },
             completion = {
-
                 documentation = {
                     auto_show = true,
                     auto_show_delay_ms = 500
                 },
-
                 list = {
                     selection = {
                         preselect = false,
                         auto_insert = true
                     }
                 },
-
                 ghost_text = {
                     enabled = true
+                }
+            },
+            cmdline = {
+                keymap = {
+                    -- recommended, as the default keymap will only show and select the next item
+                    ['<Tab>'] = {'show', 'accept'},
+                    ['<CR>'] = {'accept_and_enter', 'fallback'}
+                },
+                completion = {
+                    menu = {
+                        auto_show = function(ctx)
+                            return vim.fn.getcmdtype() == ':'
+                            -- enable for inputs as well, with:
+                            -- or vim.fn.getcmdtype() == '@'
+                        end
+                    }
                 }
             }
         }
     }, {
         "mfussenegger/nvim-dap",
         event = "VeryLazy",
-        dependencies = { {
+        dependencies = {{
             "rcarriga/nvim-dap-ui",
-            dependencies = { "nvim-neotest/nvim-nio" }
-        }, { "theHamsta/nvim-dap-virtual-text" } },
+            dependencies = {"nvim-neotest/nvim-nio"}
+        }, {"theHamsta/nvim-dap-virtual-text"}},
         config = function()
             local dap, dapui = require("dap"), require("dapui")
             dap.listeners.before.attach.dapui_config = function()
@@ -340,5 +345,5 @@ require("lazy").setup({
                 }
             })
         end
-    } }
+    }}
 })
