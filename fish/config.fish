@@ -1,40 +1,39 @@
-# Disable Fish greeting message on startup
-set -g fish_greeting
+# Disable the default Fish greeting message
+set -U fish_greeting ""
 
-# Alias
-# Show local IP (excluding IPv6)
-alias ip="ifconfig | awk '/inet / && !/inet6/ {print \$1, \$2}'"
-# Quickly navigate to home directory
+# Check if Homebrew is installed, and if so, initialize its environment
+if test -x /opt/homebrew/bin/brew
+    eval (/opt/homebrew/bin/brew shellenv)
+end
+
+# Define an alias 'ip' to display IPv4 address information
+# Uses ifconfig to get network interface details, and awk to filter for IPv4 addresses and interface names
+alias ip="ifconfig | awk '/inet / && !/inet6/ {print \$2, \$1}'"
+
+# Define an alias 'h' for quickly navigating to the user's home directory
 alias h="cd \"$HOME\""
 
-# Function to display current date/time in RFC 3339 format and Unix timestamp
+# Define a function 'now' to display the current date and time and Unix timestamp
 function now
     echo -n "Current Date and Time: "
-    # RFC 3339 format (with timezone)
     date '+%Y-%m-%dT%H:%M:%S%z'
-    
     echo -n "Unix Timestamp: "
-    # Unix timestamp (seconds since epoch)
     date +%s
 end
 
-# Function to return the current Unix timestamp
+# Define a function 'timestamp' to display the current Unix timestamp
 function timestamp
-    date +%s  # Unix timestamp (seconds since epoch)
+    date +%s
 end
 
-# Function to format Unix timestamp into human-readable date
+# Define a function 'format_timestamp' to format a given Unix timestamp into a human-readable date and time
+# Usage: format_timestamp <timestamp>
 function format_timestamp
-    # Convert timestamp to YYYY-MM-DD HH:MM:SS
     date -r $argv[1] "+%Y-%m-%d %H:%M:%S"
 end
 
-# Conditional block for commands that run only in interactive sessions
+# Check if the shell is running in interactive mode
 if status is-interactive
-    # Commands for interactive mode go here
-end
-
-# Initialize Homebrew environment (ensure proper setup for Homebrew)
-if test -x /opt/homebrew/bin/brew
-    eval "$(/opt/homebrew/bin/brew shellenv)"
+    # In interactive mode, you can add additional interactive configurations, such as prompt customization
+    # Add your interactive configurations here
 end
