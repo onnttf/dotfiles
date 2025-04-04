@@ -17,7 +17,8 @@ require("lazy").setup({
     rocks = {
         enabled = false
     },
-    spec = {{"tpope/vim-sleuth"}, {
+    spec = { -- { "tpope/vim-sleuth" },
+    {
         "folke/which-key.nvim",
         event = "VeryLazy",
         opts = {
@@ -176,9 +177,9 @@ require("lazy").setup({
             })
         end
     }, {
-        'MeanderingProgrammer/render-markdown.nvim',
+        "MeanderingProgrammer/render-markdown.nvim",
         ft = {"markdown"},
-        dependencies = {'nvim-treesitter/nvim-treesitter'}
+        dependencies = {"nvim-treesitter/nvim-treesitter"}
     }, {
         "ibhagwan/fzf-lua",
         event = "VeryLazy"
@@ -203,55 +204,71 @@ require("lazy").setup({
             })
         end
     }, {
-        "folke/trouble.nvim",
-        cmd = {"Trouble"},
-        opts = {}
-    }, {
         "stevearc/conform.nvim",
         event = {"BufWritePre"},
         cmd = {"ConformInfo"},
-        keys = {{
-            "<leader>f",
-            function()
-                require("conform").format({
-                    async = true
-                })
-            end,
-            mode = "",
-            desc = "Format buffer"
-        }},
-        opts = {
-            format_on_save = function(bufnr)
-                if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
-                    return
+        config = function()
+            require("conform").setup({
+                formatters_by_ft = {
+                    ["*"] = {"codespell"},
+                    ["go"] = {"goimports", "gofumpt"},
+                    ["python"] = {"ruff"},
+                    ["javascript"] = {"prettierd"},
+                    ["jsx"] = {"prettierd"},
+                    ["typescript"] = {"prettierd"},
+                    ["html"] = {"prettierd"},
+                    ["css"] = {"prettierd"},
+                    ["lua"] = {"stylua"},
+                    ["bash"] = {"beautysh"},
+                    ["sh"] = {"beautysh"},
+                    ["json"] = {"prettierd"},
+                    ["markdown"] = {"markdownlint-cli2"},
+                    ["php"] = {"php-cs-fixer"},
+                    ["vue"] = {"prettierd"},
+                    ["yaml"] = {"prettierd"},
+                    ["sql"] = {"sql-formatter"},
+                    ["xml"] = {"xmlformatter"},
+                    ["shell"] = {"shfmt"}
+                },
+                format_on_save = function(bufnr)
+                    -- Disable autoformat on certain filetypes
+                    local ignore_filetypes = {}
+                    if vim.tbl_contains(ignore_filetypes, vim.bo[bufnr].filetype) then
+                        return
+                    end
+                    -- Disable with a global or buffer-local variable
+                    if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+                        return
+                    end
+                    -- Disable autoformat for files in a certain path
+                    local bufname = vim.api.nvim_buf_get_name(bufnr)
+                    if bufname:match("/node_modules/") then
+                        return
+                    end
+                    return {
+                        timeout_ms = 1000,
+                        lsp_format = "fallback"
+                    }
                 end
-                local bufname = vim.api.nvim_buf_get_name(bufnr)
-                if bufname:match("/node_modules/") then
-                    return
-                end
-                return {
-                    timeout_ms = 500,
-                    lsp_format = "fallback"
-                }
-            end
-        },
+            })
+        end,
         init = function()
             vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
         end
     }, {
-        'echasnovski/mini.ai',
+        "echasnovski/mini.ai",
         event = "VeryLazy",
-        version = '*',
+        version = "*",
         opts = {}
     }, {
-        'echasnovski/mini.surround',
+        "echasnovski/mini.surround",
         event = "VeryLazy",
-        version = '*',
+        version = "*",
         opts = {}
     }, {
-        'echasnovski/mini.statusline',
+        "echasnovski/mini.statusline",
         event = "VeryLazy",
-        version = '*',
+        version = "*",
         config = function()
             local statusline = require("mini.statusline")
             statusline.setup()
@@ -260,21 +277,22 @@ require("lazy").setup({
             end
         end
     }, {
-        'echasnovski/mini.pairs',
+        "echasnovski/mini.pairs",
         event = "VeryLazy",
-        version = '*',
+        version = "*",
         opts = {}
     }, {
         "williamboman/mason.nvim",
+        event = "VeryLazy",
         opts = {}
     }, {
         "saghen/blink.cmp",
         event = "VeryLazy",
-        version = '1.*',
+        version = "1.*",
         dependencies = "rafamadriz/friendly-snippets",
         opts = {
             keymap = {
-                preset = 'none',
+                preset = "none",
                 ["<Tab>"] = {"select_next", "snippet_forward", "fallback"},
                 ["<S-Tab>"] = {"select_prev", "snippet_backward", "fallback"},
                 ["<Up>"] = {"select_prev", "fallback"},
@@ -299,15 +317,27 @@ require("lazy").setup({
             cmdline = {
                 keymap = {
                     -- recommended, as the default keymap will only show and select the next item
-                    ['<Tab>'] = {'show', 'accept'},
-                    ['<CR>'] = {'accept_and_enter', 'fallback'}
+                    ["<Tab>"] = {"show", "accept"}
                 },
                 completion = {
                     menu = {
                         auto_show = function(ctx)
-                            return vim.fn.getcmdtype() == ':'
+                            return vim.fn.getcmdtype() == ":"
                             -- enable for inputs as well, with:
                             -- or vim.fn.getcmdtype() == '@'
+                        end
+                    }
+                }
+            },
+            sources = {
+                providers = {
+                    cmdline = {
+                        min_keyword_length = function(ctx)
+                            -- when typing a command, only show when the keyword is 3 characters or longer
+                            if ctx.mode == "cmdline" and string.find(ctx.line, " ") == nil then
+                                return 3
+                            end
+                            return 0
                         end
                     }
                 }
