@@ -19,7 +19,6 @@ local options = {
     },
     cursorline = true, -- Highlight the current line
     scrolloff = 10, -- Keep 10 lines visible above and below the cursor
-    undofile = true, -- Enable persistent undo
     clipboard = "unnamedplus" -- Use the system clipboard for all yank, delete, change and put operations
 }
 
