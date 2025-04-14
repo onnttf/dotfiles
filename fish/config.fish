@@ -6,12 +6,19 @@ if test -x /opt/homebrew/bin/brew
     eval (/opt/homebrew/bin/brew shellenv)
 end
 
+# Add Go binaries to PATH if Go is installed
+if command -q go
+    # Use `go env GOPATH` to get the GOPATH and add its bin directory to PATH
+    fish_add_path (go env GOPATH)/bin
+end
+
 # Define an alias 'ip' to display IPv4 address information
 # Uses ifconfig to get network interface details, and awk to filter for IPv4 addresses and interface names
 alias ip="ifconfig | awk '/inet / && !/inet6/ {print \$2, \$1}'"
 
 # Define an alias 'h' for quickly navigating to the user's home directory
 alias h="cd \"$HOME\""
+alias p="cd \"$HOME/Desktop/zhangpeng/\""
 
 # Define a function 'now' to display the current date and time and Unix timestamp
 function now
