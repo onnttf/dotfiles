@@ -8,7 +8,6 @@ if not vim.uv.fs_stat(lazypath) then
 	end
 end
 vim.opt.rtp:prepend(lazypath)
-
 -- [[ Configure and install plugins ]]
 require("lazy").setup({
 	checker = {
@@ -18,7 +17,6 @@ require("lazy").setup({
 		enabled = false,
 	},
 	spec = {
-		-- { "tpope/vim-sleuth" },
 		{
 			"folke/which-key.nvim",
 			event = "VeryLazy",
@@ -200,13 +198,7 @@ require("lazy").setup({
 			event = "VeryLazy",
 		},
 		{
-			"lukas-reineke/indent-blankline.nvim",
-			event = "VeryLazy",
-			main = "ibl",
-		},
-		{
 			"nvim-treesitter/nvim-treesitter",
-			event = "VeryLazy",
 			build = ":TSUpdate",
 			config = function()
 				local configs = require("nvim-treesitter.configs")
@@ -223,8 +215,7 @@ require("lazy").setup({
 		},
 		{
 			"stevearc/conform.nvim",
-			event = { "BufWritePre" },
-			cmd = { "ConformInfo" },
+			event = "VeryLazy",
 			config = function()
 				require("conform").setup({
 					formatters_by_ft = {
@@ -279,7 +270,6 @@ require("lazy").setup({
 		},
 		{
 			"echasnovski/mini.statusline",
-			event = "VeryLazy",
 			version = "*",
 			config = function()
 				local statusline = require("mini.statusline")
@@ -297,12 +287,10 @@ require("lazy").setup({
 		},
 		{
 			"williamboman/mason.nvim",
-			event = "VeryLazy",
 			opts = {},
 		},
 		{
 			"saghen/blink.cmp",
-			event = "VeryLazy",
 			version = "1.*",
 			dependencies = "rafamadriz/friendly-snippets",
 			opts = {
@@ -330,16 +318,31 @@ require("lazy").setup({
 					},
 				},
 				cmdline = {
-					keymap = {
-						-- recommended, as the default keymap will only show and select the next item
-						["<Tab>"] = { "show", "accept" },
-					},
 					completion = {
+						list = {
+							selection = {
+								preselect = false,
+								auto_insert = true,
+							},
+						},
 						menu = {
-							auto_show = function(ctx)
+							auto_show = function()
 								return vim.fn.getcmdtype() == ":"
 								-- enable for inputs as well, with:
 								-- or vim.fn.getcmdtype() == '@'
+							end,
+						},
+					},
+				},
+				sources = {
+					providers = {
+						cmdline = {
+							min_keyword_length = function(ctx)
+								-- when typing a command, only show when the keyword is 3 characters or longer
+								if ctx.mode == "cmdline" and string.find(ctx.line, " ") == nil then
+									return 3
+								end
+								return 0
 							end,
 						},
 					},
@@ -358,6 +361,8 @@ require("lazy").setup({
 			},
 			config = function()
 				local dap, dapui = require("dap"), require("dapui")
+				dapui.setup()
+
 				dap.listeners.before.attach.dapui_config = function()
 					dapui.open()
 				end
@@ -370,17 +375,15 @@ require("lazy").setup({
 				dap.listeners.before.event_exited.dapui_config = function()
 					dapui.close()
 				end
+
+				require("nvim-dap-virtual-text").setup()
 			end,
 		},
 		{
 			"leoluz/nvim-dap-go",
 			ft = "go",
 			config = function()
-				require("dap-go").setup({
-					delve = {
-						path = "/Users/zhangpeng/go/bin/dlv",
-					},
-				})
+				require("dap-go").setup({})
 			end,
 		},
 	},
