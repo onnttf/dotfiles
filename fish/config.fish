@@ -18,7 +18,6 @@ alias ip="ifconfig | awk '/inet / && !/inet6/ {print \$2, \$1}'"
 
 # Define an alias 'h' for quickly navigating to the user's home directory
 alias h="cd \"$HOME\""
-alias p="cd \"$HOME/Desktop/zhangpeng/\""
 
 # Define a function 'now' to display the current date and time and Unix timestamp
 function now
@@ -39,8 +38,6 @@ function format_timestamp
     date -r $argv[1] "+%Y-%m-%d %H:%M:%S"
 end
 
-# Check if the shell is running in interactive mode
 if status is-interactive
-    # In interactive mode, you can add additional interactive configurations, such as prompt customization
-    # Add your interactive configurations here
+    # Commands to run in interactive sessions can go here
 end
