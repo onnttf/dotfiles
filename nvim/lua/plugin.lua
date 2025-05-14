@@ -1,5 +1,5 @@
+-- [[ Install `lazy.nvim` plugin manager ]]
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-
 if not vim.uv.fs_stat(lazypath) then
 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
 	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
@@ -7,10 +7,12 @@ if not vim.uv.fs_stat(lazypath) then
 		error("Error cloning lazy.nvim:\n" .. out)
 	end
 end
-
 vim.opt.rtp:prepend(lazypath)
-
+-- [[ Configure and install plugins ]]
 require("lazy").setup({
+	checker = {
+		enabled = false,
+	},
 	rocks = {
 		enabled = false,
 	},
@@ -238,6 +240,7 @@ require("lazy").setup({
 						["shell"] = { "shfmt" },
 					},
 					format_on_save = function(bufnr)
+						-- Disable autoformat for files in a certain path
 						local bufname = vim.api.nvim_buf_get_name(bufnr)
 						if bufname:match("/node_modules/") then
 							return
@@ -325,6 +328,8 @@ require("lazy").setup({
 						menu = {
 							auto_show = function()
 								return vim.fn.getcmdtype() == ":"
+								-- enable for inputs as well, with:
+								-- or vim.fn.getcmdtype() == '@'
 							end,
 						},
 					},
@@ -333,6 +338,7 @@ require("lazy").setup({
 					providers = {
 						cmdline = {
 							min_keyword_length = function(ctx)
+								-- when typing a command, only show when the keyword is 3 characters or longer
 								if ctx.mode == "cmdline" and string.find(ctx.line, " ") == nil then
 									return 3
 								end
@@ -382,4 +388,3 @@ require("lazy").setup({
 		},
 	},
 })
-
