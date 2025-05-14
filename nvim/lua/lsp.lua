@@ -60,99 +60,141 @@ local lsp2Config = {
 	},
 }
 
+vim.lsp.config("*", common_config)
+
 for lsp_name, config in pairs(lsp2Config) do
-	config = vim.tbl_deep_extend("force", common_config, config)
 	vim.lsp.config[lsp_name] = config
-	local ok, err = pcall(vim.lsp.enable, { lsp_name })
-	if not ok then
-		vim.notify("Failed to enable LSP server: " .. lsp_name .. "\n" .. err, vim.log.levels.ERROR)
-	end
+	vim.lsp.enable({ lsp_name })
 end
 
-local mappings = {
-	{ "K", "textDocument/hover", vim.lsp.buf.hover, {
-		desc = "Show hover",
-	} },
-	{ "gd", "textDocument/definition", vim.lsp.buf.definition, {
-		desc = "[G]o to definition",
-	} },
-	{
-		"<leader>oa",
-		"textDocument/codeAction",
-		"<Cmd>FzfLua lsp_code_actions previewer=false<CR>",
-		{
-			desc = "[O]perate code actions",
-		},
-	},
-	{ "<leader>or", "textDocument/rename", vim.lsp.buf.rename, {
-		desc = "[O]perate rename symbol",
-	} },
-	{
-		"<leader>sds",
-		"textDocument/documentSymbol",
-		"<Cmd>FzfLua lsp_document_symbols previewer=false<CR>",
-		{
-			desc = "[S]how [d]ocument symbols",
-		},
-	},
-	{ "<leader>sr", "textDocument/references", "<Cmd>FzfLua lsp_references<CR>", {
-		desc = "[S]how references",
-	} },
-	{
-		"<leader>sci",
-		"callHierarchy/incomingCalls",
-		"<Cmd>FzfLua lsp_incoming_calls<CR>",
-		{
-			desc = "[S]how incoming calls",
-		},
-	},
-	{
-		"<leader>sco",
-		"callHierarchy/outgoingCalls",
-		"<Cmd>FzfLua lsp_outgoing_calls<CR>",
-		{
-			desc = "[S]how outgoing calls",
-		},
-	},
-	{
-		"<leader>si",
-		"textDocument/implementation",
-		"<Cmd>FzfLua lsp_implementations<CR>",
-		{
-			desc = "[S]how implementation",
-		},
-	},
-}
-
-local keymap = require("util").keymap
 local augroup = vim.api.nvim_create_augroup("user_config_lsp", {
 	clear = true,
 })
 
+local keymap = require("util").keymap
+local wk = require("which-key")
+
+keymap("n", "<leader>sdd", "<cmd>FzfLua diagnostics_document<CR>", {
+	desc = "[S]how [d]ocument diagnostics",
+})
+keymap("n", "<leader>swd", "<cmd>FzfLua diagnostics_workspace<CR>", {
+	desc = "[S]how [w]orkspace diagnostics",
+})
+wk.add({ {
+	"<leader>s",
+	desc = "[S]how-related keymaps",
+} })
+
 vim.api.nvim_create_autocmd("LspAttach", {
 	group = augroup,
-	desc = "Set up buffer-local keymaps and options for LSP",
-	callback = function(event)
-		local client = vim.lsp.get_client_by_id(event.data.client_id)
-		local bufnr = event.buf
+	callback = function(args)
+		local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+		local bufnr = args.buf
 
-		if not client then
-			vim.notify("LSP client not found", vim.log.levels.ERROR)
-			return
+		if client:supports_method("textDocument/foldingRange") then
+			local win = vim.api.nvim_get_current_win()
+			vim.wo[win][0].foldexpr = "v:lua.vim.lsp.foldexpr()"
 		end
 
-		for _, map in ipairs(mappings) do
-			local key, method, action, opts = unpack(map)
-			if client:supports_method(method) then
-				keymap(
-					"n",
-					key,
-					action,
-					vim.tbl_extend("force", opts, {
-						buffer = bufnr,
-					})
-				)
-			end
+		-- [S]how-related keymaps
+		if client:supports_method("textDocument/hover") then
+			keymap("n", "K", function()
+				vim.lsp.buf.hover({
+					border = "rounded",
+					max_height = 10,
+				})
+			end, {
+				buffer = bufnr,
+				desc = "Show hover",
+			})
+		end
+
+		if client:supports_method("textDocument/documentSymbol") then
+			keymap("n", "<leader>sds", "<Cmd>FzfLua lsp_document_symbols previewer=false<CR>", {
+				buffer = bufnr,
+				desc = "[S]how [d]ocument symbols",
+			})
+			wk.add({ {
+				"<leader>s",
+				desc = "[S]how-related keymaps",
+			} })
+		end
+
+		if client:supports_method("textDocument/references") then
+			keymap("n", "<leader>sr", "<Cmd>FzfLua lsp_references<CR>", {
+				buffer = bufnr,
+				desc = "[S]how references",
+			})
+			wk.add({ {
+				"<leader>s",
+				desc = "[S]how-related keymaps",
+			} })
+		end
+
+		if client:supports_method("callHierarchy/incomingCalls") then
+			keymap("n", "<leader>sci", "<Cmd>FzfLua lsp_incoming_calls<CR>", {
+				buffer = bufnr,
+				desc = "[S]how incoming calls",
+			})
+			wk.add({ {
+				"<leader>s",
+				desc = "[S]how-related keymaps",
+			} })
+		end
+
+		if client:supports_method("callHierarchy/outgoingCalls") then
+			keymap("n", "<leader>sco", "<Cmd>FzfLua lsp_outgoing_calls<CR>", {
+				buffer = bufnr,
+				desc = "[S]how outgoing calls",
+			})
+			wk.add({ {
+				"<leader>s",
+				desc = "[S]how-related keymaps",
+			} })
+		end
+
+		if client:supports_method("textDocument/implementation") then
+			keymap("n", "<leader>si", "<Cmd>FzfLua lsp_implementations<CR>", {
+				buffer = bufnr,
+				desc = "[S]how implementation",
+			})
+			wk.add({ {
+				"<leader>s",
+				desc = "[S]how-related keymaps",
+			} })
+		end
+
+		-- [G]o-related keymaps
+		if client:supports_method("textDocument/definition") then
+			keymap("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", {
+				buffer = bufnr,
+				desc = "[G]o to definition",
+			})
+		end
+
+		-- [O]perate-related keymaps
+		if client:supports_method("textDocument/codeAction") then
+			keymap("n", "<leader>oa", "<Cmd>FzfLua lsp_code_actions previewer=false<CR>", {
+				buffer = bufnr,
+				desc = "[O]perate code actions",
+			})
+			wk.add({ {
+				"<leader>o",
+				desc = "[O]perate-related keymaps",
+			} })
+		end
+
+		if client:supports_method("textDocument/rename") then
+			keymap("n", "<leader>or", function()
+				vim.lsp.buf.rename()
+			end, {
+				buffer = bufnr,
+				desc = "[O]perate rename symbol",
+			})
+			wk.add({ {
+				"<leader>o",
+				desc = "[O]perate-related keymaps",
+			} })
 		end
 	end,
 })
