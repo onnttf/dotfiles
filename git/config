@@ -1,0 +1,48 @@
+[init]
+    # Set the default branch name to 'main' when initializing a new repository
+    defaultBranch = main
+
+[core]
+    # Disable case-insensitive file handling
+    ignorecase = false
+
+[color]
+    # Enable colored output for Git commands to enhance readability
+    ui = auto
+
+[pull]
+    # Use 'rebase' instead of 'merge' when pulling changes from a remote repository
+    rebase = true
+
+[push]
+    # Automatically set up remote tracking branch when creating a new branch
+    autoSetupRemote = true
+
+[alias]
+    # List all defined aliases for Git commands
+    alias = "config --get-regexp alias"
+
+    # Initialize a new repository with an empty first commit
+    start = "!git init && git commit --allow-empty -m \"initial commit\""
+
+    # Show a short log with a custom date format (YYYY-MM-DD HH:MM:SS)
+    slog = "log --date=format:'%Y-%m-%d %H:%M:%S' --pretty=short"
+
+    # Show a graph log of all branches with a custom date format (YYYY-MM-DD HH:MM:SS)
+    glog = "log --graph --all --date=format:'%Y-%m-%d %H:%M:%S' --pretty=short"
+
+    # Amend the last commit while keeping the original commit message
+    amend = "commit --amend --reuse-message=HEAD"
+
+    # Undo the last commit, but keep the staged changes (does not affect working directory)
+    uncommit = "reset --soft HEAD~1"
+
+    # Unstage files, keeping the changes in the working directory
+    unstage = "reset HEAD --"
+
+[user]
+    # Set the user's name to be used in Git commits
+    name = Zhang Peng
+
+    # Set the user's email to be used in Git commits
+    email = onnttf@gmail.com
