@@ -1,48 +1,82 @@
 [init]
-    # Set the default branch name to 'main' when initializing a new repository
+    # Set default branch name to 'main' for new repositories
     defaultBranch = main
 
 [core]
-    # Disable case-insensitive file handling
-    ignorecase = false
+    # Disable case-insensitive file handling (recommended for macOS/Linux)
+    ignoreCase = false
+    # Path to global Git ignore file
+    excludesFile = ~/.gitignore_global
+    # Use safer whitespace handling
+    whitespace = fix,-indent-with-non-tab,trailing-space,space-before-tab
+    # Optimize autocrlf for cross-platform compatibility
+    autocrlf = input
 
 [color]
-    # Enable colored output for Git commands to enhance readability
+    # Enable colored output for better readability
     ui = auto
 
-[pull]
-    # Use 'rebase' instead of 'merge' when pulling changes from a remote repository
-    rebase = true
+[branch]
+    # Automatically set up tracking for new branches
+    autoSetupMerge = always
+    # Enable rebase for new branches
+    autoSetupRebase = always
+
+[merge]
+    # Use diff3 for detailed conflict information
+    conflictStyle = diff3
+    # Set default merge tool
+    tool = sourcetree
+    # Enable automatic cleanup of failed merges
+    autoStash = true
+
+[rebase]
+    # Automatically stash changes before rebasing
+    autoStash = true
+    # Automatically squash empty commits
+    autoSquash = true
 
 [push]
-    # Automatically set up remote tracking branch when creating a new branch
+    # Automatically set upstream for new branches
     autoSetupRemote = true
+    # Push only the current branch by default
+    default = simple
+    # Include tags when pushing
+    followTags = true
+
+[pull]
+    # Use rebase instead of merge for pulls
+    rebase = true
+    # Automatically stash changes before pulling
+    autoStash = true
+
+[fetch]
+    # Prune stale remote-tracking branches
+    prune = true
+    # Fetch all tags from remote
+    pruneTags = true
 
 [alias]
-    # List all defined aliases for Git commands
+    # List all defined aliases
     alias = "config --get-regexp alias"
-
-    # Initialize a new repository with an empty first commit
-    start = "!git init && git commit --allow-empty -m \"initial commit\""
-
-    # Show a short log with a custom date format (YYYY-MM-DD HH:MM:SS)
-    slog = "log --date=format:'%Y-%m-%d %H:%M:%S' --pretty=short"
-
-    # Show a graph log of all branches with a custom date format (YYYY-MM-DD HH:MM:SS)
-    glog = "log --graph --all --date=format:'%Y-%m-%d %H:%M:%S' --pretty=short"
-
-    # Amend the last commit while keeping the original commit message
-    amend = "commit --amend --reuse-message=HEAD"
-
-    # Undo the last commit, but keep the staged changes (does not affect working directory)
-    uncommit = "reset --soft HEAD~1"
-
-    # Unstage files, keeping the changes in the working directory
-    unstage = "reset HEAD --"
+    # Short status
+    stat = status -s
+    # Amend last commit with original message
+    amend = commit --amend --no-edit
+    # Commit all changes with a message
+    ac = "!git add -A && git commit -m"
+    # Simplified log with custom format
+    slog = log --pretty='%C(yellow)%h %C(green)%ad %C(blue)%an %C(reset)%s' --date=iso
+    # Graphical log of all branches
+    glog = log --graph --all --pretty='%C(yellow)%h %C(green)%ad %C(blue)%an %C(reset)%s %C(red)%d' --date=iso
+    # Show working directory changes
+    df = diff
+    # Stash current changes
+    save = stash push
+    # Apply and remove most recent stash
+    pop = stash pop
 
 [user]
-    # Set the user's name to be used in Git commits
+    # Set user name and email for commit author
     name = Zhang Peng
-
-    # Set the user's email to be used in Git commits
     email = onnttf@gmail.com
