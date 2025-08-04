@@ -7,54 +7,18 @@
     ignoreCase = false
     # Path to global Git ignore file
     excludesFile = ~/.gitignore_global
-    # Use safer whitespace handling
-    whitespace = fix,-indent-with-non-tab,trailing-space,space-before-tab
-    # Optimize autocrlf for cross-platform compatibility
-    autocrlf = input
 
 [color]
     # Enable colored output for better readability
     ui = auto
 
-[branch]
-    # Automatically set up tracking for new branches
-    autoSetupMerge = always
-    # Enable rebase for new branches
-    autoSetupRebase = always
-
-[merge]
-    # Use diff3 for detailed conflict information
-    conflictStyle = diff3
-    # Set default merge tool
-    tool = sourcetree
-    # Enable automatic cleanup of failed merges
-    autoStash = true
-
-[rebase]
-    # Automatically stash changes before rebasing
-    autoStash = true
-    # Automatically squash empty commits
-    autoSquash = true
-
 [push]
     # Automatically set upstream for new branches
     autoSetupRemote = true
-    # Push only the current branch by default
-    default = simple
-    # Include tags when pushing
-    followTags = true
 
 [pull]
     # Use rebase instead of merge for pulls
     rebase = true
-    # Automatically stash changes before pulling
-    autoStash = true
-
-[fetch]
-    # Prune stale remote-tracking branches
-    prune = true
-    # Fetch all tags from remote
-    pruneTags = true
 
 [alias]
     # List all defined aliases
@@ -66,9 +30,9 @@
     # Commit all changes with a message
     ac = "!git add -A && git commit -m"
     # Simplified log with custom format
-    slog = log --pretty='%C(yellow)%h %C(green)%ad %C(blue)%an %C(reset)%s' --date=iso
+    slog = log --pretty=format:'%C(yellow)%h%C(reset) %C(green)%ad%C(reset) %C(blue)%an <%ae>%C(reset) %s' --date=iso
     # Graphical log of all branches
-    glog = log --graph --all --pretty='%C(yellow)%h %C(green)%ad %C(blue)%an %C(reset)%s %C(red)%d' --date=iso
+    glog = log --graph --all --pretty=format:'%C(yellow)%h%C(reset) %C(green)%ad%C(reset) %C(blue)%an <%ae>%C(reset) %s %C(red)%d%C(reset)' --date=iso
     # Show working directory changes
     df = diff
     # Stash current changes
