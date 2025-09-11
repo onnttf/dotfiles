@@ -1,46 +1,51 @@
 [init]
-    # Set default branch name to 'main' for new repositories
+    # set the default branch name for new repositories to 'main'
     defaultBranch = main
 
 [core]
-    # Disable case-insensitive file handling (recommended for macOS/Linux)
+    # disable case-insensitive file handling (important for macos/linux)
     ignoreCase = false
-    # Path to global Git ignore file
-    excludesFile = ~/.gitignore_global
+    # path to global .gitignore file
+    excludesFile = /Users/zhangpeng/.config/git/gitignore_global
 
 [color]
-    # Enable colored output for better readability
+    # enable automatic coloring in git command outputs
     ui = auto
 
 [push]
-    # Automatically set upstream for new branches
+    # automatically set the remote when creating a new branch
     autoSetupRemote = true
 
 [pull]
-    # Use rebase instead of merge for pulls
+    # use rebase instead of merge when pulling changes
     rebase = true
 
+[rebase]
+    # automatically stash changes before rebasing, then apply them after
+    autoStash = true
+
 [alias]
-    # List all defined aliases
+    # shortcut to list all git aliases
     alias = "config --get-regexp alias"
-    # Short status
+    # short format for 'git status'
     stat = status -s
-    # Amend last commit with original message
+    # amend last commit without changing the commit message
     amend = commit --amend --no-edit
-    # Commit all changes with a message
+    # add all changes and commit in one step
     ac = "!git add -A && git commit -m"
-    # Simplified log with custom format
+    # simple one-line log with color, showing hash, date, author, and message
     slog = log --pretty=format:'%C(yellow)%h%C(reset) %C(green)%ad%C(reset) %C(blue)%an <%ae>%C(reset) %s' --date=iso
-    # Graphical log of all branches
+    # graphical log showing all branches with colors, hash, date, author, message, and ref names
     glog = log --graph --all --pretty=format:'%C(yellow)%h%C(reset) %C(green)%ad%C(reset) %C(blue)%an <%ae>%C(reset) %s %C(red)%d%C(reset)' --date=iso
-    # Show working directory changes
+    # shortcut for 'git diff'
     df = diff
-    # Stash current changes
+    # shortcut to stash changes
     save = stash push
-    # Apply and remove most recent stash
+    # shortcut to apply and remove the latest stash
     pop = stash pop
 
 [user]
-    # Set user name and email for commit author
+    # user name
     name = Zhang Peng
+    # user email
     email = onnttf@gmail.com
