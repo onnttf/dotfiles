@@ -1,0 +1,95 @@
+[user]
+    name  = ZHANG PENG
+    email = onnttf@gmail.com
+
+
+[core]
+    ignoreCase = false
+
+[init]
+    defaultBranch = main
+
+
+[push]
+    autoSetupRemote    = true
+    followTags         = true
+    useForceIfIncludes = true
+
+[pull]
+    rebase = true
+
+[fetch]
+    prune       = true
+    pruneTags   = true
+    all         = true
+    fsckObjects = true
+
+
+[rebase]
+    autoStash  = true
+    autoSquash = true
+    updateRefs = true
+
+[merge]
+    conflictStyle = zdiff3
+
+[rerere]
+    enabled    = true
+    autoUpdate = true
+
+
+[diff]
+    algorithm      = histogram
+    colorMoved     = zebra
+    mnemonicPrefix = true
+    renames        = copies
+
+[commit]
+    verbose = true
+
+[branch]
+    sort = -committerdate
+
+[tag]
+    sort = version:refname
+
+[column]
+    ui = auto
+
+[log]
+    date = iso-local
+
+[help]
+    autocorrect = prompt
+
+
+[transfer]
+    fsckObjects = true
+[receive]
+    fsckObjects = true
+
+
+[alias]
+    alias = "config --get-regexp ^alias\\."
+    st   = status -sb
+    last = log -1 HEAD --stat
+    co = checkout
+    sw = switch
+    br = branch
+    a       = add
+    ap      = add --patch
+    unstage = restore --staged
+    cm     = commit -m
+    amend  = commit --amend --no-edit
+    reword = commit --amend
+    d  = diff
+    dc = diff --cached
+    ri = rebase -i
+    rc = rebase --continue
+    ra = rebase --abort
+    slog = log --pretty=format:'%C(yellow)%h%C(reset) %C(green)%ad%C(reset) %C(blue)%an <%ae>%C(reset) %s' --date=iso
+    glog = log --graph --all --pretty=format:'%C(yellow)%h%C(reset) %C(green)%ad%C(reset) %C(blue)%an <%ae>%C(reset) %s %C(red)%d%C(reset)' --date=iso
+
+
+[include]
+    path = ~/.gitconfig.local
