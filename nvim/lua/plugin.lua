@@ -1,21 +1,35 @@
+-- Plugin configuration with lazy.nvim
+
+-- Setup lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+
 if not vim.uv.fs_stat(lazypath) then
 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+	local out = vim.fn.system({
+		"git",
+		"clone",
+		"--filter=blob:none",
+		"--branch=stable",
+		lazyrepo,
+		lazypath,
+	})
+	
 	if vim.v.shell_error ~= 0 then
 		error("Error cloning lazy.nvim:\n" .. out)
 	end
 end
-vim.opt.rtp:prepend(lazypath)
 
+vim.opt.rtp:prepend(lazypath)
+-- Configure plugins
 require("lazy").setup({
 	rocks = {
 		enabled = false,
 	},
 	spec = {
+		-- UI and Navigation
 		{
+			-- Which-key plugin for keymap hints
 			"folke/which-key.nvim",
-			event = "VeryLazy",
 			opts = {
 				icons = {
 					mappings = false,
@@ -29,20 +43,18 @@ require("lazy").setup({
 							global = false,
 						})
 					end,
-					desc = "Help: Show local keymaps",
+					desc = "Show local keymaps",
 				},
 			},
 		},
 		{
-			"folke/todo-comments.nvim",
-			event = "VeryLazy",
-			dependencies = { "nvim-lua/plenary.nvim" },
-		},
-		{
+			-- File tree sidebar
 			"nvim-neo-tree/neo-tree.nvim",
-			branch = "v3.x",
-			cmd = "Neotree",
-			dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" },
+			dependencies = {
+				"nvim-lua/plenary.nvim",
+				"nvim-tree/nvim-web-devicons",
+				"MunifTanjim/nui.nvim",
+			},
 			config = function()
 				require("neo-tree").setup({
 					use_default_mappings = false,
@@ -184,29 +196,128 @@ require("lazy").setup({
 				})
 			end,
 		},
+
+		-- Search and Navigation
+		-- Fuzzy finder
+		{ "ibhagwan/fzf-lua" },
+
+		-- Syntax and Parsing
 		{
-			"ibhagwan/fzf-lua",
-			event = "VeryLazy",
-		},
-		{
+			-- Syntax highlighting and code parsing
 			"nvim-treesitter/nvim-treesitter",
 			build = ":TSUpdate",
 			config = function()
-				local configs = require("nvim-treesitter.configs")
-				configs.setup({
-					auto_install = true,
-					highlight = {
-						enable = true,
-					},
-					indent = {
-						enable = true,
-					},
+				local ts = require("nvim-treesitter")
+				local ignore_ft = {
+					["neo-tree"] = true,
+					["neo-tree-popup"] = true,
+					["neo-tree-preview"] = true,
+					["help"] = true,
+					["lazy"] = true,
+					["mason"] = true,
+					["checkhealth"] = true,
+					["TelescopePrompt"] = true,
+					["TelescopeResults"] = true,
+				}
+				local function should_ignore(buf, ft)
+					if ignore_ft[ft] then
+						return true
+					end
+					if vim.bo[buf].buftype ~= "" then
+						return true
+					end
+					return false
+				end
+				local installing = {}
+				local pending = {}
+				local function parser_installed(lang)
+					return lang and lang ~= "" and #vim.api.nvim_get_runtime_file("parser/" .. lang .. ".*", false) > 0
+				end
+				local function flush(lang)
+					local bufs = pending[lang]
+					pending[lang] = nil
+					if not bufs then
+						return
+					end
+					for buf in pairs(bufs) do
+						if vim.api.nvim_buf_is_loaded(buf) then
+							pcall(vim.treesitter.start, buf, lang)
+						end
+					end
+				end
+				local function ensure_parser(buf, lang)
+					if not lang or lang == "" then
+						return
+					end
+					pending[lang] = pending[lang] or {}
+					pending[lang][buf] = true
+					if parser_installed(lang) then
+						flush(lang)
+						return
+					end
+					if installing[lang] then
+						return
+					end
+					installing[lang] = true
+					pcall(ts.install, { lang })
+					vim.defer_fn(function()
+						installing[lang] = nil
+						if parser_installed(lang) then
+							flush(lang)
+						end
+					end, 1500)
+				end
+				vim.api.nvim_create_autocmd("FileType", {
+					group = vim.api.nvim_create_augroup("ts_auto_install", {
+						clear = true,
+					}),
+					callback = function(ev)
+						if should_ignore(ev.buf, ev.match) then
+							return
+						end
+						local lang = vim.treesitter.language.get_lang(ev.match)
+						if lang then
+							ensure_parser(ev.buf, lang)
+						end
+					end,
+				})
+				ts.install({ "lua", "vim", "vimdoc", "query" })
+				vim.opt.foldlevel = 99
+				vim.api.nvim_create_autocmd("BufWinEnter", {
+					group = vim.api.nvim_create_augroup("ts_folds", {
+						clear = true,
+					}),
+					callback = function()
+						vim.api.nvim_set_option_value("foldmethod", "expr", {
+							win = 0,
+						})
+						vim.api.nvim_set_option_value("foldexpr", "v:lua.vim.treesitter.foldexpr()", {
+							win = 0,
+						})
+					end,
+				})
+				local indent_disable = {
+					python = true,
+					yaml = true,
+					markdown = true,
+				}
+				vim.api.nvim_create_autocmd("FileType", {
+					group = vim.api.nvim_create_augroup("ts_indent", {
+						clear = true,
+					}),
+					callback = function(ev)
+						if not indent_disable[ev.match] then
+							vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+						end
+					end,
 				})
 			end,
 		},
+
+		-- Formatting
 		{
+			-- Code formatting
 			"stevearc/conform.nvim",
-			event = "VeryLazy",
 			config = function()
 				require("conform").setup({
 					format_on_save = function(bufnr)
@@ -225,23 +336,30 @@ require("lazy").setup({
 				vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
 			end,
 		},
+
+		-- UI Components
 		{
+			-- Status line
 			"echasnovski/mini.statusline",
 			version = "*",
 			config = function()
 				local statusline = require("mini.statusline")
 				statusline.setup()
-
 				statusline.section_location = function()
 					return "%2l:%-2v"
 				end
 			end,
 		},
+
+		-- LSP and Development Tools
 		{
+			-- LSP and tools manager
 			"mason-org/mason.nvim",
 			opts = {},
 		},
+
 		{
+			-- Autocompletion
 			"saghen/blink.cmp",
 			version = "1.*",
 			dependencies = "rafamadriz/friendly-snippets",
@@ -249,15 +367,34 @@ require("lazy").setup({
 				keymap = {
 					preset = "none",
 					["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
-					["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+					["<S-Tab>"] = {
+						"select_prev",
+						"snippet_backward",
+						"fallback",
+					},
 					["<Up>"] = { "select_prev", "fallback" },
 					["<Down>"] = { "select_next", "fallback" },
 					["<CR>"] = { "accept", "fallback" },
 				},
 				completion = {
+					menu = {
+						draw = {
+							padding = { 0, 1 },
+							components = {
+								kind_icon = {
+									text = function(ctx)
+										return " " .. ctx.kind_icon .. ctx.icon_gap .. " "
+									end,
+								},
+							},
+						},
+					},
 					documentation = {
 						auto_show = true,
 						auto_show_delay_ms = 500,
+					},
+					ghost_text = {
+						enabled = true,
 					},
 					list = {
 						selection = {
@@ -265,31 +402,25 @@ require("lazy").setup({
 							auto_insert = true,
 						},
 					},
-					accept = {
-						auto_brackets = {
-							enabled = true,
-						},
-					},
-					ghost_text = {
-						enabled = true,
-					},
 				},
 				cmdline = {
-					preset = "inherit",
+					keymap = {
+						preset = "inherit",
+					},
 					completion = {
 						menu = {
 							auto_show = function(ctx)
-								return vim.fn.getcmdtype() == ":"
+								return vim.fn.getcmdtype() == ":" or vim.fn.getcmdtype() == "@"
 							end,
+						},
+						ghost_text = {
+							enabled = true,
 						},
 						list = {
 							selection = {
 								preselect = false,
 								auto_insert = true,
 							},
-						},
-						ghost_text = {
-							enabled = true,
 						},
 					},
 				},
@@ -301,6 +432,13 @@ require("lazy").setup({
 									return vim.tbl_filter(function(bufnr)
 										return vim.bo[bufnr].buftype == ""
 									end, vim.api.nvim_list_bufs())
+								end,
+							},
+						},
+						path = {
+							opts = {
+								get_cwd = function(_)
+									return vim.fn.getcwd()
 								end,
 							},
 						},
@@ -319,9 +457,11 @@ require("lazy").setup({
 				},
 			},
 		},
+
+		-- Debugging
 		{
+			-- Debug adapter protocol
 			"mfussenegger/nvim-dap",
-			event = "VeryLazy",
 			dependencies = {
 				{
 					"rcarriga/nvim-dap-ui",
@@ -332,9 +472,7 @@ require("lazy").setup({
 			config = function()
 				local dap = require("dap")
 				local dapui = require("dapui")
-
 				dapui.setup()
-
 				dap.listeners.before.attach.dapui_config = function()
 					dapui.open()
 				end
@@ -347,11 +485,11 @@ require("lazy").setup({
 				dap.listeners.before.event_exited.dapui_config = function()
 					dapui.close()
 				end
-
 				require("nvim-dap-virtual-text").setup()
 			end,
 		},
 		{
+			-- Go debugger adapter
 			"leoluz/nvim-dap-go",
 			ft = "go",
 			config = function()

@@ -1,5 +1,8 @@
+-- Neovim configuration entry point
+
 require("option")
 require("plugin")
 require("autocommand")
 require("keymap")
 require("filetype-config")
+
