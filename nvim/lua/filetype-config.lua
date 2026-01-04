@@ -1,7 +1,12 @@
+-- Filetype configuration mapping LSP servers and formatters to specific filetypes
+
 local filetype_config = {
+	-- Default formatter for all filetypes
 	["*"] = {
 		formatter = { "codespell" },
 	},
+	
+	-- Go ecosystem
 	go = {
 		lsp = {
 			server = "gopls",
@@ -11,23 +16,19 @@ local filetype_config = {
 		formatter = { "goimports", "gofumpt" },
 	},
 	gomod = {
-		lsp = {
-			server = "gopls",
-		},
+		lsp = { server = "gopls" },
 		formatter = { "goimports" },
 	},
 	gowork = {
-		lsp = {
-			server = "gopls",
-		},
+		lsp = { server = "gopls" },
 		formatter = { "goimports" },
 	},
 	gotmpl = {
-		lsp = {
-			server = "gopls",
-		},
+		lsp = { server = "gopls" },
 		formatter = { "goimports" },
 	},
+	
+	-- Python
 	python = {
 		lsp = {
 			server = "pyright",
@@ -35,6 +36,8 @@ local filetype_config = {
 		},
 		formatter = { "black" },
 	},
+	
+	-- Lua
 	lua = {
 		lsp = {
 			server = "lua-language-server",
@@ -42,6 +45,8 @@ local filetype_config = {
 		},
 		formatter = { "stylua" },
 	},
+	
+	-- Configuration files
 	json = {
 		lsp = {
 			server = "jsonls",
@@ -50,9 +55,7 @@ local filetype_config = {
 		formatter = { "prettier" },
 	},
 	jsonc = {
-		lsp = {
-			server = "jsonls",
-		},
+		lsp = { server = "jsonls" },
 		formatter = { "prettier" },
 	},
 	yaml = {
@@ -62,6 +65,8 @@ local filetype_config = {
 		},
 		formatter = { "prettier" },
 	},
+	
+	-- Shell scripts
 	bash = {
 		lsp = {
 			server = "bashls",
@@ -70,25 +75,25 @@ local filetype_config = {
 		formatter = { "shfmt" },
 	},
 	sh = {
-		lsp = {
-			server = "bashls",
-		},
+		lsp = { server = "bashls" },
 		formatter = { "shfmt" },
 	},
 }
+-- Utility functions
 
+--- Removes duplicate values from a list while preserving order
 local function unique_list(tbl)
-	local seen = {}
-	local res = {}
-	for _, v in ipairs(tbl) do
+	local seen, res = {}, {}
+	for _, v in ipairs(tbl or {}) do
 		if not seen[v] then
-			table.insert(res, v)
 			seen[v] = true
+			table.insert(res, v)
 		end
 	end
 	return res
 end
 
+--- Recursively merges two tables, concatenating lists instead of replacing them
 local function deep_merge(existing, new)
 	if type(existing) ~= "table" then
 		return new
@@ -96,17 +101,14 @@ local function deep_merge(existing, new)
 	if type(new) ~= "table" then
 		return new
 	end
+	
 	local res = vim.tbl_deep_extend("force", {}, existing)
 	for k, v in pairs(new) do
-		if type(v) == "table" then
-			if type(res[k]) == "table" then
-				if vim.tbl_islist(v) then
-					res[k] = unique_list(vim.list_extend(res[k], v))
-				else
-					res[k] = deep_merge(res[k], v)
-				end
+		if type(v) == "table" and type(res[k]) == "table" then
+			if vim.tbl_islist(v) then
+				res[k] = unique_list(vim.list_extend(res[k], v))
 			else
-				res[k] = v
+				res[k] = deep_merge(res[k], v)
 			end
 		else
 			res[k] = v
@@ -114,7 +116,9 @@ local function deep_merge(existing, new)
 	end
 	return res
 end
+-- Mason tool management
 
+-- Collect all required LSP servers and formatters for Mason installation
 local mason_tools = {}
 for _, cfg in pairs(filetype_config) do
 	if cfg.lsp then
@@ -126,25 +130,32 @@ for _, cfg in pairs(filetype_config) do
 		end
 	end
 end
-
 mason_tools = unique_list(mason_tools)
 
+-- Schedule Mason tool installation after Neovim startup
 vim.schedule(function()
 	local registry = require("mason-registry")
 	local to_install = {}
+	
 	for _, tool in ipairs(mason_tools) do
 		local ok, pkg = pcall(registry.get_package, tool)
 		if ok and pkg and not pkg:is_installed() then
 			table.insert(to_install, tool)
 		end
 	end
+	
 	if #to_install > 0 then
-		vim.notify("Installing missing Mason tools: " .. table.concat(to_install, " "), vim.log.levels.INFO)
+		vim.notify(
+			"Installing missing Mason tools: " .. table.concat(to_install, " "),
+			vim.log.levels.INFO
+		)
 		vim.cmd("MasonInstall " .. table.concat(to_install, " "))
 	end
 end)
+-- LSP configuration
 
-local common_config = {
+-- Configure default LSP capabilities and root markers for all buffers
+vim.lsp.config("*", {
 	capabilities = {
 		textDocument = {
 			semanticTokens = {
@@ -153,9 +164,9 @@ local common_config = {
 		},
 	},
 	root_markers = { ".git" },
-}
-vim.lsp.config("*", common_config)
+})
 
+-- Build LSP server configuration by merging filetype-specific configs
 local lsp2Config = {}
 local fileType2FormatterList = {}
 
@@ -167,25 +178,26 @@ for ft, cfg in pairs(filetype_config) do
 		else
 			lsp2Config[server] = deep_merge(lsp2Config[server], cfg.lsp)
 		end
-		lsp2Config[server].filetypes = unique_list(vim.list_extend(lsp2Config[server].filetypes or {}, { ft }))
+		lsp2Config[server].filetypes = unique_list(
+			vim.list_extend(lsp2Config[server].filetypes or {}, { ft })
+		)
 	end
+	
 	if cfg.formatter then
 		fileType2FormatterList[ft] = cfg.formatter
 	end
 end
 
+-- Enable LSP servers with their merged configurations
 for server, cfg in pairs(lsp2Config) do
 	vim.lsp.config[server] = cfg
 	vim.lsp.enable({ server })
 end
 
-for ft, formatters in pairs(fileType2FormatterList) do
-	require("conform").formatters_by_ft[ft] = formatters
-end
-
+-- Formatter configuration
 local ok, conform = pcall(require, "conform")
 if ok then
-	for fileType, formatters in pairs(fileType2FormatterList) do
-		conform.formatters_by_ft[fileType] = formatters
+	for ft, formatters in pairs(fileType2FormatterList) do
+		conform.formatters_by_ft[ft] = formatters
 	end
 end
