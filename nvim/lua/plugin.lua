@@ -13,7 +13,7 @@ if not vim.uv.fs_stat(lazypath) then
 		lazyrepo,
 		lazypath,
 	})
-	
+
 	if vim.v.shell_error ~= 0 then
 		error("Error cloning lazy.nvim:\n" .. out)
 	end
@@ -37,7 +37,7 @@ require("lazy").setup({
 			},
 			keys = {
 				{
-					"<leader>?",
+					"<leader>",
 					function()
 						require("which-key").show({
 							global = false,
@@ -487,6 +487,14 @@ require("lazy").setup({
 				end
 				require("nvim-dap-virtual-text").setup()
 			end,
+			cmd = {
+				"DapContinue",
+				"DapToggleBreakpoint",
+				"DapStepOver",
+				"DapStepInto",
+				"DapStepOut",
+				"DapTerminate",
+			},
 		},
 		{
 			-- Go debugger adapter
