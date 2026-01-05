@@ -30,3 +30,10 @@ keymap("n", "$", "g_", { desc = "Go to last non-blank" })
 -- Paste without overwriting clipboard
 keymap("v", "p", '"_d"+p', { desc = "Paste" })
 keymap("v", "P", '"_d"+P', { desc = "Paste" })
+
+-- Text manipulation
+keymap("n", "x", '"_x', { desc = "Delete char without yank" })
+keymap("n", "X", '"_X', { desc = "Delete line before cursor without yank" })
+keymap("v", "d", '"d', { desc = "Delete without yank" })
+keymap("v", "D", '"D', { desc = "Delete line without yank" })
+keymap("n", "dd", '"_dd', { desc = "Delete line without yank" })
