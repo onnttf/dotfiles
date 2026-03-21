@@ -25,6 +25,20 @@ warn() { printf "  ! %s\n" "$*"; }
 error() { printf "  ✗ %s\n" "$*" >&2; }
 header() { printf "\n%b\n" "${BOLD}${BLUE}==> $*${NC}"; }
 
+DOTFILES_DIR="$HOME/.dotfiles"
+DOTFILES_REPO="https://github.com/onnttf/dotfiles.git"
+
+if [[ ! -d "$DOTFILES_DIR" ]]; then
+    header "clone dotfiles"
+
+    info "cloning dotfiles from $DOTFILES_REPO"
+    git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
+    success "dotfiles cloned to $DOTFILES_DIR"
+
+    export DOTFILES="$DOTFILES_DIR"
+    exec "$DOTFILES_DIR/bootstrap.sh"
+fi
+
 header "homebrew"
 
 if ! command -v brew >/dev/null 2>&1; then
@@ -107,7 +121,7 @@ fi
 
 header "configs"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$DOTFILES_DIR"
 
 sync_config() {
     local src="$1"
