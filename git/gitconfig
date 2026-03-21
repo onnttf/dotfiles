@@ -6,7 +6,7 @@
     # disable case-insensitive file handling (important for macos/linux)
     ignoreCase = false
     # path to global .gitignore file
-    excludesFile = /Users/zhangpeng/.config/git/gitignore_global
+    excludesFile = ~/.gitignore_global
 
 [color]
     # enable automatic coloring in git command outputs
@@ -46,6 +46,6 @@
 
 [user]
     # user name
-    name = Zhang Peng
+    name = ZHANG PENG
     # user email
     email = onnttf@gmail.com

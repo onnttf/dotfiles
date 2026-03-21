@@ -1,5 +1,3 @@
--- Utility functions for Neovim configuration
-
 local M = {}
 
 -- Default keymap options
@@ -15,13 +13,13 @@ local default_opts = {
 --- @param opts table Optional options (desc, etc.)
 function M.keymap(mode, lhs, rhs, opts)
 	assert(mode and lhs and rhs, "keymap: mode, lhs, rhs are required")
-	
+
 	opts = vim.tbl_deep_extend("force", {}, default_opts, opts or {})
-	
+
 	if not opts.desc then
 		vim.notify("Keymap missing desc: " .. lhs, vim.log.levels.WARN)
 	end
-	
+
 	vim.keymap.set(mode, lhs, rhs, opts)
 end
 

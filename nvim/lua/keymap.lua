@@ -1,5 +1,3 @@
--- Key mappings for Neovim configuration
-
 local keymap = require("util").keymap
 
 -- Search

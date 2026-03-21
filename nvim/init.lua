@@ -1,5 +1,3 @@
--- Neovim configuration entry point
-
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
@@ -46,7 +44,11 @@ wk.add({
 	{ "<leader>d", group = "Debug" },
 	{ "<leader>dc", "<cmd>lua require('dap').continue()<cr>", desc = "Continue" },
 	{ "<leader>db", "<cmd>lua require('dap').toggle_breakpoint()<cr>", desc = "Toggle breakpoint" },
-	{ "<leader>dB", "<cmd>lua require('dap').set_breakpoint(vim.fn.input('Breakpoint condition: '))<cr>", desc = "Conditional breakpoint" },
+	{
+		"<leader>dB",
+		"<cmd>lua require('dap').set_breakpoint(vim.fn.input('Breakpoint condition: '))<cr>",
+		desc = "Conditional breakpoint",
+	},
 	{ "<leader>do", "<cmd>lua require('dap').step_over()<cr>", desc = "Step over" },
 	{ "<leader>di", "<cmd>lua require('dap').step_into()<cr>", desc = "Step into" },
 	{ "<leader>dO", "<cmd>lua require('dap').step_out()<cr>", desc = "Step out" },

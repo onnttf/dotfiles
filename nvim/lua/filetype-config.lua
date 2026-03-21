@@ -1,11 +1,9 @@
--- Filetype configuration mapping LSP servers and formatters to specific filetypes
-
 local filetype_config = {
 	-- Default formatter for all filetypes
 	["*"] = {
 		formatter = { "codespell" },
 	},
-	
+
 	-- Go ecosystem
 	go = {
 		lsp = {
@@ -27,16 +25,16 @@ local filetype_config = {
 		lsp = { server = "gopls" },
 		formatter = { "goimports" },
 	},
-	
+
 	-- Python
-	python = {
-		lsp = {
-			server = "pyright",
-			cmd = { "pyright-langserver", "--stdio" },
-		},
-		formatter = { "black" },
-	},
-	
+	--python = {
+	--	lsp = {
+	--		server = "pyright",
+	--		cmd = { "pyright-langserver", "--stdio" },
+	--	},
+	--	formatter = { "black" },
+	--},
+
 	-- Lua
 	lua = {
 		lsp = {
@@ -45,7 +43,7 @@ local filetype_config = {
 		},
 		formatter = { "stylua" },
 	},
-	
+
 	-- Configuration files
 	json = {
 		lsp = {
@@ -65,7 +63,7 @@ local filetype_config = {
 		},
 		formatter = { "prettier" },
 	},
-	
+
 	-- Shell scripts
 	bash = {
 		lsp = {
@@ -101,7 +99,7 @@ local function deep_merge(existing, new)
 	if type(new) ~= "table" then
 		return new
 	end
-	
+
 	local res = vim.tbl_deep_extend("force", {}, existing)
 	for k, v in pairs(new) do
 		if type(v) == "table" and type(res[k]) == "table" then
@@ -136,19 +134,16 @@ mason_tools = unique_list(mason_tools)
 vim.schedule(function()
 	local registry = require("mason-registry")
 	local to_install = {}
-	
+
 	for _, tool in ipairs(mason_tools) do
 		local ok, pkg = pcall(registry.get_package, tool)
 		if ok and pkg and not pkg:is_installed() then
 			table.insert(to_install, tool)
 		end
 	end
-	
+
 	if #to_install > 0 then
-		vim.notify(
-			"Installing missing Mason tools: " .. table.concat(to_install, " "),
-			vim.log.levels.INFO
-		)
+		vim.notify("Installing missing Mason tools: " .. table.concat(to_install, " "), vim.log.levels.INFO)
 		vim.cmd("MasonInstall " .. table.concat(to_install, " "))
 	end
 end)
@@ -178,11 +173,9 @@ for ft, cfg in pairs(filetype_config) do
 		else
 			lsp2Config[server] = deep_merge(lsp2Config[server], cfg.lsp)
 		end
-		lsp2Config[server].filetypes = unique_list(
-			vim.list_extend(lsp2Config[server].filetypes or {}, { ft })
-		)
+		lsp2Config[server].filetypes = unique_list(vim.list_extend(lsp2Config[server].filetypes or {}, { ft }))
 	end
-	
+
 	if cfg.formatter then
 		fileType2FormatterList[ft] = cfg.formatter
 	end

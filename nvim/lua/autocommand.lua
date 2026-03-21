@@ -1,5 +1,3 @@
--- Autocommands for Neovim configuration
-
 local augroup = vim.api.nvim_create_augroup("user_config_autocommand", {
 	clear = true,
 })
@@ -22,7 +20,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 		if event.match:match("^%w%w+:[\\/][\\/]") then
 			return
 		end
-		
+
 		local dir = vim.fn.fnamemodify(event.file, ":p:h")
 		vim.fn.mkdir(dir, "p")
 	end,
@@ -35,10 +33,10 @@ vim.api.nvim_create_autocmd("FileType", {
 	callback = function(event)
 		local buf = event.buf
 		local ft = vim.bo[buf].filetype or ""
-		
+
 		local utility_patterns = {
 			"help",
-			"lspinfo", 
+			"lspinfo",
 			"qf",
 			"man",
 			"startuptime",
@@ -46,7 +44,7 @@ vim.api.nvim_create_autocmd("FileType", {
 			"trouble",
 			"neo%-tree",
 		}
-		
+
 		for _, pattern in ipairs(utility_patterns) do
 			if ft:lower():match(pattern:lower()) then
 				vim.bo[buf].buflisted = false
@@ -67,7 +65,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 	callback = function()
 		local mark = vim.api.nvim_buf_get_mark(0, '"')
 		local line_count = vim.api.nvim_buf_line_count(0)
-		
+
 		if mark[1] > 0 and mark[1] <= line_count then
 			pcall(vim.api.nvim_win_set_cursor, 0, mark)
 		end
