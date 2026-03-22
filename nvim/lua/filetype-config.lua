@@ -1,3 +1,5 @@
+vim.env.PATH = vim.env.PATH .. ":" .. vim.fn.expand("~/.local/share/nvim/mason/bin")
+
 local filetype_config = {
 	-- Default formatter for all filetypes
 	["*"] = {
@@ -27,13 +29,49 @@ local filetype_config = {
 	},
 
 	-- Python
-	--python = {
-	--	lsp = {
-	--		server = "pyright",
-	--		cmd = { "pyright-langserver", "--stdio" },
-	--	},
-	--	formatter = { "black" },
-	--},
+	python = {
+		lsp = {
+			server = "pyright",
+			cmd = { "pyright-langserver", "--stdio" },
+			root_markers = {
+				"pyrightconfig.json",
+				"pyproject.toml",
+				"setup.py",
+				"setup.cfg",
+				"requirements.txt",
+				"Pipfile",
+				".git",
+			},
+			settings = {
+				python = {
+					analysis = {
+						autoSearchPaths = true,
+						useLibraryCodeForTypes = true,
+						diagnosticMode = "openFilesOnly",
+					},
+				},
+			},
+		},
+		--formatter = { "black" },
+	},
+
+	-- TypeScript/JavaScript
+	javascript = {
+		lsp = {
+			server = "ts_ls",
+			cmd = { "typescript-language-server", "--stdio" },
+			root_markers = { "package.json", "package-lock.json", "yarn.lock", "pnpm-lock.yaml", ".git" },
+		},
+	},
+	javascriptreact = {
+		lsp = { server = "ts_ls" },
+	},
+	typescript = {
+		lsp = { server = "ts_ls" },
+	},
+	typescriptreact = {
+		lsp = { server = "ts_ls" },
+	},
 
 	-- Lua
 	lua = {
@@ -47,19 +85,21 @@ local filetype_config = {
 	-- Configuration files
 	json = {
 		lsp = {
-			server = "jsonls",
+			server = "json-lsp",
 			cmd = { "vscode-json-language-server", "--stdio" },
+			root_markers = { ".git" },
 		},
 		formatter = { "prettier" },
 	},
 	jsonc = {
-		lsp = { server = "jsonls" },
+		lsp = { server = "json-lsp" },
 		formatter = { "prettier" },
 	},
 	yaml = {
 		lsp = {
-			server = "yamlls",
+			server = "yaml-language-server",
 			cmd = { "yaml-language-server", "--stdio" },
+			root_markers = { ".git" },
 		},
 		formatter = { "prettier" },
 	},
@@ -148,41 +188,53 @@ vim.schedule(function()
 	end
 end)
 -- LSP configuration
+local on_attach = function(client, bufnr)
+	vim.opt.omnifunc = "v:lua.vim.lsp.omnifunc"
+	vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = bufnr, desc = "Go to definition" })
+	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = bufnr, desc = "Go to declaration" })
+	vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr, desc = "References" })
+	vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { buffer = bufnr, desc = "Go to implementation" })
+	vim.keymap.set("n", "go", vim.lsp.buf.type_definition, { buffer = bufnr, desc = "Go to type definition" })
+	vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = bufnr, desc = "Hover" })
+	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { buffer = bufnr, desc = "Code action" })
+	vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, { buffer = bufnr, desc = "Rename" })
+end
 
--- Configure default LSP capabilities and root markers for all buffers
 vim.lsp.config("*", {
+	on_attach = on_attach,
 	capabilities = {
 		textDocument = {
-			semanticTokens = {
-				multilineTokenSupport = true,
-			},
+			semanticTokens = { multilineTokenSupport = true },
+			completion = { completionItem = { snippetSupport = true } },
+		},
+		workspace = {
+			workspaceFolders = true,
 		},
 	},
-	root_markers = { ".git" },
 })
 
--- Build LSP server configuration by merging filetype-specific configs
-local lsp2Config = {}
-local fileType2FormatterList = {}
+-- Build LSP server and formatter configuration
+local lsp_config = {}
+local ft_formatters = {}
 
 for ft, cfg in pairs(filetype_config) do
 	if cfg.lsp then
 		local server = cfg.lsp.server
-		if not lsp2Config[server] then
-			lsp2Config[server] = vim.tbl_deep_extend("force", {}, cfg.lsp)
+		if not lsp_config[server] then
+			lsp_config[server] = vim.tbl_deep_extend("force", {}, cfg.lsp)
 		else
-			lsp2Config[server] = deep_merge(lsp2Config[server], cfg.lsp)
+			lsp_config[server] = deep_merge(lsp_config[server], cfg.lsp)
 		end
-		lsp2Config[server].filetypes = unique_list(vim.list_extend(lsp2Config[server].filetypes or {}, { ft }))
+		lsp_config[server].filetypes = vim.list_extend(lsp_config[server].filetypes or {}, { ft })
 	end
 
 	if cfg.formatter then
-		fileType2FormatterList[ft] = cfg.formatter
+		ft_formatters[ft] = cfg.formatter
 	end
 end
 
--- Enable LSP servers with their merged configurations
-for server, cfg in pairs(lsp2Config) do
+for server, cfg in pairs(lsp_config) do
+	cfg.filetypes = unique_list(cfg.filetypes)
 	vim.lsp.config[server] = cfg
 	vim.lsp.enable({ server })
 end
@@ -190,7 +242,7 @@ end
 -- Formatter configuration
 local ok, conform = pcall(require, "conform")
 if ok then
-	for ft, formatters in pairs(fileType2FormatterList) do
+	for ft, formatters in pairs(ft_formatters) do
 		conform.formatters_by_ft[ft] = formatters
 	end
 end

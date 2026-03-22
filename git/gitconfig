@@ -27,22 +27,10 @@
 [alias]
     # shortcut to list all git aliases
     alias = "config --get-regexp alias"
-    # short format for 'git status'
-    stat = status -s
-    # amend last commit without changing the commit message
-    amend = commit --amend --no-edit
-    # add all changes and commit in one step
-    ac = "!git add -A && git commit -m"
     # simple one-line log with color, showing hash, date, author, and message
     slog = log --pretty=format:'%C(yellow)%h%C(reset) %C(green)%ad%C(reset) %C(blue)%an <%ae>%C(reset) %s' --date=iso
     # graphical log showing all branches with colors, hash, date, author, message, and ref names
     glog = log --graph --all --pretty=format:'%C(yellow)%h%C(reset) %C(green)%ad%C(reset) %C(blue)%an <%ae>%C(reset) %s %C(red)%d%C(reset)' --date=iso
-    # shortcut for 'git diff'
-    df = diff
-    # shortcut to stash changes
-    save = stash push
-    # shortcut to apply and remove the latest stash
-    pop = stash pop
 
 [user]
     # user name
