@@ -1,4 +1,4 @@
--- Setup lazy.nvim
+-- Bootstrap lazy.nvim plugin manager (:h packages)
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
 if not vim.uv.fs_stat(lazypath) then
@@ -18,15 +18,14 @@ if not vim.uv.fs_stat(lazypath) then
 end
 
 vim.opt.rtp:prepend(lazypath)
--- Configure plugins
+
 require("lazy").setup({
 	rocks = {
 		enabled = false,
 	},
 	spec = {
-		-- UI and Navigation
 		{
-			-- Which-key plugin for keymap hints
+			-- which-key.nvim: show pending keymap completions in a popup (:h timeoutlen)
 			"folke/which-key.nvim",
 			opts = {
 				icons = {
@@ -46,7 +45,7 @@ require("lazy").setup({
 			},
 		},
 		{
-			-- File tree sidebar
+			-- neo-tree.nvim: file explorer in a floating window
 			"nvim-neo-tree/neo-tree.nvim",
 			dependencies = {
 				"nvim-lua/plenary.nvim",
@@ -195,13 +194,11 @@ require("lazy").setup({
 			end,
 		},
 
-		-- Search and Navigation
-		-- Fuzzy finder
+		-- fzf-lua: fuzzy finder for files, grep, LSP, git, and more
 		{ "ibhagwan/fzf-lua" },
 
-		-- Syntax and Parsing
 		{
-			-- Syntax highlighting and code parsing
+			-- nvim-treesitter: incremental parsing for highlighting, folds, and indent
 			"nvim-treesitter/nvim-treesitter",
 			build = ":TSUpdate",
 			config = function()
@@ -312,9 +309,8 @@ require("lazy").setup({
 			end,
 		},
 
-		-- Formatting
 		{
-			-- Code formatting
+			-- conform.nvim: formatter runner; sets 'formatexpr' and format-on-save
 			"stevearc/conform.nvim",
 			config = function()
 				require("conform").setup({
@@ -335,9 +331,8 @@ require("lazy").setup({
 			end,
 		},
 
-		-- UI Components
 		{
-			-- Status line
+			-- mini.statusline: minimal statusline with mode, diagnostics, and location
 			"echasnovski/mini.statusline",
 			version = "*",
 			config = function()
@@ -349,15 +344,14 @@ require("lazy").setup({
 			end,
 		},
 
-		-- LSP and Development Tools
 		{
-			-- LSP and tools manager
+			-- mason.nvim: install and manage LSP servers, formatters, and linters
 			"mason-org/mason.nvim",
 			opts = {},
 		},
 
 		{
-			-- Autocompletion
+			-- blink.cmp: completion engine with ghost text, snippets, and signature help
 			"saghen/blink.cmp",
 			version = "1.*",
 			dependencies = "rafamadriz/friendly-snippets",
@@ -456,9 +450,8 @@ require("lazy").setup({
 			},
 		},
 
-		-- Debugging
 		{
-			-- Debug adapter protocol
+			-- nvim-dap: Debug Adapter Protocol client (:h dap)
 			"mfussenegger/nvim-dap",
 			dependencies = {
 				{
@@ -495,7 +488,7 @@ require("lazy").setup({
 			},
 		},
 		{
-			-- Go debugger adapter
+			-- nvim-dap-go: Go debug adapter using delve
 			"leoluz/nvim-dap-go",
 			ft = "go",
 			config = function()

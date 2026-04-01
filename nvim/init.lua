@@ -33,11 +33,7 @@ wk.add({
 	{ "<leader>gs", "<cmd>FzfLua git_status<cr>", desc = "Git status" },
 
 	{ "<leader>l", group = "LSP" },
-	{ "<leader>lr", "<cmd>lua vim.lsp.buf.rename()<cr>", desc = "Rename" },
-	{ "<leader>la", "<cmd>lua vim.lsp.buf.code_action()<cr>", desc = "Code actions" },
 	{ "<leader>lf", "<cmd>lua vim.lsp.buf.format()<cr>", desc = "Format" },
-	{ "<leader>li", "<cmd>LspInfo<cr>", desc = "LSP info" },
-	{ "<leader>lI", "<cmd>LspInstallInfo<cr>", desc = "LSP install info" },
 	{ "<leader>ld", "<cmd>lua vim.diagnostic.open_float()<cr>", desc = "Line diagnostics" },
 	{ "<leader>lq", "<cmd>lua vim.diagnostic.setloclist()<cr>", desc = "Loclist diagnostics" },
 
@@ -75,8 +71,9 @@ wk.add({
 	{ "<leader>tp", "<cmd>tabprevious<cr>", desc = "Previous tab" },
 	{ "<leader>tj", "<cmd>tabnext<cr>", desc = "Next tab" },
 
+	{ "<leader>u", "<cmd>Undotree<cr>", desc = "Undo tree" },
+
 	{ "<leader>q", group = "Quit/Session" },
 	{ "<leader>qq", "<cmd>qa<cr>", desc = "Quit all" },
 	{ "<leader>qw", "<cmd>wqa<cr>", desc = "Save and quit all" },
-	{ "<leader>qo", "<cmd>only<cr>", desc = "Close other windows" },
 })

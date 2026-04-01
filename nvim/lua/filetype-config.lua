@@ -1,12 +1,13 @@
+-- Prepend Mason's bin dir so LSP servers installed by Mason are on PATH
 vim.env.PATH = vim.env.PATH .. ":" .. vim.fn.expand("~/.local/share/nvim/mason/bin")
 
+-- filetype_config: maps filetypes to LSP server specs and formatter lists.
+-- Used to auto-register vim.lsp.config entries and conform.nvim formatters.
 local filetype_config = {
-	-- Default formatter for all filetypes
 	["*"] = {
 		formatter = { "codespell" },
 	},
 
-	-- Go ecosystem
 	go = {
 		lsp = {
 			server = "gopls",
@@ -28,7 +29,6 @@ local filetype_config = {
 		formatter = { "goimports" },
 	},
 
-	-- Python
 	python = {
 		lsp = {
 			server = "pyright",
@@ -52,10 +52,8 @@ local filetype_config = {
 				},
 			},
 		},
-		--formatter = { "black" },
 	},
 
-	-- TypeScript/JavaScript
 	javascript = {
 		lsp = {
 			server = "ts_ls",
@@ -73,7 +71,6 @@ local filetype_config = {
 		lsp = { server = "ts_ls" },
 	},
 
-	-- Lua
 	lua = {
 		lsp = {
 			server = "lua-language-server",
@@ -82,7 +79,6 @@ local filetype_config = {
 		formatter = { "stylua" },
 	},
 
-	-- Configuration files
 	json = {
 		lsp = {
 			server = "json-lsp",
@@ -104,7 +100,6 @@ local filetype_config = {
 		formatter = { "prettier" },
 	},
 
-	-- Shell scripts
 	bash = {
 		lsp = {
 			server = "bashls",
@@ -117,9 +112,8 @@ local filetype_config = {
 		formatter = { "shfmt" },
 	},
 }
--- Utility functions
 
---- Removes duplicate values from a list while preserving order
+-- Deduplicate a list in-place, preserving first-occurrence order
 local function unique_list(tbl)
 	local seen, res = {}, {}
 	for _, v in ipairs(tbl or {}) do
@@ -131,7 +125,7 @@ local function unique_list(tbl)
 	return res
 end
 
---- Recursively merges two tables, concatenating lists instead of replacing them
+-- Deep-merge two tables; list fields are concatenated rather than replaced
 local function deep_merge(existing, new)
 	if type(existing) ~= "table" then
 		return new
@@ -143,7 +137,7 @@ local function deep_merge(existing, new)
 	local res = vim.tbl_deep_extend("force", {}, existing)
 	for k, v in pairs(new) do
 		if type(v) == "table" and type(res[k]) == "table" then
-			if vim.tbl_islist(v) then
+			if vim.islist(v) then
 				res[k] = unique_list(vim.list_extend(res[k], v))
 			else
 				res[k] = deep_merge(res[k], v)
@@ -154,9 +148,8 @@ local function deep_merge(existing, new)
 	end
 	return res
 end
--- Mason tool management
 
--- Collect all required LSP servers and formatters for Mason installation
+-- Collect all required tools and auto-install any that are missing via Mason
 local mason_tools = {}
 for _, cfg in pairs(filetype_config) do
 	if cfg.lsp then
@@ -170,7 +163,6 @@ for _, cfg in pairs(filetype_config) do
 end
 mason_tools = unique_list(mason_tools)
 
--- Schedule Mason tool installation after Neovim startup
 vim.schedule(function()
 	local registry = require("mason-registry")
 	local to_install = {}
@@ -187,19 +179,15 @@ vim.schedule(function()
 		vim.cmd("MasonInstall " .. table.concat(to_install, " "))
 	end
 end)
--- LSP configuration
+
+-- on_attach: called when an LSP client attaches to a buffer (:h LspAttach)
+-- Sets 'omnifunc' for i_CTRL-X_CTRL-O completion and enables codelens virtual lines.
 local on_attach = function(client, bufnr)
 	vim.opt.omnifunc = "v:lua.vim.lsp.omnifunc"
-	vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = bufnr, desc = "Go to definition" })
-	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = bufnr, desc = "Go to declaration" })
-	vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr, desc = "References" })
-	vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { buffer = bufnr, desc = "Go to implementation" })
-	vim.keymap.set("n", "go", vim.lsp.buf.type_definition, { buffer = bufnr, desc = "Go to type definition" })
-	vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = bufnr, desc = "Hover" })
-	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { buffer = bufnr, desc = "Code action" })
-	vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, { buffer = bufnr, desc = "Rename" })
+	vim.lsp.codelens.enable(true, { bufnr = bufnr })
 end
 
+-- Register global LSP capabilities via vim.lsp.config("*", ...) (:h vim.lsp.config)
 vim.lsp.config("*", {
 	on_attach = on_attach,
 	capabilities = {
@@ -213,7 +201,7 @@ vim.lsp.config("*", {
 	},
 })
 
--- Build LSP server and formatter configuration
+-- Build per-server configs from filetype_config, then register and enable each server
 local lsp_config = {}
 local ft_formatters = {}
 
@@ -239,7 +227,7 @@ for server, cfg in pairs(lsp_config) do
 	vim.lsp.enable({ server })
 end
 
--- Formatter configuration
+-- Push formatter lists into conform.nvim (:h conform)
 local ok, conform = pcall(require, "conform")
 if ok then
 	for ft, formatters in pairs(ft_formatters) do
