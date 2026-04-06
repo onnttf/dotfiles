@@ -36,7 +36,9 @@ if [[ ! -d "$DOTFILES_DIR" ]]; then
     success "dotfiles cloned to $DOTFILES_DIR"
 
     export DOTFILES="$DOTFILES_DIR"
-    exec "$DOTFILES_DIR/bootstrap.sh"
+    bash "$DOTFILES_DIR/bootstrap.sh"
+else
+    info "dotfiles already cloned, skipping clone"
 fi
 
 header "homebrew"
