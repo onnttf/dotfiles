@@ -1,17 +1,11 @@
--- Bootstrap lazy.nvim plugin manager (:h packages)
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
+-- Bootstrap lazy.nvim if not already installed. |:Lazy|
 if not vim.uv.fs_stat(lazypath) then
 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
 	local out = vim.fn.system({
-		"git",
-		"clone",
-		"--filter=blob:none",
-		"--branch=stable",
-		lazyrepo,
-		lazypath,
+		"git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath,
 	})
-
 	if vim.v.shell_error ~= 0 then
 		error("Error cloning lazy.nvim:\n" .. out)
 	end
@@ -20,32 +14,28 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-	rocks = {
-		enabled = false,
-	},
-	spec = {
+	rocks = { enabled = false },
+	spec  = {
+
+		-- which-key.nvim: display pending keymap completions in a popup.
+		-- <leader> shows only buffer-local maps (global=false). |which-key|
 		{
-			-- which-key.nvim: show pending keymap completions in a popup (:h timeoutlen)
 			"folke/which-key.nvim",
-			opts = {
-				icons = {
-					mappings = false,
-				},
-			},
+			opts = { icons = { mappings = false } },
 			keys = {
 				{
 					"<leader>",
 					function()
-						require("which-key").show({
-							global = false,
-						})
+						require("which-key").show({ global = false })
 					end,
-					desc = "Show local keymaps",
+					desc = "Show Local Keymaps",
 				},
 			},
 		},
+
+		-- neo-tree.nvim: file system, document symbols, and buffer explorer.
+		-- Opens as a floating window; closes automatically on file open. |neo-tree|
 		{
-			-- neo-tree.nvim: file explorer in a floating window
 			"nvim-neo-tree/neo-tree.nvim",
 			dependencies = {
 				"nvim-lua/plenary.nvim",
@@ -56,19 +46,13 @@ require("lazy").setup({
 				require("neo-tree").setup({
 					use_default_mappings = false,
 					close_if_last_window = true,
-					popup_border_style = "rounded",
-					sources = { "filesystem", "document_symbols", "buffers" },
-					source_selector = {
+					popup_border_style   = "rounded",
+					sources              = { "filesystem", "document_symbols", "buffers" },
+					source_selector      = {
 						sources = {
-							{
-								source = "filesystem",
-							},
-							{
-								source = "document_symbols",
-							},
-							{
-								source = "buffers",
-							},
+							{ source = "filesystem" },
+							{ source = "document_symbols" },
+							{ source = "buffers" },
 						},
 					},
 					window = {
@@ -83,18 +67,17 @@ require("lazy").setup({
 						},
 					},
 					filesystem = {
-						follow_current_file = {
-							enabled = true,
-						},
-						filtered_items = {
+						follow_current_file = { enabled = true },
+						filtered_items      = {
 							show_hidden_count = true,
-							hide_dotfiles = true,
-							hide_gitignored = true,
-							hide_by_name = { "node_modules" },
-							always_show = { ".gitignored" },
+							hide_dotfiles     = true,
+							hide_gitignored   = true,
+							hide_by_name      = { "node_modules" },
+							always_show       = { ".gitignore" },
 						},
 						window = {
 							mappings = {
+								-- h/l: collapse directory or move to parent / expand or enter child.
 								["h"] = function(state)
 									local node = state.tree:get_node()
 									if node.type == "directory" and node:is_expanded() then
@@ -113,6 +96,7 @@ require("lazy").setup({
 										end
 									end
 								end,
+								-- <tab>: toggle node if directory, open file and reveal in tree otherwise.
 								["<tab>"] = function(state)
 									local node = state.tree:get_node()
 									if require("neo-tree.utils").is_expandable(node) then
@@ -122,69 +106,44 @@ require("lazy").setup({
 										vim.cmd("Neotree reveal")
 									end
 								end,
-								["a"] = {
-									"add",
-									config = {
-										show_path = "relative",
-									},
-								},
-								["d"] = "delete",
-								["r"] = "rename",
-								["c"] = {
-									"copy",
-									config = {
-										show_path = "relative",
-									},
-								},
-								["m"] = {
-									"move",
-									config = {
-										show_path = "relative",
-									},
-								},
-								["H"] = "toggle_hidden",
+								["a"]    = { "add",  config = { show_path = "relative" } },
+								["d"]    = "delete",
+								["r"]    = "rename",
+								["c"]    = { "copy", config = { show_path = "relative" } },
+								["m"]    = { "move", config = { show_path = "relative" } },
+								["H"]    = "toggle_hidden",
 								["<bs>"] = "navigate_up",
-								["."] = "set_root",
-								["i"] = "show_file_details",
+								["."]    = "set_root",
+								["i"]    = "show_file_details",
 							},
 							fuzzy_finder_mappings = {
 								["<down>"] = "move_cursor_down",
-								["<C-n>"] = "move_cursor_down",
-								["<up>"] = "move_cursor_up",
-								["<C-p>"] = "move_cursor_up",
+								["<C-n>"]  = "move_cursor_down",
+								["<up>"]   = "move_cursor_up",
+								["<C-p>"]  = "move_cursor_up",
 							},
 						},
 					},
-					document_symbols = {
-						follow_cursor = true,
-					},
-					buffers = {
-						follow_current_file = {
-							enabled = true,
-						},
-						window = {
-							mappings = {
-								["d"] = "buffer_delete",
-							},
-						},
+					document_symbols = { follow_cursor = true },
+					buffers          = {
+						follow_current_file = { enabled = true },
+						window              = { mappings = { ["d"] = "buffer_delete" } },
 					},
 					event_handlers = {
 						{
-							event = "file_open_requested",
+							event   = "file_open_requested",
 							handler = function()
-								require("neo-tree.command").execute({
-									action = "close",
-								})
+								require("neo-tree.command").execute({ action = "close" })
 							end,
 						},
 						{
-							event = "file_renamed",
+							event   = "file_renamed",
 							handler = function(args)
 								print(args.source, " renamed to ", args.destination)
 							end,
 						},
 						{
-							event = "file_moved",
+							event   = "file_moved",
 							handler = function(args)
 								print(args.source, " moved to ", args.destination)
 							end,
@@ -194,26 +153,29 @@ require("lazy").setup({
 			end,
 		},
 
-		-- fzf-lua: fuzzy finder for files, grep, LSP, git, and more
+		-- fzf-lua: fuzzy finder powered by fzf. Keymaps defined in keymap.lua.
 		{ "ibhagwan/fzf-lua" },
 
+		-- nvim-treesitter: syntax highlighting, indentation, and folding.
+		-- Parsers are installed on demand via FileType autocmd; lua/vim/vimdoc/query
+		-- are pre-installed. Python, yaml, and markdown use native indentation.
+		-- |nvim-treesitter| |treesitter|
 		{
-			-- nvim-treesitter: incremental parsing for highlighting, folds, and indent
 			"nvim-treesitter/nvim-treesitter",
 			build = ":TSUpdate",
 			config = function()
 				local ts = require("nvim-treesitter")
+
 				local ignore_ft = {
-					["neo-tree"] = true,
-					["neo-tree-popup"] = true,
+					["neo-tree"]         = true,
+					["neo-tree-popup"]   = true,
 					["neo-tree-preview"] = true,
-					["help"] = true,
-					["lazy"] = true,
-					["mason"] = true,
-					["checkhealth"] = true,
-					["TelescopePrompt"] = true,
-					["TelescopeResults"] = true,
+					["help"]             = true,
+					["lazy"]             = true,
+					["mason"]            = true,
+					["checkhealth"]      = true,
 				}
+
 				local function should_ignore(buf, ft)
 					if ignore_ft[ft] then
 						return true
@@ -223,11 +185,14 @@ require("lazy").setup({
 					end
 					return false
 				end
+
 				local installing = {}
-				local pending = {}
+				local pending    = {}
+
 				local function parser_installed(lang)
 					return lang and lang ~= "" and #vim.api.nvim_get_runtime_file("parser/" .. lang .. ".*", false) > 0
 				end
+
 				local function flush(lang)
 					local bufs = pending[lang]
 					pending[lang] = nil
@@ -240,11 +205,12 @@ require("lazy").setup({
 						end
 					end
 				end
+
 				local function ensure_parser(buf, lang)
 					if not lang or lang == "" then
 						return
 					end
-					pending[lang] = pending[lang] or {}
+					pending[lang]      = pending[lang] or {}
 					pending[lang][buf] = true
 					if parser_installed(lang) then
 						flush(lang)
@@ -262,10 +228,9 @@ require("lazy").setup({
 						end
 					end, 1500)
 				end
+
 				vim.api.nvim_create_autocmd("FileType", {
-					group = vim.api.nvim_create_augroup("ts_auto_install", {
-						clear = true,
-					}),
+					group    = vim.api.nvim_create_augroup("ts_auto_install", { clear = true }),
 					callback = function(ev)
 						if should_ignore(ev.buf, ev.match) then
 							return
@@ -276,30 +241,24 @@ require("lazy").setup({
 						end
 					end,
 				})
+
 				ts.install({ "lua", "vim", "vimdoc", "query" })
-				vim.opt.foldlevel = 99
-				vim.api.nvim_create_autocmd("BufWinEnter", {
-					group = vim.api.nvim_create_augroup("ts_folds", {
-						clear = true,
-					}),
+
+				-- Use treesitter folds unless LSP folding is already active. |vim.treesitter.foldexpr()|
+				vim.api.nvim_create_autocmd("BufReadPost", {
+					group    = vim.api.nvim_create_augroup("ts_folds", { clear = true }),
 					callback = function()
-						vim.api.nvim_set_option_value("foldmethod", "expr", {
-							win = 0,
-						})
-						vim.api.nvim_set_option_value("foldexpr", "v:lua.vim.treesitter.foldexpr()", {
-							win = 0,
-						})
+						if not vim.wo.foldexpr:find("lsp") then
+							vim.api.nvim_set_option_value("foldmethod", "expr", { win = 0 })
+							vim.api.nvim_set_option_value("foldexpr", "v:lua.vim.treesitter.foldexpr()", { win = 0 })
+						end
 					end,
 				})
-				local indent_disable = {
-					python = true,
-					yaml = true,
-					markdown = true,
-				}
+
+				-- Disable treesitter indentation for filetypes where it is unreliable.
+				local indent_disable = { python = true, yaml = true, markdown = true }
 				vim.api.nvim_create_autocmd("FileType", {
-					group = vim.api.nvim_create_augroup("ts_indent", {
-						clear = true,
-					}),
+					group    = vim.api.nvim_create_augroup("ts_indent", { clear = true }),
 					callback = function(ev)
 						if not indent_disable[ev.match] then
 							vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
@@ -309,20 +268,18 @@ require("lazy").setup({
 			end,
 		},
 
+		-- conform.nvim: formatter multiplexer with format-on-save support.
+		-- Skips buffers under node_modules. Falls back to |lsp-format| when no
+		-- formatter is configured. |'formatexpr'| is set for |gq| support.
 		{
-			-- conform.nvim: formatter runner; sets 'formatexpr' and format-on-save
 			"stevearc/conform.nvim",
 			config = function()
 				require("conform").setup({
 					format_on_save = function(bufnr)
-						local bufname = vim.api.nvim_buf_get_name(bufnr)
-						if bufname:match("/node_modules/") then
+						if vim.api.nvim_buf_get_name(bufnr):match("/node_modules/") then
 							return nil
 						end
-						return {
-							timeout_ms = 1000,
-							lsp_format = "fallback",
-						}
+						return { timeout_ms = 1000, lsp_format = "fallback" }
 					end,
 				})
 			end,
@@ -331,11 +288,12 @@ require("lazy").setup({
 			end,
 		},
 
+		-- mini.statusline: minimal statusline. Location section overridden to show
+		-- line:column without padding noise. |mini.statusline|
 		{
-			-- mini.statusline: minimal statusline with mode, diagnostics, and location
 			"echasnovski/mini.statusline",
 			version = "*",
-			config = function()
+			config  = function()
 				local statusline = require("mini.statusline")
 				statusline.setup()
 				statusline.section_location = function()
@@ -344,34 +302,33 @@ require("lazy").setup({
 			end,
 		},
 
+		-- mason.nvim: portable package manager for LSP servers, linters, and formatters.
+		-- Tools are installed automatically via filetype-config.lua. |mason|
 		{
-			-- mason.nvim: install and manage LSP servers, formatters, and linters
 			"mason-org/mason.nvim",
 			opts = {},
 		},
 
+		-- blink.cmp: fast completion engine with LSP, buffer, path, and snippet sources.
+		-- Keymap preset is "none"; all bindings are explicit below.
+		-- Ghost text and auto-show documentation are enabled. |blink-cmp|
 		{
-			-- blink.cmp: completion engine with ghost text, snippets, and signature help
 			"saghen/blink.cmp",
-			version = "1.*",
+			version      = "1.*",
 			dependencies = "rafamadriz/friendly-snippets",
-			opts = {
+			opts         = {
 				keymap = {
-					preset = "none",
-					["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
-					["<S-Tab>"] = {
-						"select_prev",
-						"snippet_backward",
-						"fallback",
-					},
-					["<Up>"] = { "select_prev", "fallback" },
-					["<Down>"] = { "select_next", "fallback" },
-					["<CR>"] = { "accept", "fallback" },
+					preset     = "none",
+					["<Tab>"]   = { "select_next", "snippet_forward", "fallback" },
+					["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+					["<Up>"]    = { "select_prev", "fallback" },
+					["<Down>"]  = { "select_next", "fallback" },
+					["<CR>"]    = { "accept", "fallback" },
 				},
 				completion = {
 					menu = {
 						draw = {
-							padding = { 0, 1 },
+							padding    = { 0, 1 },
 							components = {
 								kind_icon = {
 									text = function(ctx)
@@ -381,43 +338,26 @@ require("lazy").setup({
 							},
 						},
 					},
-					documentation = {
-						auto_show = true,
-						auto_show_delay_ms = 500,
-					},
-					ghost_text = {
-						enabled = true,
-					},
-					list = {
-						selection = {
-							preselect = false,
-							auto_insert = true,
-						},
-					},
+					documentation = { auto_show = true, auto_show_delay_ms = 500 },
+					ghost_text    = { enabled = true },
+					list          = { selection = { preselect = false, auto_insert = true } },
 				},
 				cmdline = {
-					keymap = {
-						preset = "inherit",
-					},
+					keymap     = { preset = "inherit" },
 					completion = {
 						menu = {
+							-- Show menu only for ":" and "@" command lines.
 							auto_show = function(ctx)
 								return vim.fn.getcmdtype() == ":" or vim.fn.getcmdtype() == "@"
 							end,
 						},
-						ghost_text = {
-							enabled = true,
-						},
-						list = {
-							selection = {
-								preselect = false,
-								auto_insert = true,
-							},
-						},
+						ghost_text = { enabled = true },
+						list       = { selection = { preselect = false, auto_insert = true } },
 					},
 				},
 				sources = {
 					providers = {
+						-- Complete from all normal buffers (buftype == "").
 						buffer = {
 							opts = {
 								get_bufnrs = function()
@@ -427,6 +367,7 @@ require("lazy").setup({
 								end,
 							},
 						},
+						-- Always resolve paths relative to cwd, not the buffer's directory.
 						path = {
 							opts = {
 								get_cwd = function(_)
@@ -434,6 +375,8 @@ require("lazy").setup({
 								end,
 							},
 						},
+						-- Require 3+ characters before showing cmdline completions for bare
+						-- commands (no space yet), to avoid triggering on single-key input.
 						cmdline = {
 							min_keyword_length = function(ctx)
 								if ctx.mode == "cmdline" and string.find(ctx.line, " ") == nil then
@@ -444,38 +387,27 @@ require("lazy").setup({
 						},
 					},
 				},
-				signature = {
-					enabled = true,
-				},
+				signature = { enabled = true },
 			},
 		},
 
+		-- nvim-dap: Debug Adapter Protocol client. UI and virtual text via dependencies.
+		-- Lazy-loaded; triggered by DAP commands defined in keymap.lua.
+		-- dapui opens/closes automatically on session start/end. |dap|
 		{
-			-- nvim-dap: Debug Adapter Protocol client (:h dap)
 			"mfussenegger/nvim-dap",
 			dependencies = {
-				{
-					"rcarriga/nvim-dap-ui",
-					dependencies = { "nvim-neotest/nvim-nio" },
-				},
+				{ "rcarriga/nvim-dap-ui", dependencies = { "nvim-neotest/nvim-nio" } },
 				{ "theHamsta/nvim-dap-virtual-text" },
 			},
 			config = function()
-				local dap = require("dap")
-				local dapui = require("dapui")
+				local dap    = require("dap")
+				local dapui  = require("dapui")
 				dapui.setup()
-				dap.listeners.before.attach.dapui_config = function()
-					dapui.open()
-				end
-				dap.listeners.before.launch.dapui_config = function()
-					dapui.open()
-				end
-				dap.listeners.before.event_terminated.dapui_config = function()
-					dapui.close()
-				end
-				dap.listeners.before.event_exited.dapui_config = function()
-					dapui.close()
-				end
+				dap.listeners.before.attach.dapui_config         = function() dapui.open() end
+				dap.listeners.before.launch.dapui_config         = function() dapui.open() end
+				dap.listeners.before.event_terminated.dapui_config = function() dapui.close() end
+				dap.listeners.before.event_exited.dapui_config   = function() dapui.close() end
 				require("nvim-dap-virtual-text").setup()
 			end,
 			cmd = {
@@ -487,13 +419,15 @@ require("lazy").setup({
 				"DapTerminate",
 			},
 		},
+
+		-- nvim-dap-go: Go-specific DAP adapter (dlv). Loaded only for Go buffers.
 		{
-			-- nvim-dap-go: Go debug adapter using delve
 			"leoluz/nvim-dap-go",
-			ft = "go",
+			ft     = "go",
 			config = function()
 				require("dap-go").setup({})
 			end,
 		},
+
 	},
 })

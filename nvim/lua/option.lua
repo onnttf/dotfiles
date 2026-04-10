@@ -1,57 +1,45 @@
-local options = {
-	number = true,      -- 'number': show line numbers (:h number)
-	mouse = "a",        -- 'mouse': enable mouse in all modes (:h mouse)
-	showmode = false,   -- 'showmode': suppress -- INSERT -- etc., mode shown in statusline
-	signcolumn = "yes", -- 'signcolumn': always show; prevents layout shift (:h signcolumn)
-	cursorline = true,  -- 'cursorline': highlight the line the cursor is on (:h cursorline)
-	shelltemp = true,   -- 'shelltemp': use temp files for shell commands (:h shelltemp, 0.12 default changed)
-}
+local opt = vim.opt
 
-options.scrolloff = 8      -- 'scrolloff': lines of context above/below cursor (:h scrolloff)
-options.sidescrolloff = 8  -- 'sidescrolloff': columns of context left/right of cursor
+opt.termguicolors  = true        -- Enable 24-bit RGB color in the |TUI|. |'termguicolors'|
+opt.number         = true        -- Print the line number in front of each line. |'number'|
+opt.relativenumber = false       -- Show line numbers relative to the cursor. |'relativenumber'|
+opt.cursorline     = true        -- Highlight the screen line of the cursor. |'cursorline'|
+opt.signcolumn     = "yes"       -- Always show the sign column to avoid layout shift. |'signcolumn'|
+opt.showmode       = false       -- Mode is shown by the statusline; suppress the default. |'showmode'|
+opt.wrap           = false       -- Long lines do not wrap. |'wrap'|
+opt.list           = true        -- Show invisible characters defined in 'listchars'. |'list'|
+opt.listchars:append({ tab = "│ ", trail = "·", nbsp = "␣" })
+opt.conceallevel   = 1           -- Conceal markup in supporting filetypes (e.g. Markdown). |'conceallevel'|
+opt.winborder      = "rounded"   -- Default border style for floating windows. |'winborder'| nvim 0.11+
+opt.pumborder      = "rounded"   -- Border around the completion popup menu. |'pumborder'| nvim 0.12+
+opt.tabstop        = 4           -- Number of spaces a <Tab> counts for. |'tabstop'|
+opt.shiftwidth     = 4           -- Number of spaces per (auto)indent step. |'shiftwidth'|
+opt.expandtab      = true        -- Use spaces instead of tabs. |'expandtab'|
+opt.breakindent    = true        -- Wrapped lines continue at the same visual indent. |'breakindent'|
+opt.ignorecase     = true        -- Ignore case in search patterns. |'ignorecase'|
+opt.smartcase      = true        -- Override 'ignorecase' when pattern contains uppercase. |'smartcase'|
+opt.incsearch      = true        -- Show match while the search pattern is being typed. |'incsearch'|
+opt.hlsearch       = true        -- Keep all matches highlighted after searching. |'hlsearch'|
+opt.inccommand     = "split"     -- Show a live preview of :substitute in a split window. |'inccommand'|
+opt.scrolloff      = 8           -- Minimum lines to keep above and below the cursor. |'scrolloff'|
+opt.sidescrolloff  = 8           -- Minimum columns to keep left and right of the cursor. |'sidescrolloff'|
+opt.smoothscroll   = true        -- Scroll by screen lines rather than file lines. |'smoothscroll'|
+opt.jumpoptions    = "view"      -- Restore the window view when traversing the |jumplist|. |'jumpoptions'|
+opt.splitright     = true        -- Open vertical splits to the right. |'splitright'|
+opt.splitbelow     = true        -- Open horizontal splits below. |'splitbelow'|
+opt.updatetime     = 250         -- Delay (ms) before writing the swap file and firing |CursorHold|. |'updatetime'|
+opt.timeoutlen     = 500         -- Time (ms) to wait for a key sequence to complete. |'timeoutlen'|
+opt.undofile       = true        -- Persist undo history to disk; survives restarts. |'undofile'|
+opt.foldlevel      = 99          -- Start with all folds open. foldexpr is set per-buffer by treesitter/LSP. |'foldlevel'|
+opt.clipboard      = "unnamedplus" -- Synchronise the unnamed register with the system clipboard. |'clipboard'|
+opt.shortmess:append({ W = true, I = true, c = true }) -- Suppress various informational messages. |'shortmess'|
 
-options.tabstop = 4        -- 'tabstop': number of spaces a <Tab> counts for (:h tabstop)
-options.shiftwidth = 4     -- 'shiftwidth': spaces used for each step of (auto)indent
-options.expandtab = true   -- 'expandtab': insert spaces instead of a <Tab> character
-options.breakindent = true -- 'breakindent': wrapped lines preserve indentation visually
-
-options.wrap = false       -- 'wrap': disable soft line wrapping
-options.list = true        -- 'list': show 'listchars' markers for whitespace (:h listchars)
-options.listchars = {
-	tab = "│ ",
-	trail = "·",
-	nbsp = "␣",
-}
-
-options.ignorecase = true  -- 'ignorecase': case-insensitive search patterns (:h ignorecase)
-options.smartcase = true   -- 'smartcase': override ignorecase when pattern has uppercase
-options.incsearch = true   -- 'incsearch': show partial match as you type (:h incsearch)
-options.hlsearch = true    -- 'hlsearch': highlight all matches of last search
-
-options.updatetime = 250   -- 'updatetime': ms idle before CursorHold fires and swap writes
-options.timeoutlen = 500   -- 'timeoutlen': ms to wait for mapped key sequence to complete
-
-options.splitright = true  -- 'splitright': :vsplit opens new window to the right
-options.splitbelow = true  -- 'splitbelow': :split opens new window below
-
-for k, v in pairs(options) do
-	vim.opt[k] = v
-end
-
-if vim.fn.has("clipboard") == 1 then
-	vim.opt.clipboard = "unnamedplus" -- 'clipboard': sync unnamed register with system clipboard
-end
-
-vim.o.winborder = "rounded" -- 'winborder': default border style for all floating windows (0.12+)
-
--- vim.diagnostic.config: control virtual text, signs, and update behaviour (:h vim.diagnostic)
+-- Virtual text with a bullet prefix, sorted by severity, silent in insert mode.
+-- |vim.diagnostic.config()| |diagnostic-config|
 vim.diagnostic.config({
-	virtual_text = {
-		spacing = 2,
-		prefix = "●",
-	},
-	signs = true,
-	underline = true,
-	severity_sort = true,
+	virtual_text     = { spacing = 2, prefix = "●" },
+	signs            = true,
+	underline        = true,
+	severity_sort    = true,
 	update_in_insert = false,
 })
