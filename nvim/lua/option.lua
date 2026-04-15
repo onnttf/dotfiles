@@ -32,6 +32,12 @@ opt.timeoutlen     = 500         -- Time (ms) to wait for a key sequence to comp
 opt.undofile       = true        -- Persist undo history to disk; survives restarts. |'undofile'|
 opt.foldlevel      = 99          -- Start with all folds open. foldexpr is set per-buffer by treesitter/LSP. |'foldlevel'|
 opt.clipboard      = "unnamedplus" -- Synchronise the unnamed register with the system clipboard. |'clipboard'|
+opt.shelltemp       = false       -- Use temporary files for shell commands. |'shelltemp'| nvim 0.12+
+opt.maxsearchcount  = 999         -- Maximum value for |searchcount()|. |'maxsearchcount'| nvim 0.12+
+opt.wildchar        = 0x20        -- Enable completion in search contexts. |'wildchar'| nvim 0.12+
+opt.completeopt:append({ "nearest" }) -- Sort completion by distance to cursor. nvim 0.12+
+opt.pummaxwidth     = 80          -- Maximum width for completion popup menu. nvim 0.12+
+opt.diffopt:append({ "indent-heuristic", "inline:char" }) -- Use indent heuristic and show inline diff characters. |'diffopt'|
 opt.shortmess:append({ W = true, I = true, c = true }) -- Suppress various informational messages. |'shortmess'|
 
 -- Virtual text with a bullet prefix, sorted by severity, silent in insert mode.

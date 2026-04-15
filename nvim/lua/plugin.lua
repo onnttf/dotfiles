@@ -4,7 +4,12 @@ local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
 	local out = vim.fn.system({
-		"git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath,
+		"git",
+		"clone",
+		"--filter=blob:none",
+		"--branch=stable",
+		lazyrepo,
+		lazypath,
 	})
 	if vim.v.shell_error ~= 0 then
 		error("Error cloning lazy.nvim:\n" .. out)
@@ -15,22 +20,13 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
 	rocks = { enabled = false },
-	spec  = {
+	spec = {
 
 		-- which-key.nvim: display pending keymap completions in a popup.
 		-- <leader> shows only buffer-local maps (global=false). |which-key|
 		{
 			"folke/which-key.nvim",
 			opts = { icons = { mappings = false } },
-			keys = {
-				{
-					"<leader>",
-					function()
-						require("which-key").show({ global = false })
-					end,
-					desc = "Show Local Keymaps",
-				},
-			},
 		},
 
 		-- neo-tree.nvim: file system, document symbols, and buffer explorer.
@@ -46,9 +42,9 @@ require("lazy").setup({
 				require("neo-tree").setup({
 					use_default_mappings = false,
 					close_if_last_window = true,
-					popup_border_style   = "rounded",
-					sources              = { "filesystem", "document_symbols", "buffers" },
-					source_selector      = {
+					popup_border_style = "rounded",
+					sources = { "filesystem", "document_symbols", "buffers" },
+					source_selector = {
 						sources = {
 							{ source = "filesystem" },
 							{ source = "document_symbols" },
@@ -68,12 +64,12 @@ require("lazy").setup({
 					},
 					filesystem = {
 						follow_current_file = { enabled = true },
-						filtered_items      = {
+						filtered_items = {
 							show_hidden_count = true,
-							hide_dotfiles     = true,
-							hide_gitignored   = true,
-							hide_by_name      = { "node_modules" },
-							always_show       = { ".gitignore" },
+							hide_dotfiles = true,
+							hide_gitignored = true,
+							hide_by_name = { "node_modules" },
+							always_show = { ".gitignore" },
 						},
 						window = {
 							mappings = {
@@ -106,44 +102,44 @@ require("lazy").setup({
 										vim.cmd("Neotree reveal")
 									end
 								end,
-								["a"]    = { "add",  config = { show_path = "relative" } },
-								["d"]    = "delete",
-								["r"]    = "rename",
-								["c"]    = { "copy", config = { show_path = "relative" } },
-								["m"]    = { "move", config = { show_path = "relative" } },
-								["H"]    = "toggle_hidden",
+								["a"] = { "add", config = { show_path = "relative" } },
+								["d"] = "delete",
+								["r"] = "rename",
+								["c"] = { "copy", config = { show_path = "relative" } },
+								["m"] = { "move", config = { show_path = "relative" } },
+								["H"] = "toggle_hidden",
 								["<bs>"] = "navigate_up",
-								["."]    = "set_root",
-								["i"]    = "show_file_details",
+								["."] = "set_root",
+								["i"] = "show_file_details",
 							},
 							fuzzy_finder_mappings = {
 								["<down>"] = "move_cursor_down",
-								["<C-n>"]  = "move_cursor_down",
-								["<up>"]   = "move_cursor_up",
-								["<C-p>"]  = "move_cursor_up",
+								["<C-n>"] = "move_cursor_down",
+								["<up>"] = "move_cursor_up",
+								["<C-p>"] = "move_cursor_up",
 							},
 						},
 					},
 					document_symbols = { follow_cursor = true },
-					buffers          = {
+					buffers = {
 						follow_current_file = { enabled = true },
-						window              = { mappings = { ["d"] = "buffer_delete" } },
+						window = { mappings = { ["d"] = "buffer_delete" } },
 					},
 					event_handlers = {
 						{
-							event   = "file_open_requested",
+							event = "file_open_requested",
 							handler = function()
 								require("neo-tree.command").execute({ action = "close" })
 							end,
 						},
 						{
-							event   = "file_renamed",
+							event = "file_renamed",
 							handler = function(args)
 								print(args.source, " renamed to ", args.destination)
 							end,
 						},
 						{
-							event   = "file_moved",
+							event = "file_moved",
 							handler = function(args)
 								print(args.source, " moved to ", args.destination)
 							end,
@@ -167,13 +163,13 @@ require("lazy").setup({
 				local ts = require("nvim-treesitter")
 
 				local ignore_ft = {
-					["neo-tree"]         = true,
-					["neo-tree-popup"]   = true,
+					["neo-tree"] = true,
+					["neo-tree-popup"] = true,
 					["neo-tree-preview"] = true,
-					["help"]             = true,
-					["lazy"]             = true,
-					["mason"]            = true,
-					["checkhealth"]      = true,
+					["help"] = true,
+					["lazy"] = true,
+					["mason"] = true,
+					["checkhealth"] = true,
 				}
 
 				local function should_ignore(buf, ft)
@@ -187,7 +183,7 @@ require("lazy").setup({
 				end
 
 				local installing = {}
-				local pending    = {}
+				local pending = {}
 
 				local function parser_installed(lang)
 					return lang and lang ~= "" and #vim.api.nvim_get_runtime_file("parser/" .. lang .. ".*", false) > 0
@@ -210,7 +206,7 @@ require("lazy").setup({
 					if not lang or lang == "" then
 						return
 					end
-					pending[lang]      = pending[lang] or {}
+					pending[lang] = pending[lang] or {}
 					pending[lang][buf] = true
 					if parser_installed(lang) then
 						flush(lang)
@@ -230,7 +226,7 @@ require("lazy").setup({
 				end
 
 				vim.api.nvim_create_autocmd("FileType", {
-					group    = vim.api.nvim_create_augroup("ts_auto_install", { clear = true }),
+					group = vim.api.nvim_create_augroup("ts_auto_install", { clear = true }),
 					callback = function(ev)
 						if should_ignore(ev.buf, ev.match) then
 							return
@@ -246,7 +242,7 @@ require("lazy").setup({
 
 				-- Use treesitter folds unless LSP folding is already active. |vim.treesitter.foldexpr()|
 				vim.api.nvim_create_autocmd("BufReadPost", {
-					group    = vim.api.nvim_create_augroup("ts_folds", { clear = true }),
+					group = vim.api.nvim_create_augroup("ts_folds", { clear = true }),
 					callback = function()
 						if not vim.wo.foldexpr:find("lsp") then
 							vim.api.nvim_set_option_value("foldmethod", "expr", { win = 0 })
@@ -258,7 +254,7 @@ require("lazy").setup({
 				-- Disable treesitter indentation for filetypes where it is unreliable.
 				local indent_disable = { python = true, yaml = true, markdown = true }
 				vim.api.nvim_create_autocmd("FileType", {
-					group    = vim.api.nvim_create_augroup("ts_indent", { clear = true }),
+					group = vim.api.nvim_create_augroup("ts_indent", { clear = true }),
 					callback = function(ev)
 						if not indent_disable[ev.match] then
 							vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
@@ -293,7 +289,7 @@ require("lazy").setup({
 		{
 			"echasnovski/mini.statusline",
 			version = "*",
-			config  = function()
+			config = function()
 				local statusline = require("mini.statusline")
 				statusline.setup()
 				statusline.section_location = function()
@@ -314,21 +310,21 @@ require("lazy").setup({
 		-- Ghost text and auto-show documentation are enabled. |blink-cmp|
 		{
 			"saghen/blink.cmp",
-			version      = "1.*",
+			version = "1.*",
 			dependencies = "rafamadriz/friendly-snippets",
-			opts         = {
+			opts = {
 				keymap = {
-					preset     = "none",
-					["<Tab>"]   = { "select_next", "snippet_forward", "fallback" },
+					preset = "none",
+					["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
 					["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
-					["<Up>"]    = { "select_prev", "fallback" },
-					["<Down>"]  = { "select_next", "fallback" },
-					["<CR>"]    = { "accept", "fallback" },
+					["<Up>"] = { "select_prev", "fallback" },
+					["<Down>"] = { "select_next", "fallback" },
+					["<CR>"] = { "accept", "fallback" },
 				},
 				completion = {
 					menu = {
 						draw = {
-							padding    = { 0, 1 },
+							padding = { 0, 1 },
 							components = {
 								kind_icon = {
 									text = function(ctx)
@@ -339,11 +335,11 @@ require("lazy").setup({
 						},
 					},
 					documentation = { auto_show = true, auto_show_delay_ms = 500 },
-					ghost_text    = { enabled = true },
-					list          = { selection = { preselect = false, auto_insert = true } },
+					ghost_text = { enabled = true },
+					list = { selection = { preselect = false, auto_insert = true } },
 				},
 				cmdline = {
-					keymap     = { preset = "inherit" },
+					keymap = { preset = "inherit" },
 					completion = {
 						menu = {
 							-- Show menu only for ":" and "@" command lines.
@@ -352,7 +348,7 @@ require("lazy").setup({
 							end,
 						},
 						ghost_text = { enabled = true },
-						list       = { selection = { preselect = false, auto_insert = true } },
+						list = { selection = { preselect = false, auto_insert = true } },
 					},
 				},
 				sources = {
@@ -401,13 +397,21 @@ require("lazy").setup({
 				{ "theHamsta/nvim-dap-virtual-text" },
 			},
 			config = function()
-				local dap    = require("dap")
-				local dapui  = require("dapui")
+				local dap = require("dap")
+				local dapui = require("dapui")
 				dapui.setup()
-				dap.listeners.before.attach.dapui_config         = function() dapui.open() end
-				dap.listeners.before.launch.dapui_config         = function() dapui.open() end
-				dap.listeners.before.event_terminated.dapui_config = function() dapui.close() end
-				dap.listeners.before.event_exited.dapui_config   = function() dapui.close() end
+				dap.listeners.before.attach.dapui_config = function()
+					dapui.open()
+				end
+				dap.listeners.before.launch.dapui_config = function()
+					dapui.open()
+				end
+				dap.listeners.before.event_terminated.dapui_config = function()
+					dapui.close()
+				end
+				dap.listeners.before.event_exited.dapui_config = function()
+					dapui.close()
+				end
 				require("nvim-dap-virtual-text").setup()
 			end,
 			cmd = {
@@ -423,11 +427,10 @@ require("lazy").setup({
 		-- nvim-dap-go: Go-specific DAP adapter (dlv). Loaded only for Go buffers.
 		{
 			"leoluz/nvim-dap-go",
-			ft     = "go",
+			ft = "go",
 			config = function()
 				require("dap-go").setup({})
 			end,
 		},
-
 	},
 })
