@@ -1,0 +1,21 @@
+nvim/lua/plugins/conform.lua
+  ai_agent 1-16
+nvim/lua/plugins/fzf-lua.lua
+  ai_agent 1-6
+nvim/lua/plugins/blink-cmp.lua
+  ai_agent 1-86
+nvim/lua/plugins/gitsigns.lua
+  ai_agent 1-26
+nvim/lua/plugins/mini-statusline.lua
+  ai_agent 1-13
+nvim/lua/plugins/which-key.lua
+  ai_agent 1-8
+nvim/lua/plugins/mason.lua
+  ai_agent 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "a63018c124bde0c12bae0f3d47c1d118a7f55aba",
+  "prompts": {}
+}
