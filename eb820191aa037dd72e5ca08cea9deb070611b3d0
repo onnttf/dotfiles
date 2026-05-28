@@ -1,0 +1,13 @@
+nvim/init.lua
+  ai_agent 1-13
+nvim/lua/options.lua
+  ai_agent 1-60
+nvim/lua/keymaps.lua
+  ai_agent 1-117
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "eb820191aa037dd72e5ca08cea9deb070611b3d0",
+  "prompts": {}
+}

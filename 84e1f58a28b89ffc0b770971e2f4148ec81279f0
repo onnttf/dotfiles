@@ -1,0 +1,21 @@
+fish/functions/mysqlc.fish
+  s_2c7b3973ebd4c2::t_002b7b24a69657 1-2
+  s_2c7b3973ebd4c2::t_b556a2f88ced31 3
+  s_2c7b3973ebd4c2::t_190d2471ebadb2 16-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "84e1f58a28b89ffc0b770971e2f4148ec81279f0",
+  "prompts": {},
+  "sessions": {
+    "s_2c7b3973ebd4c2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b1e37100ffeYJaK6J32w8JXNq",
+        "model": "deepseek-v4-pro"
+      },
+      "human_author": "ZHANG PENG <onnttf@gmail.com>"
+    }
+  }
+}

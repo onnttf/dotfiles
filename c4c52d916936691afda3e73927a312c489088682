@@ -1,0 +1,9 @@
+bootstrap.sh
+  ai_agent 1-181
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "c4c52d916936691afda3e73927a312c489088682",
+  "prompts": {}
+}
