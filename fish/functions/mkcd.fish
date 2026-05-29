@@ -1,6 +1,6 @@
 function mkcd --description "Create a directory and cd into it"
     if test (count $argv) -ne 1
-        echo "Usage: mkcd <dir>" >&2
+        echo "Usage: mkcd <directory>" >&2
         return 1
     end
 

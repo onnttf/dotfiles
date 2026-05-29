@@ -4,10 +4,7 @@ function mysqlc --description "Open mysql with password"
         return 1
     end
 
-    if not command -q mysql
-        echo "mysqlc: mysql client is not installed" >&2
-        return 127
-    end
+    require_command mysql; or return
 
     mysql \
         --host="$argv[1]" \

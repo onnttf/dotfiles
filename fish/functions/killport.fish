@@ -4,8 +4,11 @@ function killport --description "Signal processes listening on a TCP port"
         return 1
     end
 
+    require_command lsof; or return
+
     set -l port "$argv[1]"
     set -l signal TERM
+
     if test (count $argv) -eq 2
         set signal "$argv[2]"
     end
@@ -16,6 +19,7 @@ function killport --description "Signal processes listening on a TCP port"
     end
 
     set -l pids (lsof -tiTCP:"$port" -sTCP:LISTEN)
+
     if test (count $pids) -eq 0
         echo "killport: no process is listening on port $port" >&2
         return 1
