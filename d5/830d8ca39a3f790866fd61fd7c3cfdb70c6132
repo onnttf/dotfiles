@@ -1,0 +1,12 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "d5830d8ca39a3f790866fd61fd7c3cfdb70c6132",
+  "prompts": {},
+  "humans": {
+    "h_71932c9e3382fc": {
+      "author": "ZHANG PENG <onnttf@gmail.com>"
+    }
+  }
+}
