@@ -1,0 +1,14 @@
+git/gitconfig
+  h_71932c9e3382fc 43,48-51,67-69,72,94-95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "3c27b7a074f01145f606284b7e7957be756a0737",
+  "prompts": {},
+  "humans": {
+    "h_71932c9e3382fc": {
+      "author": "ZHANG PENG <onnttf@gmail.com>"
+    }
+  }
+}
