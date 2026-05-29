@@ -1,11 +1,11 @@
-
+# Agent.
 .claude/
 .codex/
 .opencode/
 .agents/
 skills-lock.json
 
-
+# Editor.
 *.swp
 *.swo
 *.swn
@@ -20,7 +20,7 @@ Session.vim
 .vscode/
 *.sublime-workspace
 
-
+# System.
 .DS_Store
 .AppleDouble
 .LSOverride
