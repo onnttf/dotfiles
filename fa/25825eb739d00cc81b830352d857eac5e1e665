@@ -1,0 +1,26 @@
+nvim/lua/filetype_config/yaml.lua
+  h_71932c9e3382fc 1-4
+nvim/lua/filetype_config/typescript.lua
+  h_71932c9e3382fc 1-4
+nvim/lua/filetype_config/bash.lua
+  h_71932c9e3382fc 1-4
+nvim/lua/filetype_config/json.lua
+  h_71932c9e3382fc 1-4
+nvim/lua/filetype_config/lua.lua
+  h_71932c9e3382fc 1-4
+nvim/lua/filetype_config/go.lua
+  h_71932c9e3382fc 1-4
+nvim/lua/filetype.lua
+  h_71932c9e3382fc 1-461
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "fa25825eb739d00cc81b830352d857eac5e1e665",
+  "prompts": {},
+  "humans": {
+    "h_71932c9e3382fc": {
+      "author": "ZHANG PENG <onnttf@gmail.com>"
+    }
+  }
+}
