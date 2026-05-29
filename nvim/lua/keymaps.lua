@@ -1,38 +1,29 @@
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR><cmd>let @/ = ''<CR>", { desc = "Clear search highlight" })
+local function map(mode, lhs, rhs, desc, opts)
+	opts = vim.tbl_extend("force", {
+		silent = true,
+		noremap = true,
+		desc = desc,
+	}, opts or {})
 
-vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, desc = "Move down" })
-vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, desc = "Move up" })
+	vim.keymap.set(mode, lhs, rhs, opts)
+end
 
-vim.keymap.set("n", "Q", "<Nop>", { desc = "Disable Ex mode" })
+local function cmd(command)
+	return "<cmd>" .. command .. "<cr>"
+end
 
-vim.keymap.set("n", "[b", function()
-	vim.cmd.bprevious({ count = vim.v.count1 })
-end, { desc = "Previous buffer" })
-vim.keymap.set("n", "]b", function()
-	vim.cmd.bnext({ count = vim.v.count1 })
-end, { desc = "Next buffer" })
-vim.keymap.set("n", "[B", "<cmd>bfirst<CR>", { desc = "First buffer" })
-vim.keymap.set("n", "]B", "<cmd>blast<CR>", { desc = "Last buffer" })
+-- Editing.
+map("n", "<esc>", function()
+	vim.cmd.nohlsearch()
+	vim.fn.setreg("/", "")
+end, "Edit: Clear search highlight")
 
-vim.keymap.set("n", "[q", function()
-	vim.cmd.cprevious({ count = vim.v.count1 })
-end, { desc = "Previous quickfix" })
-vim.keymap.set("n", "]q", function()
-	vim.cmd.cnext({ count = vim.v.count1 })
-end, { desc = "Next quickfix" })
-vim.keymap.set("n", "[Q", "<cmd>cfirst<CR>", { desc = "First quickfix" })
-vim.keymap.set("n", "]Q", "<cmd>clast<CR>", { desc = "Last quickfix" })
+map("n", "j", "v:count == 0 ? 'gj' : 'j'", "Move: Down", { expr = true })
+map("n", "k", "v:count == 0 ? 'gk' : 'k'", "Move: Up", { expr = true })
 
-vim.keymap.set("n", "[l", function()
-	vim.cmd.lprevious({ count = vim.v.count1 })
-end, { desc = "Previous location" })
-vim.keymap.set("n", "]l", function()
-	vim.cmd.lnext({ count = vim.v.count1 })
-end, { desc = "Next location" })
-vim.keymap.set("n", "[L", "<cmd>lfirst<CR>", { desc = "First location" })
-vim.keymap.set("n", "]L", "<cmd>llast<CR>", { desc = "Last location" })
+map("n", "Q", "<nop>", "Edit: Disable Ex mode")
 
-vim.keymap.set("n", "[<Space>", function()
+map("n", "[<space>", function()
 	vim.api.nvim_buf_set_lines(
 		0,
 		vim.fn.line(".") - 1,
@@ -40,78 +31,160 @@ vim.keymap.set("n", "[<Space>", function()
 		false,
 		vim.fn["repeat"]({ "" }, vim.v.count1)
 	)
-end, { desc = "Add line above" })
-vim.keymap.set("n", "]<Space>", function()
+end, "Edit: Add line above")
+
+map("n", "]<space>", function()
 	vim.api.nvim_buf_set_lines(0, vim.fn.line("."), vim.fn.line("."), false, vim.fn["repeat"]({ "" }, vim.v.count1))
-end, { desc = "Add line below" })
+end, "Edit: Add line below")
 
-vim.keymap.set("v", "an", "an", { desc = "Select outer node" })
-vim.keymap.set("v", "in", "in", { desc = "Select inner node" })
-vim.keymap.set({ "n", "v" }, "]n", "]n", { desc = "Next treesitter node" })
-vim.keymap.set({ "n", "v" }, "[n", "[n", { desc = "Previous treesitter node" })
+-- Buffers.
+map("n", "[b", function()
+	vim.cmd.bprevious({ count = vim.v.count1 })
+end, "Buffer: Previous")
 
-vim.keymap.set({ "n", "v" }, "<leader>ff", function()
-	require("conform").format({ lsp_format = "fallback" })
-end, { desc = "Format" })
+map("n", "]b", function()
+	vim.cmd.bnext({ count = vim.v.count1 })
+end, "Buffer: Next")
 
-vim.keymap.set("n", "<leader>ut", function()
+map("n", "[B", cmd("bfirst"), "Buffer: First")
+map("n", "]B", cmd("blast"), "Buffer: Last")
+map("n", "<leader>bd", cmd("bdelete"), "Buffer: Delete")
+
+-- Quickfix.
+map("n", "[q", function()
+	vim.cmd.cprevious({ count = vim.v.count1 })
+end, "Quickfix: Previous")
+
+map("n", "]q", function()
+	vim.cmd.cnext({ count = vim.v.count1 })
+end, "Quickfix: Next")
+
+map("n", "[Q", cmd("cfirst"), "Quickfix: First")
+map("n", "]Q", cmd("clast"), "Quickfix: Last")
+map("n", "<leader>qo", cmd("copen"), "Quickfix: Open")
+map("n", "<leader>qc", cmd("cclose"), "Quickfix: Close")
+
+-- Location list.
+map("n", "[l", function()
+	vim.cmd.lprevious({ count = vim.v.count1 })
+end, "Location: Previous")
+
+map("n", "]l", function()
+	vim.cmd.lnext({ count = vim.v.count1 })
+end, "Location: Next")
+
+map("n", "[L", cmd("lfirst"), "Location: First")
+map("n", "]L", cmd("llast"), "Location: Last")
+
+-- Code.
+map({ "n", "x" }, "<leader>cf", function()
+	require("conform").format({
+		lsp_format = "fallback",
+	})
+end, "Code: Format")
+
+-- Search.
+map("n", "<leader>sf", function()
+	require("fzf-lua").files()
+end, "Search: Files")
+
+map("n", "<leader>sg", function()
+	require("fzf-lua").live_grep()
+end, "Search: Live grep")
+
+map("n", "<leader>sb", function()
+	require("fzf-lua").buffers()
+end, "Search: Buffers")
+
+map("n", "<leader>sh", function()
+	require("fzf-lua").helptags()
+end, "Search: Help tags")
+
+map("n", "<leader>sr", function()
+	require("fzf-lua").oldfiles()
+end, "Search: Recent files")
+
+map("n", "<leader>sw", function()
+	require("fzf-lua").grep_cword()
+end, "Search: Word under cursor")
+
+map("n", "<leader>sk", function()
+	require("fzf-lua").keymaps()
+end, "Search: Keymaps")
+
+map("n", "<leader>sc", function()
+	require("fzf-lua").commands()
+end, "Search: Commands")
+
+map("n", "<leader>sd", function()
+	require("fzf-lua").diagnostics_document()
+end, "Search: Document diagnostics")
+
+map("n", "<leader>sD", function()
+	require("fzf-lua").diagnostics_workspace()
+end, "Search: Workspace diagnostics")
+
+-- Git.
+local function diff_current_file_with_head()
+	local file = vim.fn.expand("%:p")
+
+	if file == "" then
+		vim.notify("No buffer to diff", vim.log.levels.WARN)
+		return
+	end
+
+	vim.fn.system({ "git", "rev-parse", "--is-inside-work-tree" })
+
+	if vim.v.shell_error ~= 0 then
+		vim.notify("Not in a git repo", vim.log.levels.WARN)
+		return
+	end
+
+	local rel = vim.fn.system({ "git", "ls-files", "--full-name", file }):gsub("%s+$", "")
+
+	if rel == "" then
+		vim.notify("File not tracked in git yet", vim.log.levels.WARN)
+		return
+	end
+
+	vim.cmd("packadd nvim.difftool")
+
+	local tmp = vim.fn.tempname()
+
+	vim.fn.system("git show HEAD:" .. vim.fn.shellescape(rel) .. " > " .. vim.fn.shellescape(tmp))
+
+	if vim.v.shell_error ~= 0 then
+		vim.notify("Failed to get HEAD version", vim.log.levels.WARN)
+		return
+	end
+
+	vim.cmd("DiffTool " .. vim.fn.fnameescape(tmp) .. " " .. vim.fn.fnameescape(file))
+end
+
+map("n", "<leader>gd", diff_current_file_with_head, "Git: Diff current file with HEAD")
+
+-- Debug.
+map("n", "<leader>dc", cmd("DapContinue"), "Debug: Continue")
+map("n", "<leader>db", cmd("DapToggleBreakpoint"), "Debug: Toggle breakpoint")
+map("n", "<leader>do", cmd("DapStepOver"), "Debug: Step over")
+map("n", "<leader>di", cmd("DapStepInto"), "Debug: Step into")
+map("n", "<leader>dO", cmd("DapStepOut"), "Debug: Step out")
+map("n", "<leader>dt", cmd("DapTerminate"), "Debug: Terminate")
+
+map("n", "<leader>dr", function()
+	require("dap").run_to_cursor()
+end, "Debug: Run to cursor")
+
+map("n", "<leader>dB", function()
+	require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
+end, "Debug: Conditional breakpoint")
+
+map("n", "<leader>dL", function()
+	require("dap").set_breakpoint(nil, nil, vim.fn.input("Log point message: "))
+end, "Debug: Log point")
+
+-- UI.
+map("n", "<leader>uu", function()
 	vim.cmd("packadd nvim.undotree")
 	require("nvim.undotree").open()
-end, { desc = "Undo tree" })
-
-vim.keymap.set("n", "<leader>gv", function()
-	local file = vim.fn.expand("%:p")
-	if file == "" then
-		return vim.notify("No buffer to diff", vim.log.levels.WARN)
-	end
-	vim.fn.system({ "git", "rev-parse", "--is-inside-work-tree" })
-	if vim.v.shell_error ~= 0 then
-		return vim.notify("Not in a git repo", vim.log.levels.WARN)
-	end
-	local rel = vim.fn.system({ "git", "ls-files", "--full-name", file }):gsub("%s+$", "")
-	if rel == "" then
-		return vim.notify("File not tracked in git yet", vim.log.levels.WARN)
-	end
-	vim.cmd("packadd nvim.difftool")
-	local tmp = vim.fn.tempname()
-	vim.fn.system("git show HEAD:" .. vim.fn.shellescape(rel) .. " > " .. vim.fn.shellescape(tmp))
-	if vim.v.shell_error ~= 0 then
-		return vim.notify("Failed to get HEAD version", vim.log.levels.WARN)
-	end
-	vim.cmd("DiffTool " .. vim.fn.fnameescape(tmp) .. " " .. vim.fn.fnameescape(file))
-end, { desc = "Git diff vs HEAD" })
-
-vim.keymap.set("n", "<leader>sf", function()
-	require("fzf-lua").files()
-end, { desc = "Find files" })
-vim.keymap.set("n", "<leader>sg", function()
-	require("fzf-lua").live_grep()
-end, { desc = "Live grep" })
-vim.keymap.set("n", "<leader>sb", function()
-	require("fzf-lua").buffers()
-end, { desc = "Buffers" })
-vim.keymap.set("n", "<leader>sh", function()
-	require("fzf-lua").helptags()
-end, { desc = "Help tags" })
-vim.keymap.set("n", "<leader>sr", function()
-	require("fzf-lua").oldfiles()
-end, { desc = "Recent files" })
-vim.keymap.set("n", "<leader>sw", function()
-	require("fzf-lua").grep_cword()
-end, { desc = "Grep word" })
-
-vim.keymap.set("n", "<F5>", "<cmd>DapContinue<CR>", { desc = "Continue" })
-vim.keymap.set("n", "<F9>", "<cmd>DapToggleBreakpoint<CR>", { desc = "Toggle breakpoint" })
-vim.keymap.set("n", "<F10>", "<cmd>DapStepOver<CR>", { desc = "Step over" })
-vim.keymap.set("n", "<F11>", "<cmd>DapStepInto<CR>", { desc = "Step into" })
-vim.keymap.set("n", "<F12>", "<cmd>DapStepOut<CR>", { desc = "Step out" })
-vim.keymap.set("n", "<leader>dt", "<cmd>DapTerminate<CR>", { desc = "Terminate" })
-vim.keymap.set("n", "<leader>dr", function()
-	require("dap").run_to_cursor()
-end, { desc = "Run to cursor" })
-vim.keymap.set("n", "<leader>db", function()
-	require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
-end, { desc = "Conditional breakpoint" })
-vim.keymap.set("n", "<leader>dL", function()
-	require("dap").set_breakpoint(nil, nil, vim.fn.input("Log point message: "))
-end, { desc = "Log point" })
+end, "UI: Undo tree")

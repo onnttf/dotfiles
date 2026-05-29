@@ -40,6 +40,21 @@ return {
 					hide_by_name = { "node_modules" },
 					always_show = { ".gitignore" },
 				},
+				commands = {
+					copy_path = function(state)
+						local node = state.tree:get_node()
+						local path = node.path or node:get_id()
+						vim.fn.setreg("+", path)
+						vim.notify("Copied path: " .. path)
+					end,
+					copy_relative_path = function(state)
+						local node = state.tree:get_node()
+						local path = node.path or node:get_id()
+						local relpath = vim.fn.fnamemodify(path, ":.")
+						vim.fn.setreg("+", relpath)
+						vim.notify("Copied relative path: " .. relpath)
+					end,
+				},
 				window = {
 					mappings = {
 						["h"] = function(state)
@@ -78,6 +93,8 @@ return {
 						["<bs>"] = "navigate_up",
 						["."] = "set_root",
 						["i"] = "show_file_details",
+						["Y"] = "copy_path",
+						["gy"] = "copy_relative_path",
 					},
 					fuzzy_finder_mappings = {
 						["<down>"] = "move_cursor_down",
