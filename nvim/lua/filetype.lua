@@ -112,7 +112,13 @@ local on_attach = function(client, bufnr)
 
 	-- Documentation.
 	if supports("textDocument/hover") then
-		map("n", "K", vim.lsp.buf.hover, "LSP: Hover")
+		map("n", "K", function()
+			vim.lsp.buf.hover({
+				max_width = math.min(80, math.floor(vim.o.columns * 0.6)),
+				max_height = math.min(20, math.floor(vim.o.lines * 0.5)),
+				border = "rounded",
+			})
+		end, "LSP: Hover")
 	end
 
 	if supports("textDocument/signatureHelp") then
