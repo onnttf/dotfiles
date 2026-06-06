@@ -124,45 +124,6 @@ map("n", "<leader>sD", function()
 	require("fzf-lua").diagnostics_workspace()
 end, "Search: Workspace diagnostics")
 
--- Git.
-local function diff_current_file_with_head()
-	local file = vim.fn.expand("%:p")
-
-	if file == "" then
-		vim.notify("No buffer to diff", vim.log.levels.WARN)
-		return
-	end
-
-	vim.fn.system({ "git", "rev-parse", "--is-inside-work-tree" })
-
-	if vim.v.shell_error ~= 0 then
-		vim.notify("Not in a git repo", vim.log.levels.WARN)
-		return
-	end
-
-	local rel = vim.fn.system({ "git", "ls-files", "--full-name", file }):gsub("%s+$", "")
-
-	if rel == "" then
-		vim.notify("File not tracked in git yet", vim.log.levels.WARN)
-		return
-	end
-
-	vim.cmd("packadd nvim.difftool")
-
-	local tmp = vim.fn.tempname()
-
-	vim.fn.system("git show HEAD:" .. vim.fn.shellescape(rel) .. " > " .. vim.fn.shellescape(tmp))
-
-	if vim.v.shell_error ~= 0 then
-		vim.notify("Failed to get HEAD version", vim.log.levels.WARN)
-		return
-	end
-
-	vim.cmd("DiffTool " .. vim.fn.fnameescape(tmp) .. " " .. vim.fn.fnameescape(file))
-end
-
-map("n", "<leader>gd", diff_current_file_with_head, "Git: Diff current file with HEAD")
-
 -- Debug.
 map("n", "<leader>dc", cmd("DapContinue"), "Debug: Continue")
 map("n", "<leader>db", cmd("DapToggleBreakpoint"), "Debug: Toggle breakpoint")
@@ -182,9 +143,3 @@ end, "Debug: Conditional breakpoint")
 map("n", "<leader>dL", function()
 	require("dap").set_breakpoint(nil, nil, vim.fn.input("Log point message: "))
 end, "Debug: Log point")
-
--- UI.
-map("n", "<leader>uu", function()
-	vim.cmd("packadd nvim.undotree")
-	require("nvim.undotree").open()
-end, "UI: Undo tree")
