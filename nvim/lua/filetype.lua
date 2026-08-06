@@ -63,20 +63,8 @@ local on_attach = function(client, bufnr)
 		})
 	end
 
-	local function type_hierarchy()
-		vim.ui.select(
-			{ "supertypes", "subtypes" },
-			{ prompt = "Type hierarchy:", kind = "typehierarchy" },
-			function(kind)
-				if kind then
-					vim.lsp.buf.typehierarchy(kind)
-				end
-			end
-		)
-	end
-
 	-- LSP meta.
-	map("n", "<leader>cl", "<cmd>checkhealth vim.lsp<cr>", "LSP: Info")
+	map("n", "<leader>li", "<cmd>checkhealth vim.lsp<cr>", "LSP: Info")
 	map("n", "<leader>ll", "<cmd>log lsp<cr>", "LSP: Log")
 
 	-- Navigation.
@@ -129,28 +117,21 @@ local on_attach = function(client, bufnr)
 	-- Code actions.
 	if supports("textDocument/rename") then
 		map("n", "grn", vim.lsp.buf.rename, "LSP: Rename")
-		map("n", "<leader>cr", vim.lsp.buf.rename, "LSP: Rename")
 	end
 
 	if supports("textDocument/codeAction") then
 		map({ "n", "x" }, "gra", vim.lsp.buf.code_action, "LSP: Code action")
-		map({ "n", "x" }, "<leader>ca", vim.lsp.buf.code_action, "LSP: Code action")
-		map("n", "<leader>cA", code_action("source"), "LSP: Source action")
-		map("n", "<leader>co", code_action("source.organizeImports"), "LSP: Organize imports")
+		map("n", "<leader>lo", code_action("source.organizeImports"), "LSP: Organize imports")
 	end
 
 	-- Formatting.
 	if supports("textDocument/formatting") or supports("textDocument/rangeFormatting") then
-		map({ "n", "x" }, "<leader>cf", format, "LSP: Format")
+		map({ "n", "x" }, "<leader>lf", format, "LSP: Format")
 	end
 
 	-- Code lens.
 	if supports("textDocument/codeLens") then
 		map("n", "grx", vim.lsp.codelens.run, "LSP: Run code lens")
-		map("n", "<leader>cc", vim.lsp.codelens.run, "LSP: Run code lens")
-		map("n", "<leader>cR", function()
-			vim.lsp.codelens.refresh({ bufnr = bufnr })
-		end, "LSP: Refresh code lens")
 	end
 
 	-- Workspace folders.
@@ -163,7 +144,7 @@ local on_attach = function(client, bufnr)
 
 	-- Inlay hints.
 	if supports("textDocument/inlayHint") then
-		map("n", "<leader>li", toggle_inlay_hints, "LSP: Toggle inlay hints")
+		map("n", "<leader>lh", toggle_inlay_hints, "LSP: Toggle inlay hints")
 	end
 
 	-- Semantic tokens.
@@ -184,7 +165,7 @@ local on_attach = function(client, bufnr)
 			})
 		end, "LSP: Toggle document colors")
 
-		map("n", "<leader>cp", vim.lsp.document_color.color_presentation, "LSP: Color presentation")
+		map("n", "<leader>lp", vim.lsp.document_color.color_presentation, "LSP: Color presentation")
 	end
 
 	-- Linked editing.
@@ -206,10 +187,6 @@ local on_attach = function(client, bufnr)
 		map("n", "<leader>lco", vim.lsp.buf.outgoing_calls, "LSP: Outgoing calls")
 	end
 
-	-- Type hierarchy.
-	if supports("textDocument/prepareTypeHierarchy") then
-		map("n", "<leader>lH", type_hierarchy, "LSP: Type hierarchy")
-	end
 
 	-- Folding.
 	if supports("textDocument/foldingRange") then

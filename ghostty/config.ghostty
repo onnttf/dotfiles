@@ -1,0 +1,23 @@
+# Treat only the left Option key as Alt; keep the right Option key available for macOS character input.
+macos-option-as-alt = left
+
+# Distribute space left over after fitting whole terminal cells across all four window edges.
+window-padding-balance = true
+
+# Render the terminal background at 85% opacity (disabled by Ghostty in native macOS fullscreen).
+background-opacity = 0.85
+
+# Apply the configured opacity to cells with explicit background colors, such as those drawn by Neovim.
+background-opacity-cells = true
+
+# Blur the translucent background using Ghostty's default blur intensity.
+background-blur = true
+
+# Disable contextual alternates, which fonts commonly use for programming ligatures.
+font-feature = -calt
+
+# Hide the pointer while typing and show it again when the mouse is used.
+mouse-hide-while-typing = true
+
+# Do not automatically copy text merely because it is selected.
+copy-on-select = false

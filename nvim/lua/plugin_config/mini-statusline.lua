@@ -2,7 +2,6 @@
 return {
 	"echasnovski/mini.statusline",
 	version = "*",
-	event = "VeryLazy",
 	config = function()
 		local statusline = require("mini.statusline")
 		statusline.setup()

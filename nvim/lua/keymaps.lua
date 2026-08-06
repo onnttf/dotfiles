@@ -23,6 +23,39 @@ map("n", "k", "v:count == 0 ? 'gk' : 'k'", "Move: Up", { expr = true })
 
 map("n", "Q", "<nop>", "Edit: Disable Ex mode")
 
+-- Treesitter incremental selection, with LSP selection-range fallback.
+map({ "x", "o" }, "an", function()
+	if vim.treesitter.get_parser(nil, nil, { error = false }) then
+		vim.treesitter.select("parent", vim.v.count1)
+	else
+		vim.lsp.buf.selection_range(vim.v.count1)
+	end
+end, "Select: Parent node")
+
+map({ "x", "o" }, "in", function()
+	if vim.treesitter.get_parser(nil, nil, { error = false }) then
+		vim.treesitter.select("child", vim.v.count1)
+	else
+		vim.lsp.buf.selection_range(-vim.v.count1)
+	end
+end, "Select: Child node")
+
+map("x", "]n", function()
+	vim.treesitter.select("next", vim.v.count1)
+end, "Select: Next node")
+
+map("x", "[n", function()
+	vim.treesitter.select("prev", vim.v.count1)
+end, "Select: Previous node")
+
+map("x", "]N", function()
+	vim.treesitter.select("extend_next", vim.v.count1)
+end, "Select: Next sibling node")
+
+map("x", "[N", function()
+	vim.treesitter.select("extend_prev", vim.v.count1)
+end, "Select: Previous sibling node")
+
 map("n", "[<space>", function()
 	vim.api.nvim_buf_set_lines(
 		0,
@@ -36,6 +69,11 @@ end, "Edit: Add line above")
 map("n", "]<space>", function()
 	vim.api.nvim_buf_set_lines(0, vim.fn.line("."), vim.fn.line("."), false, vim.fn["repeat"]({ "" }, vim.v.count1))
 end, "Edit: Add line below")
+
+map("n", "<leader>u", function()
+	vim.cmd.packadd("nvim.undotree")
+	vim.cmd.Undotree()
+end, "Edit: Undo tree")
 
 -- Buffers.
 map("n", "[b", function()
@@ -76,12 +114,44 @@ end, "Location: Next")
 map("n", "[L", cmd("lfirst"), "Location: First")
 map("n", "]L", cmd("llast"), "Location: Last")
 
--- Code.
-map({ "n", "x" }, "<leader>cf", function()
+-- LSP.
+map({ "n", "x" }, "<leader>lf", function()
 	require("conform").format({
 		lsp_format = "fallback",
 	})
-end, "Code: Format")
+end, "LSP: Format")
+
+-- Copy.
+local function copy(value, label)
+	vim.fn.setreg("+", value)
+	vim.notify(("Copied %s: %s"):format(label, value))
+end
+
+map("n", "<leader>cp", function()
+	copy(vim.api.nvim_buf_get_name(0), "path")
+end, "Copy: Absolute path")
+
+map("n", "<leader>cr", function()
+	copy(vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":."), "relative path")
+end, "Copy: Relative path")
+
+map("n", "<leader>cd", function()
+	local diagnostics = vim.diagnostic.get(0, { lnum = vim.api.nvim_win_get_cursor(0)[1] - 1 })
+	if #diagnostics == 0 then
+		vim.notify("No diagnostics on current line", vim.log.levels.INFO)
+		return
+	end
+
+	copy(
+		table.concat(
+			vim.tbl_map(function(diagnostic)
+				return diagnostic.message
+			end, diagnostics),
+			"\n"
+		),
+		"diagnostics"
+	)
+end, "Copy: Line diagnostics")
 
 -- Search.
 map("n", "<leader>sf", function()

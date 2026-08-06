@@ -1,6 +1,6 @@
 # dotfiles
 
-A small, opinionated macOS dotfiles setup for Git, fish, Neovim, and everyday developer tooling.
+A small, opinionated macOS dotfiles setup for Git, Ghostty, fish, Neovim, and everyday developer tooling.
 
 ## Usage
 
@@ -23,6 +23,7 @@ The script is macOS-only. It first prints the operations it plans to run, then w
 - Creates an ed25519 SSH key if `~/.ssh/id_ed25519` does not exist.
 - Copies `git/gitconfig` to `~/.gitconfig`.
 - Copies `git/ignore` to `~/.config/git/ignore`.
+- Copies `ghostty/config.ghostty` to `~/.config/ghostty/config.ghostty`.
 - Copies `fish/conf.d`, `fish/functions`, and `nvim` into `~/.config`.
 
 Existing config paths that need to be replaced are backed up as `.bak.YYYYmmddHHMMSS` after confirmation.

@@ -58,3 +58,18 @@ vim.diagnostic.config({
 	severity_sort = true,
 	update_in_insert = false,
 })
+
+-- Let Ghostty provide the editor background so terminal transparency remains visible.
+local transparent_groups = {
+	"Normal",
+	"NormalNC",
+	"EndOfBuffer",
+	"SignColumn",
+}
+
+for _, group in ipairs(transparent_groups) do
+	vim.api.nvim_set_hl(0, group, {
+		bg = "NONE",
+		ctermbg = "NONE",
+	})
+end

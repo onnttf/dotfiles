@@ -361,6 +361,7 @@ plan_config_copy() {
 plan_config_files() {
     plan_config_copy "$DOTFILES_DIR/git/gitconfig" "$HOME/.gitconfig"
     plan_config_copy "$DOTFILES_DIR/git/ignore" "$HOME/.config/git/ignore"
+    plan_config_copy "$DOTFILES_DIR/ghostty/config.ghostty" "$HOME/.config/ghostty/config.ghostty"
     plan_config_copy "$DOTFILES_DIR/fish/conf.d" "$HOME/.config/fish/conf.d"
     plan_config_copy "$DOTFILES_DIR/fish/functions" "$HOME/.config/fish/functions"
     plan_config_copy "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
