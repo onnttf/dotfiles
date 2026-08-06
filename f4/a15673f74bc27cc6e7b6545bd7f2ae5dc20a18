@@ -1,0 +1,44 @@
+nvim/lua/keymaps.lua
+  s_57599ae47ce1ab::t_3577b6e9f863e8 26-58
+  s_57599ae47ce1ab::t_f01bd4b3bb170f 73-77
+  s_57599ae47ce1ab::t_bbf63559176aec 117-118,122-154
+ghostty/config.ghostty
+  s_85a36a55ca6031::t_7fc58e10b76b62 1-23
+nvim/lua/autocmds.lua
+  s_57599ae47ce1ab::t_f094e3805a971c 65-69
+nvim/lua/filetype.lua
+  s_57599ae47ce1ab::t_318d1931db2c0c 67,124,129,147,168
+README.md
+  s_85a36a55ca6031::t_55e0033a7ab63f 3,26
+nvim/lua/options.lua
+  s_57599ae47ce1ab::t_a1a54a94a32c85 62-75
+  s_57599ae47ce1ab::t_4d56db8d41e006 61
+nvim/lua/plugin_config/which-key.lua
+  s_57599ae47ce1ab::t_6b1b0c1474d24f 11
+bootstrap.sh
+  s_85a36a55ca6031::t_78fe496f053a2e 364
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f4a15673f74bc27cc6e7b6545bd7f2ae5dc20a18",
+  "prompts": {},
+  "sessions": {
+    "s_57599ae47ce1ab": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "019fd5bd-cbb9-71b3-8a1d-4042459c2895",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "ZHANG PENG <onnttf@gmail.com>"
+    },
+    "s_85a36a55ca6031": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "019fd66e-4b96-7fd4-b4d9-2043175f3ea2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "ZHANG PENG <onnttf@gmail.com>"
+    }
+  }
+}
