@@ -1,0 +1,37 @@
+nvim/lua/plugin_config/mini-statusline.lua
+  s_85a36a55ca6031::t_d5f81b39db4ea6 7-13
+nvim/lua/options.lua
+  s_85a36a55ca6031::t_529563f35ef906 51
+nvim/lua/plugin_config/neo-tree.lua
+  s_85a36a55ca6031::t_a96ca228a9bd22 22
+  s_85a36a55ca6031::t_29dc8d3daab152 33
+  s_85a36a55ca6031::t_d16092bc02a316 11-18,51,54,80,82
+nvim/lua/plugin_config/blink-cmp.lua
+  s_85a36a55ca6031::t_c0ebe12c34285b 7-11,14,23,29-30,41
+nvim/lua/plugin_config/dap-go.lua
+  s_85a36a55ca6031::t_319c4a5536792e 4
+nvim/lua/autocmds.lua
+  s_85a36a55ca6031::t_dc7830aa535155 19-34
+nvim/lua/plugin_config/nvim-treesitter.lua
+  s_85a36a55ca6031::t_2cc817f06229e1 6-8,12-15,18-19,22-24,26-32,34-38,40-58,62-65,68-70,73-79,84-85,88
+nvim/lua/plugin_config/gitsigns.lua
+  s_85a36a55ca6031::t_923852d545e4ad 15
+nvim/lua/keymaps.lua
+  s_85a36a55ca6031::t_5564aad1e87977 26-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "1c6eb96d411b37eba4a0d75f78568689bf2eba99",
+  "prompts": {},
+  "sessions": {
+    "s_85a36a55ca6031": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "019fd66e-4b96-7fd4-b4d9-2043175f3ea2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "ZHANG PENG <onnttf@gmail.com>"
+    }
+  }
+}
