@@ -11,16 +11,7 @@ return {
 			changedelete = { text = "~" },
 			untracked = { text = "┆" },
 		},
-		signcolumn = true,
-		sign_priority = 6,
-		word_diff = false,
 		current_line_blame = true,
-		current_line_blame_opts = {
-			virt_text = true,
-			virt_text_pos = "eol",
-			delay = 500,
-		},
-		-- Internal diff engine for performance
-		diff_opts = { internal = true },
+		current_line_blame_opts = { delay = 500 },
 	},
 }

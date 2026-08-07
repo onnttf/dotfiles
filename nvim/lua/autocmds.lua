@@ -16,6 +16,22 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
+vim.api.nvim_create_autocmd("WinEnter", {
+	group = augroup,
+	desc = "Highlight cursor line in active window",
+	callback = function()
+		vim.wo.cursorline = true
+	end,
+})
+
+vim.api.nvim_create_autocmd("WinLeave", {
+	group = augroup,
+	desc = "Hide cursor line in inactive window",
+	callback = function()
+		vim.wo.cursorline = false
+	end,
+})
+
 vim.api.nvim_create_autocmd("BufWritePre", {
 	group = augroup,
 	desc = "Create missing parent dirs on save",
@@ -47,16 +63,6 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
-vim.api.nvim_create_autocmd("FileType", {
-	group = vim.api.nvim_create_augroup("ts_highlight", { clear = true }),
-	desc = "Enable treesitter syntax highlighting",
-	callback = function(ev)
-		local lang = vim.treesitter.language.get_lang(ev.match)
-		if lang then
-			pcall(vim.treesitter.start, ev.buf, lang)
-		end
-	end,
-})
 
 vim.api.nvim_create_autocmd("BufReadPost", {
 	group = augroup,

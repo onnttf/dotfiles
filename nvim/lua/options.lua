@@ -48,6 +48,7 @@ opt.pumborder = "rounded"
 
 opt.diffopt:append({ "indent-heuristic", "inline:char" })
 opt.fillchars:append({ foldinner = "│" })
+opt.fillchars:append({ vert = "│" })
 
 opt.shortmess:append({ W = true, I = true, c = true })
 

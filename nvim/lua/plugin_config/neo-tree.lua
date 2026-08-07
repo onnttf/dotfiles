@@ -8,10 +8,18 @@ return {
 	},
 	cmd = "Neotree",
 	config = function()
+		local function copy_path(state, modifier, label)
+			local node = state.tree:get_node()
+			local path = node.path or node:get_id()
+			path = vim.fn.fnamemodify(path, modifier)
+			vim.fn.setreg("+", path)
+			vim.notify(("Copied %s: %s"):format(label, path))
+		end
+
 		require("neo-tree").setup({
 			use_default_mappings = false,
 			close_if_last_window = true,
-			popup_border_style = "rounded",
+			popup_border_style = "none",
 			sources = { "filesystem", "document_symbols", "buffers" },
 			source_selector = {
 				sources = {
@@ -22,6 +30,7 @@ return {
 			},
 			window = {
 				position = "float",
+				popup = { border = "none", title = "" },
 				mappings = {
 					["<"] = "prev_source",
 					[">"] = "next_source",
@@ -34,25 +43,15 @@ return {
 			filesystem = {
 				follow_current_file = { enabled = true },
 				filtered_items = {
-					show_hidden_count = true,
-					hide_dotfiles = true,
-					hide_gitignored = true,
 					hide_by_name = { "node_modules" },
 					always_show = { ".gitignore" },
 				},
 				commands = {
 					copy_path = function(state)
-						local node = state.tree:get_node()
-						local path = node.path or node:get_id()
-						vim.fn.setreg("+", path)
-						vim.notify("Copied path: " .. path)
+						copy_path(state, ":p", "path")
 					end,
 					copy_relative_path = function(state)
-						local node = state.tree:get_node()
-						local path = node.path or node:get_id()
-						local relpath = vim.fn.fnamemodify(path, ":.")
-						vim.fn.setreg("+", relpath)
-						vim.notify("Copied relative path: " .. relpath)
+						copy_path(state, ":.", "relative path")
 					end,
 				},
 				window = {
@@ -78,9 +77,9 @@ return {
 						["<tab>"] = function(state)
 							local node = state.tree:get_node()
 							if require("neo-tree.utils").is_expandable(node) then
-								state.commands["toggle_node"](state)
+								state.commands.toggle_node(state)
 							else
-								state.commands["open"](state)
+								state.commands.open(state)
 								vim.cmd("Neotree reveal")
 							end
 						end,
@@ -96,17 +95,10 @@ return {
 						["Y"] = "copy_path",
 						["gy"] = "copy_relative_path",
 					},
-					fuzzy_finder_mappings = {
-						["<down>"] = "move_cursor_down",
-						["<C-n>"] = "move_cursor_down",
-						["<up>"] = "move_cursor_up",
-						["<C-p>"] = "move_cursor_up",
-					},
 				},
 			},
 			document_symbols = { follow_cursor = true },
 			buffers = {
-				follow_current_file = { enabled = true },
 				window = { mappings = { ["d"] = "buffer_delete" } },
 			},
 			event_handlers = {
@@ -114,18 +106,6 @@ return {
 					event = "file_open_requested",
 					handler = function()
 						require("neo-tree.command").execute({ action = "close" })
-					end,
-				},
-				{
-					event = "file_renamed",
-					handler = function(args)
-						print(args.source, " renamed to ", args.destination)
-					end,
-				},
-				{
-					event = "file_moved",
-					handler = function(args)
-						print(args.source, " moved to ", args.destination)
 					end,
 				},
 			},

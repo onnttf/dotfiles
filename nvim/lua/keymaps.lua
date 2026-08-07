@@ -23,6 +23,9 @@ map("n", "k", "v:count == 0 ? 'gk' : 'k'", "Move: Up", { expr = true })
 
 map("n", "Q", "<nop>", "Edit: Disable Ex mode")
 
+map({ "n", "x", "o" }, "0", "^", "Move: First non-blank character")
+map({ "n", "x", "o" }, "$", "g_", "Move: Last non-blank character")
+
 -- Treesitter incremental selection, with LSP selection-range fallback.
 map({ "x", "o" }, "an", function()
 	if vim.treesitter.get_parser(nil, nil, { error = false }) then

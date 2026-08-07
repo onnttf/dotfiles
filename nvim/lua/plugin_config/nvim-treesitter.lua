@@ -2,84 +2,90 @@
 return {
 	"nvim-treesitter/nvim-treesitter",
 	build = ":TSUpdate",
-	event = { "BufReadPost", "BufNewFile" },
 	config = function()
-		local ts_config = require("nvim-treesitter.config")
-		local parsers = require("nvim-treesitter.parsers")
-		local install = require("nvim-treesitter.install").install
-
-		vim.api.nvim_create_autocmd("BufReadPost", {
-			group = vim.api.nvim_create_augroup("ts_folds", { clear = true }),
-			callback = function()
-				if not vim.wo.foldexpr:find("lsp") then
-					vim.api.nvim_set_option_value("foldmethod", "expr", { win = 0 })
-					vim.api.nvim_set_option_value("foldexpr", "v:lua.vim.treesitter.foldexpr()", { win = 0 })
-				end
-			end,
-		})
-
-		local ignore_ft = {
+		local treesitter = require("nvim-treesitter")
+		local installing = {}
+		local ignored_filetypes = {
 			["neo-tree"] = true,
 			["neo-tree-popup"] = true,
 			["neo-tree-preview"] = true,
-			["help"] = true,
-			["lazy"] = true,
-			["mason"] = true,
-			["checkhealth"] = true,
+			help = true,
+			lazy = true,
+			mason = true,
+			checkhealth = true,
 		}
 
-		local installing = {}
-
-		local function parser_installed(lang)
-			return lang and lang ~= "" and #vim.api.nvim_get_runtime_file("parser/" .. lang .. ".*", false) > 0
+		local function parser_installed(language)
+			return #vim.api.nvim_get_runtime_file("parser/" .. language .. ".*", false) > 0
 		end
 
-		local function should_install(buf, ft)
-			if ignore_ft[ft] or vim.bo[buf].buftype ~= "" then
-				return false
+		local function enable(bufnr, winid, language)
+			if not vim.api.nvim_buf_is_valid(bufnr) or not parser_installed(language) then
+				return
 			end
-			if vim.list_contains(ts_config.get_installed(), ft) then
-				return false
+
+			pcall(vim.treesitter.start, bufnr, language)
+			if vim.api.nvim_win_is_valid(winid) and vim.api.nvim_win_get_buf(winid) == bufnr then
+				if not vim.wo[winid].foldexpr:find("lsp", 1, true) then
+					vim.wo[winid].foldmethod = "expr"
+					vim.wo[winid].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+				end
 			end
-			if parser_installed(ft) then
-				return false
+		end
+
+		local function install_and_enable(bufnr, winid, language)
+			if installing[language] then
+				return
 			end
-			if not parsers[ft] then
-				return false
-			end
-			return true
+
+			installing[language] = true
+			treesitter.install({ language }, { summary = false }):await(function(err)
+				installing[language] = nil
+				if err then
+					vim.schedule(function()
+						vim.notify(("Failed to install Treesitter parser %s: %s"):format(language, err), vim.log.levels.WARN)
+					end)
+					return
+				end
+				vim.schedule(function()
+					enable(bufnr, winid, language)
+				end)
+			end)
+		end
+
+		local available = {}
+		for _, language in ipairs(treesitter.get_available()) do
+			available[language] = true
 		end
 
 		vim.api.nvim_create_autocmd("FileType", {
-			group = vim.api.nvim_create_augroup("ts_auto_install", { clear = true }),
-			callback = function(ev)
-				if not should_install(ev.buf, ev.match) then
+			group = vim.api.nvim_create_augroup("treesitter_features", { clear = true }),
+			desc = "Install parsers and enable Treesitter features",
+			callback = function(event)
+				if ignored_filetypes[event.match] or vim.bo[event.buf].buftype ~= "" then
 					return
 				end
-				local lang = vim.treesitter.language.get_lang(ev.match) or ev.match
-				if installing[lang] then
+
+				local language = vim.treesitter.language.get_lang(event.match) or event.match
+				if not available[language] then
 					return
 				end
-				installing[lang] = true
-				vim.schedule(function()
-					install({ lang }, { summary = false })
-					installing[lang] = nil
-					if vim.api.nvim_buf_is_loaded(ev.buf) then
-						pcall(vim.treesitter.start, ev.buf, lang)
-					end
-				end)
+
+				local winid = vim.api.nvim_get_current_win()
+				if parser_installed(language) then
+					enable(event.buf, winid, language)
+				else
+					install_and_enable(event.buf, winid, language)
+				end
 			end,
 		})
 
 		local essentials = { "lua", "vim", "vimdoc", "query" }
-		local installed = ts_config.get_installed()
-		local missing = vim.tbl_filter(function(l)
-			return not vim.list_contains(installed, l)
+		local missing = vim.tbl_filter(function(language)
+			return not parser_installed(language)
 		end, essentials)
 		if #missing > 0 then
-			vim.schedule(function()
-				install(missing, { summary = false })
-			end)
+			treesitter.install(missing, { summary = false })
 		end
 	end,
 }
