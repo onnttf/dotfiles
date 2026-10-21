@@ -474,6 +474,8 @@ apply_all() {
 plan_all
 print_plan
 
-if confirm_plan; then
-    apply_all
+if ! confirm_plan; then
+    exit 0
 fi
+# Keep application outside an if-condition so Bash errexit remains active.
+apply_all
