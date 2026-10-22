@@ -27,14 +27,11 @@ DOTFILES_REPO="https://github.com/onnttf/dotfiles.git"
 BREW_PREFIX=$([[ "$(uname -m)" == "arm64" ]] && echo "/opt/homebrew" || echo "/usr/local")
 FISH_PATH="${BREW_PREFIX}/bin/fish"
 SSH_KEY="$HOME/.ssh/id_ed25519"
-GITCONFIG_LOCAL="$HOME/.gitconfig.local"
-FISH_LOCAL="$HOME/.config/fish/local.fish"
 
 PLAN_HOME=()
 PLAN_SHELL=()
 PLAN_SSH=()
 PLAN_CONFIG=()
-PLAN_LOCAL=()
 CHANGE_COUNT=0
 
 NEED_CLONE=0
@@ -45,8 +42,6 @@ NEED_FISH_SHELLS=0
 NEED_CHSH=0
 NEED_SSH_DIR=0
 NEED_SSH_KEY=0
-NEED_GITCONFIG_LOCAL=0
-NEED_FISH_LOCAL=0
 
 CONFIG_SRC=()
 CONFIG_DEST=()
@@ -66,7 +61,6 @@ add_plan() {
         shell) PLAN_SHELL+=("$line") ;;
         ssh) PLAN_SSH+=("$line") ;;
         config) PLAN_CONFIG+=("$line") ;;
-        local) PLAN_LOCAL+=("$line") ;;
         *) error "unknown plan group: $group"; exit 1 ;;
     esac
 
@@ -92,11 +86,10 @@ print_plan() {
     header "planned operations"
     info "dotfiles root: $DOTFILES_DIR"
 
-    print_group "homebrew" "${PLAN_HOME[@]}"
-    print_group "fish shell" "${PLAN_SHELL[@]}"
-    print_group "ssh key" "${PLAN_SSH[@]}"
-    print_group "config files" "${PLAN_CONFIG[@]}"
-    print_group "machine-local scaffolds" "${PLAN_LOCAL[@]}"
+    print_group "homebrew" ${PLAN_HOME[@]+"${PLAN_HOME[@]}"}
+    print_group "fish shell" ${PLAN_SHELL[@]+"${PLAN_SHELL[@]}"}
+    print_group "ssh key" ${PLAN_SSH[@]+"${PLAN_SSH[@]}"}
+    print_group "config files" ${PLAN_CONFIG[@]+"${PLAN_CONFIG[@]}"}
 }
 
 confirm_plan() {
@@ -326,6 +319,19 @@ apply_ssh_key() {
     fi
 }
 
+config_backup_path() {
+    local base="${1}.bak.$(date +%Y%m%d%H%M%S)"
+    local candidate="$base"
+    local suffix=0
+
+    while [[ -e "$candidate" || -L "$candidate" ]]; do
+        suffix=$((suffix + 1))
+        candidate="${base}.${suffix}"
+    done
+
+    printf '%s\n' "$candidate"
+}
+
 plan_config_copy() {
     local src="$1"
     local dest="$2"
@@ -337,18 +343,19 @@ plan_config_copy() {
         return 0
     fi
 
-    if [[ ! -e "$dest" && ! -L "$dest" ]]; then
+    if [[ -L "$dest" ]]; then
+        error "configuration path is a symlink: $dest; handle it manually before deploying"
+        exit 1
+    fi
+
+    if [[ ! -e "$dest" ]]; then
         add_plan config do "copy $src -> $dest"
-    elif [[ -L "$dest" ]]; then
-        action="replace"
-        backup="${dest}.bak.$(date +%Y%m%d%H%M%S)"
-        add_plan config do "backup symlink $dest -> $backup; copy $src -> $dest"
     elif diff -qr "$src" "$dest" >/dev/null 2>&1; then
         action="skip"
         add_plan config skip "$dest already matches $src"
     else
         action="replace"
-        backup="${dest}.bak.$(date +%Y%m%d%H%M%S)"
+        backup="$(config_backup_path "$dest")"
         add_plan config do "backup $dest -> $backup; copy $src -> $dest"
     fi
 
@@ -385,63 +392,22 @@ apply_config_files() {
         mkdir -p "$(dirname "$dest")"
 
         if [[ "$action" == "replace" ]]; then
-            mv -- "$dest" "$backup"
+            if [[ -e "$backup" || -L "$backup" ]]; then
+                error "backup path is now occupied: $backup; rerun bootstrap to plan again"
+                exit 1
+            fi
+
+            mv -n -- "$dest" "$backup"
+            if [[ -e "$dest" || -L "$dest" ]]; then
+                error "could not back up $dest; leaving configuration unchanged"
+                exit 1
+            fi
             info "backed up: $dest -> $backup"
         fi
 
         ditto "$src" "$dest"
         success "copied: $src -> $dest"
     done
-}
-
-plan_local_scaffolds() {
-    if [[ -e "$GITCONFIG_LOCAL" ]]; then
-        add_plan local skip "$GITCONFIG_LOCAL exists"
-    else
-        NEED_GITCONFIG_LOCAL=1
-        add_plan local do "create $GITCONFIG_LOCAL"
-    fi
-
-    if [[ -e "$FISH_LOCAL" ]]; then
-        add_plan local skip "$FISH_LOCAL exists"
-    else
-        NEED_FISH_LOCAL=1
-        add_plan local do "create $FISH_LOCAL"
-    fi
-}
-
-apply_local_scaffolds() {
-    header "machine-local scaffolds"
-
-    if [[ "$NEED_GITCONFIG_LOCAL" -eq 1 ]]; then
-        cat >"$GITCONFIG_LOCAL" <<'LOCAL_GITCONFIG'
-# Machine-local Git overrides.
-# Loaded from ~/.gitconfig via [include].
-# This file is not tracked by the dotfiles repository.
-
-# [user]
-#     email = you@example.com
-LOCAL_GITCONFIG
-        success "scaffolded: $GITCONFIG_LOCAL"
-    else
-        success "exists, leaving alone: $GITCONFIG_LOCAL"
-    fi
-
-    mkdir -p "$(dirname "$FISH_LOCAL")"
-
-    if [[ "$NEED_FISH_LOCAL" -eq 1 ]]; then
-        cat >"$FISH_LOCAL" <<'LOCAL_FISH'
-# Machine-local fish overrides.
-# Sourced by conf.d/99-local.fish.
-# This file is not tracked by the dotfiles repository.
-
-# fish_add_path -g "$HOME/bin"
-# set -gx EDITOR nvim
-LOCAL_FISH
-        success "scaffolded: $FISH_LOCAL"
-    else
-        success "exists, leaving alone: $FISH_LOCAL"
-    fi
 }
 
 plan_all() {
@@ -455,7 +421,6 @@ plan_all() {
     plan_fish_shell
     plan_ssh_key
     plan_config_files
-    plan_local_scaffolds
 }
 
 apply_all() {
@@ -465,7 +430,6 @@ apply_all() {
     apply_ssh_key
 
     apply_config_files
-    apply_local_scaffolds
 
     header "bootstrap complete"
     info "open a new terminal to apply shell changes"

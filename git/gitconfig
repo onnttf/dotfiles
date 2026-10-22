@@ -93,6 +93,3 @@
     ra = rebase --abort
     slog = "log --pretty=format:'%C(yellow)%h%C(reset) %C(green)%ad%C(reset) %C(blue)%an <%ae>%C(reset) %s' --date=iso"
     glog = "log --graph --all --pretty=format:'%C(yellow)%h%C(reset) %C(green)%ad%C(reset) %C(blue)%an <%ae>%C(reset) %s %C(red)%d%C(reset)' --date=iso"
-
-[include]
-    path = ~/.gitconfig.local
